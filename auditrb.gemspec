@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Allister Beharry"]
   spec.email         = ["allister.beharry@gmail.com"]
 
-  spec.summary       = "Audit dependencies"
+  spec.summary       = "Audit Ruby package dependencies for security vulnerabilities."
   spec.homepage      = "https://github.com/allisterb/auditrb"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
