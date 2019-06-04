@@ -14,6 +14,8 @@ module Auditrb
         @pastel = Pastel.new
         @dependencies = Hash.new()
         @dependencies_versions = Hash.new()
+        @coordinates = Hash.new()
+        @coordinates["coordinates"] = Array.new()
       end
 
       def execute(input: $stdin, output: $stdout)
@@ -26,13 +28,8 @@ module Auditrb
           print_err "No dependencies retrieved. Exiting."
           return
         end
-        n = get_dependencies_versions()
-        puts "Parsed #{n} version strings."
-        if n == 0
-          print_err "No versions parsed. Exiting."
-          return
-        end
-
+        get_dependencies_versions()
+        get_coordinates()
       end
 
       def gemspec_file_exists?()
@@ -85,6 +82,12 @@ module Auditrb
           @dependencies_versions[p] = version
         end
         @dependencies_versions.count()
+      end
+
+      def get_coordinates()
+        @dependencies_versions.each do |p, v|
+          @coordinates["coordinates"] <<  "pkg:gem/#{p}@#{v}";
+        end
       end
 
       def decrement(version)
