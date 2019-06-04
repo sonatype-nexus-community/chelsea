@@ -35,6 +35,7 @@ module Auditrb
           print_err "No vulnerability data retrieved from server. Exiting."
           return
         end
+        print_results()
       end
 
       def gemspec_file_exists?()
@@ -66,9 +67,12 @@ module Auditrb
               end 
             @dependencies[p] = Gem::Requirement.parse(r)
           end
+          rescue StandardError => e
+            spinner.stop("...failed.")
+            print_err "Parsing dependency line #{x} failed."
         end
         c = @dependencies.count()
-        spinner.success("done. Parsed #{c} dependencies.")
+        spinner.success("...done. Parsed #{c} dependencies.")
         c
       end
 
@@ -95,7 +99,7 @@ module Auditrb
           @dependencies_versions[p] = version
         end
         c = @dependencies_versions.count()
-        spinner.success("done.")
+        spinner.success("...done.")
         c
       end
 
@@ -115,14 +119,55 @@ module Auditrb
           {content_type: :json, accept: :json}
         if r.code == 200
           @server_response = JSON.parse(r.body)
-          spinner.success("done.")
+          spinner.success("...done.")
           @server_response.count()
         else
-          spinner.stop("Server returned non-success code #{r.code}.")
+          spinner.stop("...request failed.")
+          print_err "Error getting data from OSS Index server. Server returned non-success code #{r.code}."
           0
         end
+      rescue SocketError => e
+        spinner.stop("...request failed.")
+        print_err "Socket error getting data from OSS Index server."
+        0      
+      rescue RestClient::RequestFailed => e
+        spinner.stop("Request failed.")
+        print_err "Error getting data from OSS Index server:#{e.response}."
+        0
+      rescue RestClient::ResourceNotfound => e
+        spinner.stop("...request failed.")
+        print_err "Error getting data from OSS Index server. Resource not found."
+        0
+      rescue Errno::ECONNREFUSED => e
+        spinner.stop("...request failed.")
+        print_err "Error getting data from OSS Index server. Connection refused."
+        0
+      rescue StandardError => e
+        spinner.stop("...request failed.")
+        print_err "UNKNOWN Error getting data from OSS Index server."
+        0
       end
-        
+
+      def print_results()
+        puts ""
+        puts "Audit Results"
+        puts "============="
+        @server_response.each do |r|
+          package = r["coordinates"].split('/')[1].split('@')
+          vulnerable = r["vulnerabilities"].length() > 0
+          desc = r["description"] != "" ? "#{r['description']}" : ""
+          if vulnerable
+            puts(@pastel.white("Package: #{package[0]} #{package[1]}. #{desc} ") +  @pastel.red.bold("Vulnerable."))
+            r["vulnerabilities"].each do |k, v|
+              puts @pastel.red.bold("    #{k}:#{v}")
+              #@pastel.red.white.
+            end
+          else
+            puts(@pastel.white("Package: #{package[0]} #{package[1]}. #{desc} ") + @pastel.green.bold("Not vulnerable."))
+          end
+          #puts r 
+        end
+      end
 
       def decrement(version)
         major = version.major
