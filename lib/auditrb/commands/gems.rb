@@ -2,7 +2,7 @@
 
 require 'pastel'
 require 'semantic'
-#require_relative './version.rb'
+require 'tty-spinner'
 require_relative '../command'
 
 module Auditrb
@@ -23,7 +23,6 @@ module Auditrb
           return
         end
         n = get_dependencies()
-        puts "Parsed #{n} dependencies."
         if n == 0
           print_err "No dependencies retrieved. Exiting."
           return
@@ -45,6 +44,9 @@ module Auditrb
       end
 
       def get_dependencies()
+        format = "[#{@pastel.green(':spinner')}] " + @pastel.white("Parsing dependencies")
+        spinner = TTY::Spinner.new(format, success_mark: @pastel.green('+'), hide_cursor: true)
+        spinner.auto_spin()
         IO.foreach(@file) do |x|
           case x
           when /^\s*spec\.add_dependency\s+"?([^"]+)"?,\s*(.+)$/
@@ -59,10 +61,15 @@ module Auditrb
             @dependencies[p] = Gem::Requirement.parse(r)
           end
         end
-        @dependencies.count()
+        c = @dependencies.count()
+        spinner.success("done. Parsed #{c} dependencies.")
+        c
       end
 
       def get_dependencies_versions()
+        format = "[#{@pastel.green(':spinner')}] " + @pastel.white("Parsing versions")
+        spinner = TTY::Spinner.new(format, success_mark: @pastel.green('+'), hide_cursor: true)
+        spinner.auto_spin()
         @dependencies.each do |p, r|
           o =  r[0]
           v = r[1].to_s
@@ -81,7 +88,9 @@ module Auditrb
           #puts "p:#{p} o:#{o} v:#{v} version:#{version}."
           @dependencies_versions[p] = version
         end
-        @dependencies_versions.count()
+        c = @dependencies_versions.count()
+        spinner.success("done.")
+        c
       end
 
       def get_coordinates()
