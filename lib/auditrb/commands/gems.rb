@@ -2,6 +2,7 @@
 
 require 'pastel'
 require 'semantic'
+#require_relative './version.rb'
 require_relative '../command'
 
 module Auditrb
@@ -12,7 +13,7 @@ module Auditrb
         @options = options
         @pastel = Pastel.new
         @dependencies = Hash.new()
-        @versions
+        @dependencies_versions = Hash.new()
       end
 
       def execute(input: $stdin, output: $stdout)
@@ -25,11 +26,12 @@ module Auditrb
           print_err "No dependencies retrieved. Exiting."
           return
         end
+        get_dependencies_versions()
       end
 
       def gemspec_file_exists?()
         if not ::File.file? @file
-          print_err "Could not find .gemspec file #{@file}."
+          print_err "Could not fifnd .gemspec file #{@file}."
           return false
         else
           require 'pathname'
@@ -58,12 +60,15 @@ module Auditrb
       end
 
       def get_dependencies_versions()
-        @dependencies.each do |p, v|
-          v
-          #spec = v.to_spec()
-          #version = Gem::Version.new(v.)
-          rescue Gem::MissingSpecError => error
-            print_err "Parsing dependency #{p} failed: #{error}."       
+        @dependencies.each do |p, r|
+          o =  r[0]
+          v = r[1].to_s
+          if v.split('.').length == 1 then
+            v = v + ".0.0"
+          elsif v.split('.').length == 2 then
+              v = v + ".0"
+          end
+          version = Semantic::Version.new(v)
         end
       end
 
