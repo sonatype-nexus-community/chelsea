@@ -26,7 +26,13 @@ module Auditrb
           print_err "No dependencies retrieved. Exiting."
           return
         end
-        get_dependencies_versions()
+        n = get_dependencies_versions()
+        puts "Parsed #{n} version strings."
+        if n == 0
+          print_err "No versions parsed. Exiting."
+          return
+        end
+
       end
 
       def gemspec_file_exists?()
@@ -69,7 +75,31 @@ module Auditrb
               v = v + ".0"
           end
           version = Semantic::Version.new(v)
+          case o
+          when '>'
+            version = version.increment!(:minor)
+          when '<'
+            version = decrement(version)
+          end
+          #puts "p:#{p} o:#{o} v:#{v} version:#{version}."
+          @dependencies_versions[p] = version
         end
+        @dependencies_versions.count()
+      end
+
+      def decrement(version)
+        major = version.major
+        minor = version.minor
+        patch = version.patch
+        if patch > 0 then
+          patch = patch - 1
+        elsif minor > 0 then
+          minor = minor - 1
+        elsif major > 0 then
+          major = major - 1
+        else raise 'Version is 0.0.0'
+        end
+        Semantic::Version.new("#{major}.#{minor}.#{patch}")
       end
 
       def print_err(s)
