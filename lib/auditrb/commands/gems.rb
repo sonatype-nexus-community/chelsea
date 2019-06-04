@@ -16,6 +16,7 @@ module Auditrb
         @dependencies_versions = Hash.new()
         @coordinates = Hash.new()
         @coordinates["coordinates"] = Array.new()
+        @server_response = Array.new()
       end
 
       def execute(input: $stdin, output: $stdout)
@@ -29,6 +30,11 @@ module Auditrb
         end
         get_dependencies_versions()
         get_coordinates()
+        n = get_vulns()
+        if n == 0
+          print_err "No vulnerability data retrieved from server. Exiting."
+          return
+        end
       end
 
       def gemspec_file_exists?()
@@ -98,6 +104,25 @@ module Auditrb
           @coordinates["coordinates"] <<  "pkg:gem/#{p}@#{v}";
         end
       end
+
+      def get_vulns()
+        require 'json'
+        require 'rest-client'
+        format = "[#{@pastel.green(':spinner')}] " + @pastel.white("Making request to OSS Index server")
+        spinner = TTY::Spinner.new(format, success_mark: @pastel.green('+'), hide_cursor: true)
+        spinner.auto_spin()
+        r = RestClient.post "https://ossindex.sonatype.org/api/v3/component-report", @coordinates.to_json, 
+          {content_type: :json, accept: :json}
+        if r.code == 200
+          @server_response = JSON.parse(r.body)
+          spinner.success("done.")
+          @server_response.count()
+        else
+          spinner.stop("Server returned non-success code #{r.code}.")
+          0
+        end
+      end
+        
 
       def decrement(version)
         major = version.major
