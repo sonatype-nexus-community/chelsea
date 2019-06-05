@@ -1,3 +1,3 @@
 @echo off
 echo Installing Ruby dependencies
-bundle install
+bundle install %*O

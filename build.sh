@@ -1,2 +1,2 @@
 #!/bin/bash
-ruby ./bin/setup "$@"
+bundle install "$@"
