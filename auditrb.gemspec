@@ -56,10 +56,10 @@ Gem::Specification.new do |spec|
   spec.add_dependency "tty-which", "~> 0.4"
   spec.add_dependency "pastel", "~> 0.7.2"
   spec.add_dependency "thor", "~> 0.20.0"
-  spec.add_dependency "rest-client" "~> 2.0.2"
-  spec.add_dependency "semantic" "~> 1.6.1"
+  spec.add_dependency "rest-client", "~> 2.0.2"
+  spec.add_dependency "semantic", "~> 1.6.1"
 
-  spec.add_development_dependency "bundler", "~> 1.17"
+  spec.add_development_dependency "bundler", "~> 1.16"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "tty", "~> 0.9"
