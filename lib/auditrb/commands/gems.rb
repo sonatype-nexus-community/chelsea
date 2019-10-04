@@ -10,6 +10,7 @@ module Auditrb
     class Gems < Auditrb::Command
       def initialize(file, options)
         @file = file
+        @lock_file = ''
         @options = options
         @pastel = Pastel.new
         @dependencies = Hash.new()
@@ -23,6 +24,7 @@ module Auditrb
         if not gemspec_file_exists?
           return
         end
+        gem_lock_file_exists?()
         n = get_dependencies()
         if n == 0
           print_err "No dependencies retrieved. Exiting."
@@ -40,7 +42,7 @@ module Auditrb
 
       def gemspec_file_exists?()
         if not ::File.file? @file
-          print_err "Could not fifnd .gemspec file #{@file}."
+          print_err "Could not find .gemspec file #{@file}."
           return false
         else
           require 'pathname'
@@ -50,8 +52,21 @@ module Auditrb
         end
       end
 
+      def gem_lock_file_exists?()
+        lf = File.join(File.dirname(@file), "Gemfile.lock")
+        if ::File.file? lf 
+          @lock_file = lf
+          require 'pathname'
+          path = Pathname.new(@lock_file)
+          print_success "Using Gemfile.lock at #{path.realpath}."
+          return true
+        else
+          return false
+        end
+      end
+
       def get_dependencies()
-        format = "[#{@pastel.green(':spinner')}] " + @pastel.white("Parsing dependencies")
+        format = "[#{@pastel.green(':spinner')}] " + @pastel.white("Parsing dependencies from #{@file}")
         spinner = TTY::Spinner.new(format, success_mark: @pastel.green('+'), hide_cursor: true)
         spinner.auto_spin()
         IO.foreach(@file) do |x|
@@ -72,12 +87,45 @@ module Auditrb
             print_err "Parsing dependency line #{x} failed."
         end
         c = @dependencies.count()
-        spinner.success("...done. Parsed #{c} dependencies.")
-        c
+        spinner.success("...done. Parsed #{c} dependencies from spec file #{@file}.")
+        if @lock_file == '' then
+          return c
+        end
+        format = "[#{@pastel.green(':spinner')}] " + @pastel.white("Parsing dependencies from lock file #{@lock_file}\n")
+        spinner = TTY::Spinner.new(format, success_mark: @pastel.green('+'), hide_cursor: true)
+        spinner.auto_spin()
+        IO.foreach(@lock_file) do |x|
+          case x
+          when /^\s+(\S+)\s*\((.+)\)\s*$/
+            p = $1
+            v = $2.to_s
+            r = 
+              if v.start_with?('"') then 
+                v.gsub!(/\A"|"\Z/, '') 
+              else 
+                v 
+              end 
+            if not @dependencies.key?(p) then
+              begin
+                @dependencies[p] = Gem::Requirement.parse(r)  
+              rescue => ex
+                print_err "Error parsing Gemfile requirement #{r}: #{ex.message}."
+              end
+            end
+          end
+          rescue StandardError => e
+            spinner.stop("...failed.")
+            print_err "Parsing dependency line #{x} failed."
+        end
+        if @dependencies.count() > c then
+          spinner.success("...done. Parsed #{@dependencies.count() - c} additional dependencies from lock file #{@lock_file}.")
+        else
+          spinner.stop("...done. Did not parse any additional dependencies from lock file #{@lock_file}.")
+        end
       end
 
       def get_dependencies_versions()
-        format = "[#{@pastel.green(':spinner')}] " + @pastel.white("Parsing versions")
+        format = "[#{@pastel.green(':spinner')}] " + @pastel.white("Parsing versions\n")
         spinner = TTY::Spinner.new(format, success_mark: @pastel.green('+'), hide_cursor: true)
         spinner.auto_spin()
         @dependencies.each do |p, r|
@@ -88,15 +136,18 @@ module Auditrb
           elsif v.split('.').length == 2 then
               v = v + ".0"
           end
-          version = Semantic::Version.new(v)
-          case o
-          when '>'
-            version = version.increment!(:minor)
-          when '<'
-            version = decrement(version)
+          begin
+            version = Semantic::Version.new(v)  
+            case o
+            when '>'
+              version = version.increment!(:minor)
+            when '<'
+              version = decrement(version)
+            end
+            @dependencies_versions[p] = version
+          rescue => ex
+            print_err "Error parsing #{p} dependency version #{v}: #{ex.message}. Skipping."
           end
-          #puts "p:#{p} o:#{o} v:#{v} version:#{version}."
-          @dependencies_versions[p] = version
         end
         c = @dependencies_versions.count()
         spinner.success("...done.")
