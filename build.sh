@@ -1,3 +1,3 @@
 #!/bin/bash
 echo Installing Ruby dependencies...
-bundle install "$@"
+bundle install --deployment "$@"
