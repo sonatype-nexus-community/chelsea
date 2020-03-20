@@ -5,9 +5,9 @@ require 'semantic'
 require 'tty-spinner'
 require_relative '../command'
 
-module Auditrb
+module Chelsea
   module Commands
-    class Gems < Auditrb::Command
+    class Gems < Chelsea::Command
       def initialize(file, options)
         @file = file
         @options = options

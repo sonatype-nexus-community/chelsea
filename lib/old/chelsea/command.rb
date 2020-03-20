@@ -2,7 +2,7 @@
 
 require 'forwardable'
 
-module Auditrb
+module Chelsea
   class Command
     extend Forwardable
 

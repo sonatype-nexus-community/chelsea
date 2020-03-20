@@ -5,11 +5,11 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug auditrb",
+            "name": "Debug chelsea",
             "type": "Ruby",
             "request": "launch",
-            "program": "${workspaceRoot}/exe/auditrb",
-            "args": ["gems", "${workspaceRoot}\\auditrb.gemspec"],
+            "program": "${workspaceRoot}/exe/chelsea",
+            "args": ["gems", "${workspaceRoot}\\chelsea.gemspec"],
             "pathToRDebugIDE": "C:\\Ruby\\Ruby26-x64\\bin\\rdebug-ide.bat"
         }
     ]
