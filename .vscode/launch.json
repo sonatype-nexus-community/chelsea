@@ -8,9 +8,8 @@
             "name": "Debug chelsea",
             "type": "Ruby",
             "request": "launch",
-            "program": "${workspaceRoot}/exe/chelsea",
+            "program": "${workspaceRoot}/bin/chelsea",
             "args": ["gems", "${workspaceRoot}\\chelsea.gemspec"],
-            "pathToRDebugIDE": "C:\\Ruby\\Ruby26-x64\\bin\\rdebug-ide.bat"
         }
     ]
 }
