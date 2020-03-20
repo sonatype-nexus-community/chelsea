@@ -4,8 +4,10 @@ PATH
     chelsea (0.0.1)
       pastel (~> 0.7.2)
       rest-client (~> 2.0.2)
+      semantic (~> 1.6.1)
       slop (~> 4.8.0)
       tty-font (~> 0.5.0)
+      tty-spinner (~> 0.9.3)
 
 GEM
   remote: https://rubygems.org/
@@ -41,9 +43,13 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.9.0)
     rspec-support (3.9.2)
+    semantic (1.6.1)
     slop (4.8.0)
     tty-color (0.5.1)
+    tty-cursor (0.7.1)
     tty-font (0.5.0)
+    tty-spinner (0.9.3)
+      tty-cursor (~> 0.7)
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.7.6)

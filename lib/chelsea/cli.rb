@@ -1,6 +1,6 @@
 require 'slop'
 require 'pastel'
-require_relative './version'
+require_relative 'version'
 
 module Chelsea
   class CLI
@@ -8,18 +8,53 @@ module Chelsea
       puts show_logo()
       parser = Slop::Parser.new cli_flags()
       arguments = parse_arguments(command_line_options, parser)
+      validate_arguments arguments
+
+      if arguments.fetch(:file)
+        gems(arguments[:file])
+      end
     end
 
     def cli_flags()
       opts = Slop::Options.new
       opts.banner = "usage: chelsea [options] ..."
       opts.separator ""
+      opts.separator 'Options:'
+      opts.string '-f', '--file', 'do the dang thing'
       opts.on '--version', 'print the version' do
         puts version()
         exit
       end
 
       opts
+    end
+
+    def validate_arguments(arguments)
+      if number_of_required_flags_set(arguments) < 1 && !arguments.fetch(:file)
+        flags_error
+      end
+    end
+
+    def number_of_required_flags_set(arguments)
+      minimum_flags = flags
+      valid_flags = minimum_flags.collect {|a| arguments.fetch(a) }.compact
+      valid_flags.count
+    end
+
+    def flags
+      [:file]
+    end
+
+    def flags_error
+      switches = flags.collect {|f| "--#{f}"}
+      puts cli_flags
+      puts
+      abort "please set one of #{switches}"
+    end
+
+    def gems(file)
+      require_relative 'gems'
+      Chelsea::Gems.new(file, nil).execute
     end
 
     def parse_arguments(command_line_options, parser)
