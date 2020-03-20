@@ -12,7 +12,13 @@ module Chelsea
 
       if arguments.fetch(:file)
         gems(arguments[:file])
+      elsif set?(arguments, :help)
+        puts cli_flags
       end
+    end
+
+    def set?(arguments, flag)
+      !arguments.fetch(flag).nil?
     end
 
     def cli_flags()
@@ -20,6 +26,7 @@ module Chelsea
       opts.banner = "usage: chelsea [options] ..."
       opts.separator ""
       opts.separator 'Options:'
+      opts.bool '-h', '--help', 'show usage' 
       opts.string '-f', '--file', 'do the dang thing'
       opts.on '--version', 'print the version' do
         puts version()
@@ -42,7 +49,7 @@ module Chelsea
     end
 
     def flags
-      [:file]
+      [:file, :help]
     end
 
     def flags_error
