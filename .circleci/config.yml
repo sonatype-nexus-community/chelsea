@@ -30,9 +30,8 @@ jobs:
       - run:
           name: Run rspec in parallel
           command: |
-            rake rspec --profile 10 \
-                              --format RspecJunitFormatter \
-                              --out test_results/rspec.xml \
-                              --format progress
+            rake rspec --format RspecJunitFormatter \
+                      --out test_results/rspec.xml \
+                      --format progress
       - store_test_results:
           path: test_results
