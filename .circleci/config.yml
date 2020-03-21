@@ -36,6 +36,9 @@ jobs:
     docker:
       - image: circleci/ruby:2.6.5-stretch
     steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "89:00:b0:ce:95:1b:d9:ef:46:c3:81:dc:75:56:b3:ca"
       - checkout
       - run:
           name: Install gem-release
