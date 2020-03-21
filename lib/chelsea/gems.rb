@@ -146,28 +146,11 @@ module Chelsea
           puts(@pastel.white("Package: #{package[0]} #{package[1]}. #{desc} ") +  @pastel.red.bold("Vulnerable."))
           r["vulnerabilities"].each do |k, v|
             puts @pastel.red.bold("    #{k}:#{v}")
-            #@pastel.red.white.
           end
         else
           puts(@pastel.white("Package: #{package[0]} #{package[1]}. #{desc} ") + @pastel.green.bold("Not vulnerable."))
         end
-        #puts r 
       end
-    end
-
-    def decrement(version)
-      major = version.major
-      minor = version.minor
-      patch = version.patch
-      if patch > 0 then
-        patch = patch - 1
-      elsif minor > 0 then
-        minor = minor - 1
-      elsif major > 0 then
-        major = major - 1
-      else raise 'Version is 0.0.0'
-      end
-      Semantic::Version.new("#{major}.#{minor}.#{patch}")
     end
 
     def print_err(s)
@@ -177,6 +160,5 @@ module Chelsea
     def print_success(s)
       puts @pastel.green.bold(s)
     end
-
   end
 end
