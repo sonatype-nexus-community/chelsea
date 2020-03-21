@@ -33,6 +33,7 @@ jobs:
             bundle exec rspec --format progress \
                             --format RspecJunitFormatter \
                             --out test_results/rspec.xml \
+                            $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
                             
       - store_test_results:
           path: test_results
