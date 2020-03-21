@@ -3,7 +3,7 @@ require 'chelsea/gems'
 RSpec.describe Chelsea::Gems do
   it "executes `gems` command successfully" do
     output = StringIO.new
-    file = "chelsea.gemspec"
+    file = "Gemfile.lock"
     options = {}
     command = Chelsea::Gems.new(file, options)
 

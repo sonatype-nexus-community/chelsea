@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'pastel'
-require 'semantic'
 require 'tty-spinner'
 require 'bundler'
 require 'bundler/lockfile_parser'
