@@ -32,3 +32,23 @@ jobs:
                             --out test_results/rspec.xml
       - store_test_results:
           path: test_results
+  release:
+    docker:
+      - image: circleci/ruby:2.6.5-stretch
+    steps:
+      - checkout
+      - run:
+          name: Install gem-release
+          command: gem install gem-release
+      - run:
+          name: Bump version
+          command: gem bump
+
+workflows:
+  version: 2.1
+  build_and_release:
+    jobs:
+      - build
+      - release:
+          requires:
+            - build
