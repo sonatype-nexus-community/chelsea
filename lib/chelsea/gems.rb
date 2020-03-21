@@ -3,6 +3,8 @@
 require 'pastel'
 require 'semantic'
 require 'tty-spinner'
+require 'bundler'
+require 'bundler/lockfile_parser'
 
 module Chelsea
   class Gems
@@ -15,12 +17,18 @@ module Chelsea
       @coordinates = Hash.new()
       @coordinates["coordinates"] = Array.new()
       @server_response = Array.new()
-    end
 
-    def execute(input: $stdin, output: $stdout)
-      if not gemspec_file_exists?
+      if not gemfile_lock_file_exists()
         return
       end
+
+      path = Pathname.new(@file)
+      @lockfile = Bundler::LockfileParser.new(
+        File.read(path)
+      )
+    end
+
+    def execute(input: $stdin, output: $stdout)      
       n = get_dependencies()
       if n == 0
         print_err "No dependencies retrieved. Exiting."
@@ -36,14 +44,11 @@ module Chelsea
       print_results()
     end
 
-    def gemspec_file_exists?()
+    def gemfile_lock_file_exists()
       if not ::File.file? @file
-        print_err "Could not find .gemspec file #{@file}."
         return false
       else
-        require 'pathname'
-        path = Pathname.new(@file)  
-        print_success "Using .gemspec file #{path.realpath}."
+        path = Pathname.new(@file)
         return true
       end
     end
@@ -52,23 +57,14 @@ module Chelsea
       format = "[#{@pastel.green(':spinner')}] " + @pastel.white("Parsing dependencies")
       spinner = TTY::Spinner.new(format, success_mark: @pastel.green('+'), hide_cursor: true)
       spinner.auto_spin()
-      IO.foreach(@file) do |x|
-        case x
-        when /^\s*spec\.add_dependency\s+"?([^"]+)"?,\s*(.+)$/
-          p = $1
-          v = $2.to_s
-          r = 
-            if v.start_with?('"') then 
-              v.gsub!(/\A"|"\Z/, '') 
-            else 
-              v 
-            end 
-          @dependencies[p] = Gem::Requirement.parse(r)
-        end
+
+      @lockfile.specs.each do |gem|
+        @dependencies[gem.name] = [gem.name, gem.version]
         rescue StandardError => e
           spinner.stop("...failed.")
-          print_err "Parsing dependency line #{x} failed."
+          print_err "Parsing dependency line #{gem} failed."
       end
+
       c = @dependencies.count()
       spinner.success("...done. Parsed #{c} dependencies.")
       c
@@ -86,15 +82,7 @@ module Chelsea
         elsif v.split('.').length == 2 then
             v = v + ".0"
         end
-        version = Semantic::Version.new(v)
-        case o
-        when '>'
-          version = version.increment!(:minor)
-        when '<'
-          version = decrement(version)
-        end
-        #puts "p:#{p} o:#{o} v:#{v} version:#{version}."
-        @dependencies_versions[p] = version
+        @dependencies_versions[p] = v
       end
       c = @dependencies_versions.count()
       spinner.success("...done.")

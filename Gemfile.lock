@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     chelsea (0.0.1)
+      bundler (~> 2.0.0)
       pastel (~> 0.7.2)
       rest-client (~> 2.0.2)
       semantic (~> 1.6.1)
