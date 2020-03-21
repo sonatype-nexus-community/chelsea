@@ -14,9 +14,6 @@ jobs:
           name: Install bundler
           command: gem install bundler
       - run:
-          name: Install rspec Junit Formatter
-          command: gem install rspec_junit_formatter
-      - run:
           name: Which bundler?
           command: bundle -v
       - restore_cache:
