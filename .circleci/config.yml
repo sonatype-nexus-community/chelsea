@@ -48,7 +48,7 @@ jobs:
           command: git config --global user.email "$GITHUB_EMAIL"
       - run:
           name: Bump version
-          command: gem bump --skip-ci
+          command: gem bump --skip-ci --push
 
 workflows:
   version: 2.1
