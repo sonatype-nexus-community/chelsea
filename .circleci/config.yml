@@ -41,8 +41,11 @@ jobs:
           name: Install gem-release
           command: gem install gem-release
       - run:
+          name: Configure git
+          command: git config user.email "$GITHUB_USERNAME" ${} && git config user.email "$GITHUB_EMAIL"
+      - run:
           name: Bump version
-          command: gem bump
+          command: gem bump --skip-ci
 
 workflows:
   version: 2.1
@@ -50,5 +53,6 @@ workflows:
     jobs:
       - build
       - release:
+          context: chelsea
           requires:
             - build
