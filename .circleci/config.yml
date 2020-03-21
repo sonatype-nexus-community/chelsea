@@ -42,7 +42,7 @@ jobs:
           command: gem install gem-release
       - run:
           name: Configure git
-          command: git config user.email "$GITHUB_USERNAME" ${} && git config user.email "$GITHUB_EMAIL"
+          command: git config user.email "$GITHUB_USERNAME" && git config user.email "$GITHUB_EMAIL"
       - run:
           name: Bump version
           command: gem bump --skip-ci
