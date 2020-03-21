@@ -47,8 +47,11 @@ jobs:
           name: Set git email
           command: git config --global user.email "$GITHUB_EMAIL"
       - run:
+          name: Set git upstream
+          command: git branch -u origin/$CIRCLE_BRANCH
+      - run:
           name: Bump version
-          command: gem bump --skip-ci --remote origin $CIRCLE_BRANCH --push
+          command: gem bump --skip-ci --push
 
 workflows:
   version: 2.1
