@@ -40,9 +40,12 @@ jobs:
       - run:
           name: Install gem-release
           command: gem install gem-release
+      - run: 
+          name: Set git name
+          command: git config --global user.name "$GITHUB_USERNAME" 
       - run:
-          name: Configure git
-          command: git config --global user.email "$GITHUB_USERNAME" && git config --global user.email "$GITHUB_EMAIL"
+          name: Set git email
+          command: git config --global user.email "$GITHUB_EMAIL"
       - run:
           name: Bump version
           command: gem bump --skip-ci
