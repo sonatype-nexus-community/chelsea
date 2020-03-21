@@ -43,6 +43,9 @@ jobs:
       - run:
           name: Install gem-release
           command: gem install gem-release
+      - run:
+          name: Setup Rubygems
+          command: bash .circleci/setup-rubygems.sh
       - run: 
           name: Set git name
           command: git config --global user.name "$GITHUB_USERNAME" 
