@@ -33,7 +33,7 @@ jobs:
       - run:
           name: Run rspec in parallel
           command: |
-            bundle exec rspec --format progess \
+            bundle exec rspec --format progress \
                             --format RspecJunitFormatter \
                             --out test_results/rspec.xml \
                             
