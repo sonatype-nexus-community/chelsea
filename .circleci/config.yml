@@ -51,10 +51,10 @@ jobs:
           command: git config --global user.email "$GITHUB_EMAIL"
       - run:
           name: Set git upstream
-          command: git branch -u origin/$CIRCLE_BRANCH
+          command: git branch -u origin/master
       - run:
           name: Bump version
-          command: gem bump --skip-ci --push
+          command: gem bump -v $CIRCLE_TAG --skip-ci --push
 
 workflows:
   version: 2.1
@@ -63,5 +63,10 @@ workflows:
       - build
       - release:
           context: chelsea
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /[0-9]+(\.[0-9]+)*(-.*)*/
           requires:
             - build
