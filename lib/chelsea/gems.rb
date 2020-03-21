@@ -137,17 +137,20 @@ module Chelsea
       puts ""
       puts "Audit Results"
       puts "============="
+      i = 0
+      count = @server_response.count()
       @server_response.each do |r|
-        package = r["coordinates"].split('/')[1].split('@')
+        i += 1
+        package = r["coordinates"]
         vulnerable = r["vulnerabilities"].length() > 0
         desc = r["description"] != "" ? "#{r['description']}" : ""
         if vulnerable
-          puts(@pastel.white("Package: #{package[0]} #{package[1]}. #{desc} ") +  @pastel.red.bold("Vulnerable."))
+          puts @pastel.red("[#{i}/#{count}] - #{package} ") +  @pastel.red.bold("Vulnerable.")
           r["vulnerabilities"].each do |k, v|
             puts @pastel.red.bold("    #{k}:#{v}")
           end
         else
-          puts(@pastel.white("Package: #{package[0]} #{package[1]}. #{desc} ") + @pastel.green.bold("Not vulnerable."))
+          puts(@pastel.white("[#{i}/#{count}] - #{package} ") + @pastel.green.bold("No vulnerabilities found!"))
         end
       end
     end
