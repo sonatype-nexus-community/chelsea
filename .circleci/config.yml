@@ -1,10 +1,10 @@
-version: 2 # use CircleCI 2.0
-jobs: # a collection of steps
-  build: # runs not using Workflows must have a `build` job as entry point
-    parallelism: 3 # run three instances of this job in parallel
-    docker: # run the steps with Docker
+version: 2 
+jobs: 
+  build: 
+    parallelism: 3 
+    docker: 
       - image: circleci/ruby:2.6.5-jessie
-        environment: # environment variables for primary container
+        environment: 
           BUNDLE_JOBS: 3
           BUNDLE_RETRY: 3
           BUNDLE_PATH: vendor/bundle
