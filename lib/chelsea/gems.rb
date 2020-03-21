@@ -4,6 +4,7 @@ require 'pastel'
 require 'tty-spinner'
 require 'bundler'
 require 'bundler/lockfile_parser'
+require_relative 'version'
 
 module Chelsea
   class Gems
@@ -94,6 +95,12 @@ module Chelsea
       end
     end
 
+    def get_user_agent()
+      user_agent = "chelsea/#{Chelsea::VERSION}"
+
+      user_agent
+    end
+
     def get_vulns()
       require 'json'
       require 'rest-client'
@@ -101,7 +108,7 @@ module Chelsea
       spinner = TTY::Spinner.new(format, success_mark: @pastel.green('+'), hide_cursor: true)
       spinner.auto_spin()
       r = RestClient.post "https://ossindex.sonatype.org/api/v3/component-report", @coordinates.to_json, 
-        {content_type: :json, accept: :json}
+        {content_type: :json, accept: :json, 'User-Agent': get_user_agent()}
       if r.code == 200
         @server_response = JSON.parse(r.body)
         spinner.success("...done.")
