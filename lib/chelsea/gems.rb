@@ -143,7 +143,6 @@ module Chelsea
         i += 1
         package = r["coordinates"]
         vulnerable = r["vulnerabilities"].length() > 0
-        desc = r["description"] != "" ? "#{r['description']}" : ""
         if vulnerable
           puts @pastel.red("[#{i}/#{count}] - #{package} ") +  @pastel.red.bold("Vulnerable.")
           r["vulnerabilities"].each do |k, v|
