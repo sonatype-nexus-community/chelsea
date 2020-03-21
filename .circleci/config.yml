@@ -14,6 +14,9 @@ jobs:
           name: Install bundler
           command: gem install bundler
       - run:
+          name: Install rspec Junit Formatter
+          command: gem install rspec_junit_formatter
+      - run:
           name: Which bundler?
           command: bundle -v
       - restore_cache:
@@ -30,8 +33,9 @@ jobs:
       - run:
           name: Run rspec in parallel
           command: |
-            rake rspec --format RspecJunitFormatter \
-                      --out test_results/rspec.xml \
-                      --format progress
+            rake rspec spec --format progess \
+                            --format RspecJunitFormatter \
+                            --out test_results/rspec.xml \
+                            
       - store_test_results:
           path: test_results
