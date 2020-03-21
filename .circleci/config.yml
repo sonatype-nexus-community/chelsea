@@ -1,0 +1,36 @@
+version: 2 # use CircleCI 2.0
+jobs: # a collection of steps
+  build: # runs not using Workflows must have a `build` job as entry point
+    parallelism: 3 # run three instances of this job in parallel
+    docker: # run the steps with Docker
+      - image: circleci/ruby:2.6.5-jessie
+        environment: # environment variables for primary container
+          BUNDLE_JOBS: 3
+          BUNDLE_RETRY: 3
+          BUNDLE_PATH: vendor/bundle
+    steps:
+      - checkout
+      - run:
+          name: Which bundler?
+          command: bundle -v
+      - restore_cache:
+          keys:
+            - chelsea-bundle-v2-{{ checksum "Gemfile.lock" }}
+            - chelsea-bundle-v2-
+      - run:
+          name: Bundle Install
+          command: bundle check --path vendor/bundle || bundle install
+      - save_cache:
+          key: chelsea-bundle-v2-{{ checksum "Gemfile.lock" }}
+          paths:
+            - vendor/bundle
+      - run:
+          name: Run rspec in parallel
+          command: |
+            rake rspec --profile 10 \
+                              --format RspecJunitFormatter \
+                              --out test_results/rspec.xml \
+                              --format progress \
+                              $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
+      - store_test_results:
+          path: test_results
