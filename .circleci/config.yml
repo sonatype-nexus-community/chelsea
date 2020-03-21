@@ -47,6 +47,9 @@ jobs:
           name: Set git email
           command: git config --global user.email "$GITHUB_EMAIL"
       - run:
+          name: Set git remote
+          command: git remote add origin git@github.com:sonatype-nexus-community/chelsea.git
+      - run:
           name: Bump version
           command: gem bump --skip-ci --remote origin/$CIRCLE_BRANCH --push
 
