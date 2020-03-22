@@ -58,6 +58,9 @@ jobs:
       - run:
           name: Bump version
           command: gem bump -v $CIRCLE_TAG --skip-ci --push
+      - run:
+          name: Release to Rubygems
+          command: gem release --pretend
 
 workflows:
   version: 2.1
