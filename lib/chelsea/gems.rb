@@ -152,12 +152,12 @@ module Chelsea
     # and eventually set @coordinates to the new hash, so we query OSS Index on only coords not in cache
     def check_db_for_cached_values()
       new_coords = Hash.new
+      new_coords["coordinates"] = Array.new
       @coordinates["coordinates"].each do |coord|
         record = get_cached_value_from_db(coord)
         if !record.nil?
           @server_response << record
         else
-          puts coord
           new_coords["coordinates"].push(coord)
         end
       end
