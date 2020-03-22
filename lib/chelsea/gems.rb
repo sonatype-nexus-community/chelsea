@@ -187,7 +187,7 @@ module Chelsea
           if gran.class == String && !gran.include?(name)
             # There is likely a fun and clever way to check @server-results, etc... and see if a dep is in there
             # Right now this looks at all Ruby deps, so it might find some in your Library, but that don't belong to your project
-            puts "Required by: " + gran
+            puts "\tRequired by: " + gran
           else
           end
         end
