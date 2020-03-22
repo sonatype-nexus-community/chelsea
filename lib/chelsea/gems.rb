@@ -175,9 +175,8 @@ module Chelsea
 
       if @coordinates["coordinates"].count() > 0
         chunked = Hash.new()
-        chunks = @coordinates["coordinates"].each_slice(128).to_a
-
-        chunks.each do |coords|
+        @coordinates["coordinates"].each_slice(128).to_a.each do |coords|
+          chunked["coordinates"] = coords
           r = RestClient.post "https://ossindex.sonatype.org/api/v3/component-report", chunked.to_json, 
           {content_type: :json, accept: :json, 'User-Agent': get_user_agent()}
         
