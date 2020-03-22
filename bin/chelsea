@@ -1,5 +1,5 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
-require "chelsea"
+require_relative "../lib/chelsea"
 
 Chelsea::CLI.new.main
