@@ -157,6 +157,7 @@ module Chelsea
         if !record.nil?
           @server_response << record
         else
+          puts coord
           new_coords["coordinates"].push(coord)
         end
       end
