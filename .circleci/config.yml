@@ -60,7 +60,7 @@ jobs:
           command: gem bump -v patch --tag --skip-ci --push
       - run:
           name: Release to Rubygems
-          command: gem release --pretend
+          command: gem release
 
 workflows:
   version: 2.1
