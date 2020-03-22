@@ -114,6 +114,8 @@ module Chelsea
       user_agent
     end
 
+    # This method will take an array of values, and save them to a pstore database
+    # and as well set a TTL of Time.now to be checked later
     def save_values_to_db(values)
       values.each do |val|
         if get_cached_value_from_db(val["coordinates"]).nil?
