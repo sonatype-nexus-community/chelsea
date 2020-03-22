@@ -20,7 +20,28 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+```
+$ chelsea 
+ _____  _            _                   
+/  __ \| |          | |                  
+| /  \/| |__    ___ | | ___   ___   __ _ 
+| |    | '_ \  / _ \| |/ __| / _ \ / _` |
+| \__/\| | | ||  __/| |\__ \|  __/| (_| |
+ \____/|_| |_| \___||_||___/ \___| \__,_|
+                                         
+                                         
+Version: 0.0.1
+
+usage: chelsea [options] ...
+
+Options:
+    -f, --file  do the dang thing
+    --version   print the version
+```
+
+Most basic usage is:
+
+`chelsea --file name.gemspec`
 
 ## Development
 

@@ -1,0 +1,75 @@
+version: 2.1
+jobs: 
+  build: 
+    docker: 
+      - image: circleci/ruby:2.6.5-stretch
+        environment: 
+          BUNDLE_PATH: vendor/bundle
+    steps:
+      - checkout
+      - run:
+          name: Install bundler
+          command: gem install bundler
+      - run:
+          name: Which bundler?
+          command: bundle -v
+      - restore_cache:
+          keys:
+            - chelsea-bundle-v2-{{ checksum "Gemfile.lock" }}
+            - chelsea-bundle-v2-
+      - run:
+          name: Bundle Install
+          command: bundle check --path vendor/bundle || bundle install
+      - save_cache:
+          key: chelsea-bundle-v2-{{ checksum "Gemfile.lock" }}
+          paths:
+            - vendor/bundle
+      - run:
+          name: Run rspec in parallel
+          command: |
+            bundle exec rspec --format progress \
+                            --format RspecJunitFormatter \
+                            --out test_results/rspec.xml
+      - store_test_results:
+          path: test_results
+  release:
+    docker:
+      - image: circleci/ruby:2.6.5-stretch
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "89:00:b0:ce:95:1b:d9:ef:46:c3:81:dc:75:56:b3:ca"
+      - checkout
+      - run:
+          name: Install gem-release
+          command: gem install gem-release
+      - run:
+          name: Setup Rubygems
+          command: bash .circleci/setup-rubygems.sh
+      - run: 
+          name: Set git name
+          command: git config --global user.name "$GITHUB_USERNAME" 
+      - run:
+          name: Set git email
+          command: git config --global user.email "$GITHUB_EMAIL"
+      - run:
+          name: Set git upstream
+          command: git branch -u origin/master
+      - run:
+          name: Bump version
+          command: gem bump -v $CIRCLE_TAG --skip-ci --push
+
+workflows:
+  version: 2.1
+  build_and_release:
+    jobs:
+      - build
+      - release:
+          context: chelsea
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /[0-9]+(\.[0-9]+)*(-.*)*/
+          requires:
+            - build
