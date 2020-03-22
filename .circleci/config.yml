@@ -31,6 +31,12 @@ jobs:
                             --format RspecJunitFormatter \
                             --out test_results/rspec.xml
       - run:
+          name: Build gem
+          command: gem build chelsea.gemspec
+      - run:
+          name: Install gem
+          command: gem install ./chelsea-*.gem
+      - run:
           name: Dogfood
           command: chelsea --file Gemfile.lock
       - store_test_results:
