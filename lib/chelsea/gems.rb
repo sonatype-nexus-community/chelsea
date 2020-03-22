@@ -5,6 +5,8 @@ require 'tty-spinner'
 require 'bundler'
 require 'bundler/lockfile_parser'
 require_relative 'version'
+require 'rubygems'
+require 'rubygems/commands/dependency_command'
 
 module Chelsea
   class Gems
@@ -17,6 +19,7 @@ module Chelsea
       @coordinates = Hash.new()
       @coordinates["coordinates"] = Array.new()
       @server_response = Array.new()
+      @reverse_deps = Hash.new()
 
       if not gemfile_lock_file_exists()
         return
@@ -57,6 +60,10 @@ module Chelsea
       format = "[#{@pastel.green(':spinner')}] " + @pastel.white("Parsing dependencies")
       spinner = TTY::Spinner.new(format, success_mark: @pastel.green('+'), hide_cursor: true)
       spinner.auto_spin()
+
+      reverse = Gem::Commands::DependencyCommand.new
+      reverse.options[:reverse_dependencies] = true
+      @reverse_deps = reverse.reverse_dependencies(@lockfile.specs)
 
       @lockfile.specs.each do |gem|
         @dependencies[gem.name] = [gem.name, gem.version]
@@ -157,15 +164,40 @@ module Chelsea
         i += 1
         package = r["coordinates"]
         vulnerable = r["vulnerabilities"].length() > 0
+        coord = r["coordinates"].sub("pkg:gem/", "")
+        name = coord.split('@')[0]
+        version = coord.split('@')[1]
+        reverse_dep_coord = "#{name}-#{version}"
         if vulnerable
           puts @pastel.red("[#{i}/#{count}] - #{package} ") +  @pastel.red.bold("Vulnerable.")
+          print_reverse_deps(@reverse_deps[reverse_dep_coord], name, version)
           r["vulnerabilities"].each do |k, v|
             puts @pastel.red.bold("    #{k}:#{v}")
           end
         else
           puts(@pastel.white("[#{i}/#{count}] - #{package} ") + @pastel.green.bold("No vulnerabilities found!"))
+          print_reverse_deps(@reverse_deps[reverse_dep_coord], name, version)
         end
       end
+    end
+
+    def print_reverse_deps(reverse_deps, name, version)
+      reverse_deps.each do |dep|
+        dep.each do |gran|
+          if gran.class == String && !gran.include?(name)
+            # There is likely a fun and clever way to check @server-results, etc... and see if a dep is in there
+            # Right now this looks at all Ruby deps, so it might find some in your Library, but that don't belong to your project
+            puts "Required by: " + gran
+          else
+          end
+        end
+      end
+    end
+
+    def to_purl(name, version)
+      purl = "pkg:gem/#{name}@#{version}"
+
+      purl
     end
 
     def print_err(s)
