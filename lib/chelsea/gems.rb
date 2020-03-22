@@ -107,16 +107,23 @@ module Chelsea
       format = "[#{@pastel.green(':spinner')}] " + @pastel.white("Making request to OSS Index server")
       spinner = TTY::Spinner.new(format, success_mark: @pastel.green('+'), hide_cursor: true)
       spinner.auto_spin()
-      r = RestClient.post "https://ossindex.sonatype.org/api/v3/component-report", @coordinates.to_json, 
+
+      chunked = Hash.new()
+      chunks = @coordinates["coordinates"].each_slice(128).to_a
+      chunks.each do |coords|
+        chunked["coordinates"] = coords
+        r = RestClient.post "https://ossindex.sonatype.org/api/v3/component-report", chunked.to_json, 
         {content_type: :json, accept: :json, 'User-Agent': get_user_agent()}
-      if r.code == 200
-        @server_response = JSON.parse(r.body)
-        spinner.success("...done.")
-        @server_response.count()
-      else
-        spinner.stop("...request failed.")
-        print_err "Error getting data from OSS Index server. Server returned non-success code #{r.code}."
-        0
+      
+        if r.code == 200
+          @server_response = @server_response.concat(JSON.parse(r.body))
+          spinner.success("...done.")
+          @server_response.count()
+        else
+          spinner.stop("...request failed.")
+          print_err "Error getting data from OSS Index server. Server returned non-success code #{r.code}."
+          0
+        end
       end
     rescue SocketError => e
       spinner.stop("...request failed.")
