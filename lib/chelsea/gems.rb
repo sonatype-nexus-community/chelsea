@@ -175,6 +175,7 @@ module Chelsea
 
       chunked = Hash.new()
       chunks = @coordinates["coordinates"].each_slice(128).to_a
+      puts chunks
       if chunks.length > 0
         chunks.each do |coords|
           chunked["coordinates"] = coords
