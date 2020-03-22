@@ -7,6 +7,7 @@ require 'bundler/lockfile_parser'
 require_relative 'version'
 require 'rubygems'
 require 'rubygems/commands/dependency_command'
+require 'pstore'
 
 module Chelsea
   class Gems
@@ -20,6 +21,7 @@ module Chelsea
       @coordinates["coordinates"] = Array.new()
       @server_response = Array.new()
       @reverse_deps = Hash.new()
+      @store = PStore.new(get_db_store_location())
 
       if not gemfile_lock_file_exists()
         return
@@ -29,6 +31,10 @@ module Chelsea
       @lockfile = Bundler::LockfileParser.new(
         File.read(path)
       )
+    end
+
+    def get_db_store_location()
+      path = File.join("#{Dir.home}", ".ossindex", "chelsea.pstore")
     end
 
     def execute(input: $stdin, output: $stdout)      
@@ -108,6 +114,51 @@ module Chelsea
       user_agent
     end
 
+    def save_values_to_db(values)
+      values.each do |val|
+        if get_cached_value_from_db(val["coordinates"]).nil?
+          new_val = val.dup
+          new_val["ttl"] = Time.now
+          @store.transaction do 
+            @store[new_val["coordinates"]] = new_val
+          end 
+        end
+      end
+    end
+
+    # Checks pstore to see if a coordinate exists, and if it does also
+    # checks to see if it's ttl has expired. Returns nil unless a record
+    # is valid in the cache (ttl has not expired) and found
+    def get_cached_value_from_db(coordinate)
+      record = @store.transaction { @store[coordinate] }
+      if !record.nil?
+        diff = (Time.now - record['ttl']) / 3600
+        if diff > 12
+          return nil
+        else
+          return record
+        end
+      else
+        return nil
+      end
+    end
+
+    # Goes through the list of @coordinates and checks pstore for them, if it finds a valid coord
+    # it will add it to the server response. If it does not, it will append the coord to a new hash
+    # and eventually set @coordinates to the new hash, so we query OSS Index on only coords not in cache
+    def check_db_for_cached_values()
+      new_coords = Hash.new
+      @coordinates["coordinates"].each do |coord|
+        record = get_cached_value_from_db(coord)
+        if !record.nil?
+          @server_response << record
+        else
+          new_coords["coordinates"].push(coord)
+        end
+      end
+      @coordinates["coordinates"] = new_coords
+    end
+
     def get_vulns()
       require 'json'
       require 'rest-client'
@@ -115,22 +166,30 @@ module Chelsea
       spinner = TTY::Spinner.new(format, success_mark: @pastel.green('+'), hide_cursor: true)
       spinner.auto_spin()
 
+      check_db_for_cached_values()
+
       chunked = Hash.new()
       chunks = @coordinates["coordinates"].each_slice(128).to_a
-      chunks.each do |coords|
-        chunked["coordinates"] = coords
-        r = RestClient.post "https://ossindex.sonatype.org/api/v3/component-report", chunked.to_json, 
-        {content_type: :json, accept: :json, 'User-Agent': get_user_agent()}
-      
-        if r.code == 200
-          @server_response = @server_response.concat(JSON.parse(r.body))
-          spinner.success("...done.")
-          @server_response.count()
-        else
-          spinner.stop("...request failed.")
-          print_err "Error getting data from OSS Index server. Server returned non-success code #{r.code}."
-          0
+      if chunks.length > 0
+        chunks.each do |coords|
+          chunked["coordinates"] = coords
+          r = RestClient.post "https://ossindex.sonatype.org/api/v3/component-report", chunked.to_json, 
+          {content_type: :json, accept: :json, 'User-Agent': get_user_agent()}
+        
+          if r.code == 200
+            @server_response = @server_response.concat(JSON.parse(r.body))
+            save_values_to_db(JSON.parse(r.body))
+            spinner.success("...done.")
+            @server_response.count()
+          else
+            spinner.stop("...request failed.")
+            print_err "Error getting data from OSS Index server. Server returned non-success code #{r.code}."
+            0
+          end
         end
+      else
+        spinner.success("...done.")
+        @server_response.count()
       end
     rescue SocketError => e
       spinner.stop("...request failed.")
