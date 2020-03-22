@@ -32,7 +32,7 @@ jobs:
                             --out test_results/rspec.xml
       - run:
           name: Dogfood
-          command: ./chelsea --file Gemfile.lock
+          command: chelsea --file Gemfile.lock
       - store_test_results:
           path: test_results
   release:
