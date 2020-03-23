@@ -1,15 +1,13 @@
-# Auditrb
+# Chelsea
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/auditrb`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+Chelsea is a Ruby gem designed to allow you to scan your Ruby Gem powered projects and report on any vulnerabilities in your third party dependencies. It is powered by Sonatype's OSS Index.
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'auditrb'
+gem 'chelsea'
 ```
 
 And then execute:
@@ -18,11 +16,32 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install auditrb
+    $ gem install chelsea
 
 ## Usage
 
-TODO: Write usage instructions here
+```
+$ chelsea 
+ _____  _            _                   
+/  __ \| |          | |                  
+| /  \/| |__    ___ | | ___   ___   __ _ 
+| |    | '_ \  / _ \| |/ __| / _ \ / _` |
+| \__/\| | | ||  __/| |\__ \|  __/| (_| |
+ \____/|_| |_| \___||_||___/ \___| \__,_|
+                                         
+                                         
+Version: 0.0.1
+
+usage: chelsea [options] ...
+
+Options:
+    -f, --file  do the dang thing
+    --version   print the version
+```
+
+Most basic usage is:
+
+`chelsea --file name.gemspec`
 
 ## Development
 
@@ -32,11 +51,11 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/auditrb. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/sonatype-nexus-community/chelsea. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
 ## Code of Conduct
 
-Everyone interacting in the Auditrb project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/auditrb/blob/master/CODE_OF_CONDUCT.md).
+Everyone interacting in the Chelsea project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/sonatype-nexus-community/chelsea/blob/master/CODE_OF_CONDUCT.md).
 
 ## Copyright
 

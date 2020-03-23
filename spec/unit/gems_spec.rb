@@ -1,14 +1,14 @@
-require 'auditrb/commands/gems'
+require 'chelsea/gems'
 
-RSpec.describe Auditrb::Commands::Gems do
+RSpec.describe Chelsea::Gems do
   it "executes `gems` command successfully" do
     output = StringIO.new
-    file = nil
+    file = "Gemfile.lock"
     options = {}
-    command = Auditrb::Commands::Gems.new(file, options)
+    command = Chelsea::Gems.new(file, options)
 
     command.execute(output: output)
 
-    expect(output.string).to eq("OK\n")
+    expect(output.string).to eq("")
   end
 end
