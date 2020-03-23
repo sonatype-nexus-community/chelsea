@@ -5,13 +5,16 @@ require_relative 'version'
 module Chelsea
   class CLI
     def main(command_line_options=ARGV)
-      puts show_logo()
       parser = Slop::Parser.new cli_flags()
       arguments = parse_arguments(command_line_options, parser)
       validate_arguments arguments
 
+      if !arguments.fetch(:quiet)
+        puts show_logo()
+      end
+
       if arguments.fetch(:file)
-        gems(arguments[:file])
+        gems(arguments[:file], {quiet: arguments[:quiet], format: arguments[:format]})
       elsif set?(arguments, :help)
         puts cli_flags
       end
@@ -26,7 +29,9 @@ module Chelsea
       opts.banner = "usage: chelsea [options] ..."
       opts.separator ""
       opts.separator 'Options:'
-      opts.bool '-h', '--help', 'show usage' 
+      opts.bool '-h', '--help', 'show usage'
+      opts.bool '-q', '--quiet', 'make chelsea only output vulnerable third party dependencies (default: false)', default: false 
+      opts.string '-t', '--format', 'choose what type of format you want your report in (default: text)', default: 'text'
       opts.string '-f', '--file', 'do the dang thing'
       opts.on '--version', 'print the version' do
         puts version()
@@ -59,9 +64,9 @@ module Chelsea
       abort "please set one of #{switches}"
     end
 
-    def gems(file)
+    def gems(file, options)
       require_relative 'gems'
-      Chelsea::Gems.new(file, nil).execute
+      Chelsea::Gems.new(file, options).execute
     end
 
     def parse_arguments(command_line_options, parser)

@@ -5,6 +5,8 @@ require 'tty-spinner'
 require 'bundler'
 require 'bundler/lockfile_parser'
 require_relative 'version'
+require_relative 'formatters/json'
+require_relative 'formatters/text'
 require 'rubygems'
 require 'rubygems/commands/dependency_command'
 require 'pstore'
@@ -22,6 +24,14 @@ module Chelsea
       @server_response = Array.new()
       @reverse_deps = Hash.new()
       @store = PStore.new(get_db_store_location())
+      case @options[:format]
+      when 'text'
+        @formatter = Chelsea::TextFormatter.new(options)
+      when 'json'
+        @formatter = Chelsea::JsonFormatter.new(options)
+      else
+        @formatter = Chelsea::TextFormatter.new(options)
+      end
 
       if not gemfile_lock_file_exists()
         return
@@ -39,7 +49,7 @@ module Chelsea
       path = File.join(initial_path, "chelsea.pstore")
     end
 
-    def execute(input: $stdin, output: $stdout)      
+    def execute(input: $stdin, output: $stdout) 
       n = get_dependencies()
       if n == 0
         print_err "No dependencies retrieved. Exiting."
@@ -52,7 +62,7 @@ module Chelsea
         print_err "No vulnerability data retrieved from server. Exiting."
         return
       end
-      print_results()
+      @formatter.print_results(@server_response, @reverse_deps)
     end
 
     def gemfile_lock_file_exists()
