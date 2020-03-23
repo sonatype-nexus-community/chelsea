@@ -41,7 +41,7 @@ Options:
 
 Most basic usage is:
 
-`chelsea --file name.gemspec`
+`chelsea --file Gemfile.lock`
 
 ## Development
 
