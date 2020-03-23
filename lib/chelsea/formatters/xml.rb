@@ -30,12 +30,11 @@ module Chelsea
           failure << coord["vulnerabilities"]
           testcase << failure
         end
-        
+
         testsuite << testcase
       end
 
-      puts Ox.dump(doc)
+      Ox.dump(doc)
     end
-
   end
 end
