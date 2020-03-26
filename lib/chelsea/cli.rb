@@ -31,9 +31,9 @@ module Chelsea
       opts.separator ""
       opts.separator 'Options:'
       opts.bool '-h', '--help', 'show usage'
-      opts.bool '-q', '--quiet', 'make chelsea only output vulnerable third party dependencies (default: false)', default: false 
-      opts.string '-t', '--format', 'choose what type of format you want your report in (default: text)', default: 'text'
-      opts.string '-f', '--file', 'do the dang thing'
+      opts.bool '-q', '--quiet', 'make chelsea only output vulnerable third party dependencies for text output (default: false)', default: false 
+      opts.string '-t', '--format', 'choose what type of format you want your report in (default: text) (options: text, json, xml)', default: 'text'
+      opts.string '-f', '--file', 'path to your Gemfile.lock'
       opts.on '--version', 'print the version' do
         puts version()
         exit
