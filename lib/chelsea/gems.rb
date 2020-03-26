@@ -65,7 +65,8 @@ module Chelsea
         print_err "No vulnerability data retrieved from server. Exiting."
         return
       end
-      @formatter.print_results(@server_response, @reverse_deps)
+      print_result = @formatter.get_results(@server_response, @reverse_deps)
+      @formatter.do_print(print_result)
     end
 
     def gemfile_lock_file_exists()
@@ -78,9 +79,11 @@ module Chelsea
     end
 
     def get_dependencies()
-      format = "[#{@pastel.green(':spinner')}] " + @pastel.white("Parsing dependencies")
-      spinner = TTY::Spinner.new(format, success_mark: @pastel.green('+'), hide_cursor: true)
-      spinner.auto_spin()
+      if !@options[:quiet]
+        format = "[#{@pastel.green(':spinner')}] " + @pastel.white("Parsing dependencies")
+        spinner = TTY::Spinner.new(format, success_mark: @pastel.green('+'), hide_cursor: true)
+        spinner.auto_spin()
+      end
 
       reverse = Gem::Commands::DependencyCommand.new
       reverse.options[:reverse_dependencies] = true
@@ -89,19 +92,21 @@ module Chelsea
       @lockfile.specs.each do |gem|
         @dependencies[gem.name] = [gem.name, gem.version]
         rescue StandardError => e
-          spinner.stop("...failed.")
+          if !@options[:quiet] then spinner.stop("...failed.") end
           print_err "Parsing dependency line #{gem} failed."
       end
 
       c = @dependencies.count()
-      spinner.success("...done. Parsed #{c} dependencies.")
+      if !@options[:quiet] then spinner.success("...done. Parsed #{c} dependencies.") end
       c
     end
 
     def get_dependencies_versions()
-      format = "[#{@pastel.green(':spinner')}] " + @pastel.white("Parsing versions")
-      spinner = TTY::Spinner.new(format, success_mark: @pastel.green('+'), hide_cursor: true)
-      spinner.auto_spin()
+      if !@options[:quiet]
+        format = "[#{@pastel.green(':spinner')}] " + @pastel.white("Parsing versions")
+        spinner = TTY::Spinner.new(format, success_mark: @pastel.green('+'), hide_cursor: true)
+        spinner.auto_spin()
+      end
       @dependencies.each do |p, r|
         o =  r[0]
         v = r[1].to_s
@@ -113,7 +118,9 @@ module Chelsea
         @dependencies_versions[p] = v
       end
       c = @dependencies_versions.count()
-      spinner.success("...done.")
+      if !@options[:quiet]
+        spinner.success("...done.")
+      end
       c
     end
 
@@ -126,9 +133,11 @@ module Chelsea
     def get_vulns()
       require 'json'
       require 'rest-client'
-      format = "[#{@pastel.green(':spinner')}] " + @pastel.white("Making request to OSS Index server")
-      spinner = TTY::Spinner.new(format, success_mark: @pastel.green('+'), hide_cursor: true)
-      spinner.auto_spin()
+      if !@options[:quiet]
+        format = "[#{@pastel.green(':spinner')}] " + @pastel.white("Making request to OSS Index server")
+        spinner = TTY::Spinner.new(format, success_mark: @pastel.green('+'), hide_cursor: true)
+        spinner.auto_spin()
+      end
 
       check_db_for_cached_values()
 
@@ -142,44 +151,45 @@ module Chelsea
           if r.code == 200
             @server_response = @server_response.concat(JSON.parse(r.body))
             save_values_to_db(JSON.parse(r.body))
-            spinner.success("...done.")
+            if !@options[:quiet] then spinner.success("...done.") end
             @server_response.count()
           else
-            spinner.stop("...request failed.")
+            if !@options[:quiet] then spinner.stop("...request failed.") end
             print_err "Error getting data from OSS Index server. Server returned non-success code #{r.code}."
             0
           end
         end
       else
-        spinner.success("...done.")
+        if !@options[:quiet] then spinner.success("...done.") end
         @server_response.count()
       end
     rescue SocketError => e
-      spinner.stop("...request failed.")
+      if !@options[:quiet] then spinner.stop("...request failed.") end
       print_err "Socket error getting data from OSS Index server."
       0      
     rescue RestClient::RequestFailed => e
-      spinner.stop("Request failed.")
+      if !@options[:quiet] then spinner.stop("Request failed.") end
       print_err "Error getting data from OSS Index server:#{e.response}."
       0
     rescue RestClient::ResourceNotfound => e
-      spinner.stop("...request failed.")
+      if !@options[:quiet] then spinner.stop("...request failed.") end
       print_err "Error getting data from OSS Index server. Resource not found."
       0
     rescue Errno::ECONNREFUSED => e
-      spinner.stop("...request failed.")
+      if !@options[:quiet] then spinner.stop("...request failed.") end
       print_err "Error getting data from OSS Index server. Connection refused."
       0
     rescue StandardError => e
-      spinner.stop("...request failed.")
+      if !@options[:quiet] then spinner.stop("...request failed.") end 
       print_err "UNKNOWN Error getting data from OSS Index server."
       0
     end
 
     def print_results()
-      puts ""
-      puts "Audit Results"
-      puts "============="
+      response = String.new
+      response += "\n"\
+                  "Audit Results\n"\
+                  "=============\n"
       i = 0
       count = @server_response.count()
       @server_response.each do |r|
@@ -191,16 +201,18 @@ module Chelsea
         version = coord.split('@')[1]
         reverse_dep_coord = "#{name}-#{version}"
         if vulnerable
-          puts @pastel.red("[#{i}/#{count}] - #{package} ") +  @pastel.red.bold("Vulnerable.")
-          print_reverse_deps(@reverse_deps[reverse_dep_coord], name, version)
+          response += @pastel.red("[#{i}/#{count}] - #{package} ") +  @pastel.red.bold("Vulnerable.\n")
+          response += print_reverse_deps(@reverse_deps[reverse_dep_coord], name, version)
           r["vulnerabilities"].each do |k, v|
-            puts @pastel.red.bold("    #{k}:#{v}")
+            response += @pastel.red.bold("    #{k}:#{v}")
           end
         else
-          puts(@pastel.white("[#{i}/#{count}] - #{package} ") + @pastel.green.bold("No vulnerabilities found!"))
-          print_reverse_deps(@reverse_deps[reverse_dep_coord], name, version)
+          response += @pastel.white("[#{i}/#{count}] - #{package} ") + @pastel.green.bold("No vulnerabilities found!\n")
+          response += print_reverse_deps(@reverse_deps[reverse_dep_coord], name, version)
         end
       end
+
+      response
     end
 
     def print_reverse_deps(reverse_deps, name, version)

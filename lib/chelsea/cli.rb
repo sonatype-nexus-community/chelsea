@@ -9,12 +9,13 @@ module Chelsea
       arguments = parse_arguments(command_line_options, parser)
       validate_arguments arguments
 
-      if !arguments.fetch(:quiet)
+      if !arguments.fetch(:quiet) && arguments.fetch(:format) == 'text'
         puts show_logo()
       end
 
       if arguments.fetch(:file)
-        gems(arguments[:file], {quiet: arguments[:quiet], format: arguments[:format]})
+        quiet = (arguments[:quiet] || !(arguments.fetch(:format) == 'text'))
+        gems(arguments[:file], {quiet: quiet, format: arguments[:format]})
       elsif set?(arguments, :help)
         puts cli_flags
       end

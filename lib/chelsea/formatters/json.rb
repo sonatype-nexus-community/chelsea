@@ -6,9 +6,12 @@ module Chelsea
       @options = options
     end
 
-    def print_results(server_response, reverse_deps)
-      puts JSON.pretty_generate(server_response)
+    def get_results(server_response, reverse_deps)
+      server_response.to_json
     end
 
+    def do_print(result)
+      puts result
+    end
   end
 end
