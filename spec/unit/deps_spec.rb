@@ -28,7 +28,7 @@ RSpec.describe Chelsea::Deps do
     expect(coordinates["coordinates"][29]).to eq("pkg:gem/webmock@3.8.3")
   end
 
-  it "an invalid file path raises a RuntimeError with a custom message" do
+  it "will raises a RuntimeError with a custom message with an invalid file path" do
     output = StringIO.new
     file = "spec/Gemfile.lock"
     expect{Chelsea::Deps.new({path: Pathname.new(file)})}.to raise_error(RuntimeError, "Gemfile.lock not parseable, please check file or that it's path is valid")
