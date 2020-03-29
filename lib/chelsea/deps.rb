@@ -7,14 +7,18 @@ require_relative 'dependency_exception'
 module Chelsea
   class Deps
     def initialize(options)
-      @lockfile = Bundler::LockfileParser.new(
-        File.read(options[:path])
-      )
+      begin
+        @lockfile = Bundler::LockfileParser.new(
+          File.read(options[:path])
+        )
+      rescue
+        raise "Gemfile.lock not parseable, please check file or that it's path is valid"
+      end
     end
 
     def get_dependencies()
       dependencies = Hash.new()
-      
+
       begin
         @lockfile.specs.each do |gem|
           dependencies[gem.name] = [gem.name, gem.version]
