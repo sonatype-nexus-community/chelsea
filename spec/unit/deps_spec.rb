@@ -30,7 +30,7 @@ RSpec.describe Chelsea::Deps do
 
   it "will raises a RuntimeError with a custom message with an invalid file path" do
     output = StringIO.new
-    file = "spec/Gemfile.lock"
+    file = "invalid/path"
     expect{Chelsea::Deps.new({path: Pathname.new(file)})}.to raise_error(RuntimeError, "Gemfile.lock not parseable, please check file or that it's path is valid")
   end
 

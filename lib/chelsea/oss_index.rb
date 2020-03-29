@@ -52,9 +52,11 @@ module Chelsea
       rescue SocketError => e
         raise Chelsea::OssIndexException.new "Socket error getting data from OSS Index server.", "SocketError" 
       rescue RestClient::RequestFailed => e
-        raise Chelsea::OssIndexException.new "Error getting data from OSS Index server:#{e.response}.", "RequestFailed"
+        raise Chelsea::OssIndexException.new "Error getting data from OSS Index server: #{e.response}.", "RequestFailed"
       rescue RestClient::ResourceNotFound => e
         raise Chelsea::OssIndexException.new "Error getting data from OSS Index server. Resource not found.", "ResourceNotfound"
+      rescue RestClient::ExceptionWithResponse => e
+        raise Chelsea::OssIndexException.new e.response
       rescue Errno::ECONNREFUSED => e
         raise Chelsea::OssIndexException.new "Error getting data from OSS Index server. Connection refused.", "ECONNREFUSED"
       rescue StandardError => e
