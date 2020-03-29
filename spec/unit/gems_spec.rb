@@ -1,17 +1,9 @@
 require 'chelsea/gems'
-require_relative '../spec_helper'
-
-RSpec.configure do |config|
-  config.before(:each) do
-    stub_request(:post, 'https://ossindex.sonatype.org/api/v3/component-report').
-      to_return(status: 200, body: "", headers: {})
-  end
-end
 
 RSpec.describe Chelsea::Gems do
-  it "executes `gems` command successfully" do
+  it "can collect dependencies, query, and print results" do
     output = StringIO.new
-    file = "Gemfile.lock"
+    file = "spec/testdata/Gemfile.lock"
     options = {}
     command = Chelsea::Gems.new(file, options)
 
@@ -20,11 +12,12 @@ RSpec.describe Chelsea::Gems do
     expect(output.string).to eq("")
   end
 
-  it "can handle requests to OSS Index" do
-      file = "Gemfile.lock"
-      options = {}
-      command = Chelsea::Gems.new(file, options)
+  it "will exit if a invalid Gemfile.lock is passed" do
+    output = StringIO.new
+    file = "spec/Gemfile.lock"
+    options = {}
+    command = Chelsea::Gems.new(file, options)
 
-      command.get_vulns()
+    expect{command.execute(output: output)}.to raise_error(RuntimeError, "Gemfile.lock not found, check --file path")
   end
 end
