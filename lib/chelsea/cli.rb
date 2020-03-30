@@ -1,27 +1,35 @@
 require 'slop'
 require 'pastel'
 require_relative 'version'
+require_relative 'gems'
 
 module Chelsea
+  ##
+  # This class provides an interface to the oss index, gems and deps
   class CLI
-    def main(command_line_options=ARGV)
-      puts show_logo()
-      parser = Slop::Parser.new cli_flags()
-      arguments = parse_arguments(command_line_options, parser)
-      validate_arguments arguments
 
-      if arguments.fetch(:file)
-        gems(arguments[:file])
-      elsif set?(arguments, :help)
-        puts cli_flags
+    def initialize(opts)
+      @opts = opts
+      _validate
+      _show_logo
+    end
+
+    def process!
+      if opts.file?
+        @gems = Chelsea::Gems.new(opts[:file])
+        @gems.execute
+      elsif opts.help?
+        puts _cli_flags
       end
     end
 
-    def set?(arguments, flag)
-      !arguments.fetch(flag).nil?
+    def self.version
+      Chelsea::VERSION
     end
 
-    def cli_flags()
+  protected
+
+    def _cli_flags
       opts = Slop::Options.new
       opts.banner = "usage: chelsea [options] ..."
       opts.separator ""
@@ -36,51 +44,33 @@ module Chelsea
       opts
     end
 
-    def validate_arguments(arguments)
-      if number_of_required_flags_set(arguments) < 1 && !arguments.fetch(:file)
-        flags_error
-      end
-    end
-
-    def number_of_required_flags_set(arguments)
-      minimum_flags = flags
-      valid_flags = minimum_flags.collect {|a| arguments.fetch(a) }.compact
-      valid_flags.count
-    end
-
-    def flags
-      [:file, :help]
-    end
-
-    def flags_error
+    def _flags_error
+      # should be custom exception! 
       switches = flags.collect {|f| "--#{f}"}
       puts cli_flags
       puts
       abort "please set one of #{switches}"
     end
 
-    def gems(file)
-      require_relative 'gems'
-      Chelsea::Gems.new(file, nil).execute
-    end
-
-    def parse_arguments(command_line_options, parser)
-      begin
-        result = parser.parse command_line_options
-        result.to_hash
-
-      rescue Slop::UnknownOption
-        # print help
-        puts cli_flags()
-        exit
+    def _validate(arguments)
+      if _number_of_required_flags_set(arguments) < 1 && !arguments[:file]
+        ## require at least one argument
+        _flags_error
       end
     end
 
-    def version()
-      Chelsea::VERSION
+    def _number_of_required_flags_set(arguments)
+      # I'm still unsure what this is trying to express
+      valid_flags = flags.collect {|arg| arguments[arg] }.compact
+      valid_flags.count
     end
-  
-    def show_logo()
+
+    def _flags
+      # Seems wrong, should all be handled by bin
+      [:file, :help]
+    end
+
+    def _show_logo()
       @pastel = Pastel.new
       require 'tty-font'
       font = TTY::Font.new(:doom)

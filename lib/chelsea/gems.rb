@@ -7,9 +7,8 @@ require_relative 'deps'
 
 module Chelsea
   class Gems
-    def initialize(file, options)
+    def initialize(file)
       @file = file
-      @options = options
       @pastel = Pastel.new
     end
 

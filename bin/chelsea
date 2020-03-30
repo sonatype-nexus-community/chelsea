@@ -1,5 +1,27 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 require_relative "../lib/chelsea"
+require 'slop'
+opts =
+  begin
+    Slop.parse do |o|
+      o.string '-f', '--file', 'do the dang thing'
+      o.on '--version', 'print the version' do
+          puts Chelsea::VERSION
+          exit
+      end
+      o.on '-h', '--help', 'show usage' do
+        puts(o)
+        exit
+      end
+    end
+  rescue Slop::Error => e
+    puts(e.message + ' (try --help)')
+    exit 1
+  end
+if opts.arguments.count.positive?
+  puts("extraneous arguments: #{opts.arguments.join(' ')} (try --help)")
+  exit 1
+end
 
-Chelsea::CLI.new.main
+Chelsea::CLI.new(opts).process!
