@@ -1,7 +1,7 @@
 require 'ox'
-
+require_relative 'formatter'
 module Chelsea
-  class XMLFormatter
+  class XMLFormatter < Formatter
     def initialize(options)
       @options = options
     end

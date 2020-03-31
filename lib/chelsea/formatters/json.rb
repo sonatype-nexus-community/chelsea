@@ -1,7 +1,8 @@
 require 'json'
+require_relative 'formatter'
 
 module Chelsea
-  class JsonFormatter
+  class JsonFormatter < Formatter
     def initialize(options)
       @options = options
     end

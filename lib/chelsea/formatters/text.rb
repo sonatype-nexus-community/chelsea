@@ -1,7 +1,8 @@
 require 'pastel'
+require_relative 'formatter'
 
 module Chelsea
-  class TextFormatter
+  class TextFormatter < Formatter
     def initialize(quiet: false)
       @quiet = quiet
       @pastel = Pastel.new

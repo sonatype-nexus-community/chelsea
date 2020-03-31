@@ -7,9 +7,7 @@ require_relative 'deps'
 require 'bundler'
 require 'bundler/lockfile_parser'
 require_relative 'version'
-require_relative 'formatters/json'
-require_relative 'formatters/text'
-require_relative 'formatters/xml'
+require_relative 'formatters/factory'
 require 'rubygems'
 require 'rubygems/commands/dependency_command'
 require 'pstore'
@@ -30,16 +28,7 @@ module Chelsea
       @server_response = Array.new()
       @reverse_deps = Hash.new()
       @store = PStore.new(get_db_store_location())
-      case @options[:format]
-      when 'text'
-        @formatter = Chelsea::TextFormatter.new(options)
-      when 'json'
-        @formatter = Chelsea::JsonFormatter.new(options)
-      when 'xml'
-        @formatter = Chelsea::XMLFormatter.new(options)
-      else
-        @formatter = Chelsea::TextFormatter.new(options)
-      end
+      @formatter = FormatterFactory.new.get_formatter(@options)
       @pastel = Pastel.new
       @deps = Chelsea::Deps.new({path: Pathname.new(@file)})
       @ossindex = Chelsea::OssIndex.new({})
