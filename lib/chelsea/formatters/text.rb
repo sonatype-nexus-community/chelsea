@@ -2,14 +2,14 @@ require 'pastel'
 
 module Chelsea
   class TextFormatter
-    def initialize(options)
-      @options = options
+    def initialize(quiet: false)
+      @quiet = quiet
       @pastel = Pastel.new
     end
 
     def get_results(server_response, reverse_deps)
       response = String.new
-      if !@options[:quiet]
+      if !@quiet
         response += "\n"\
         "Audit Results\n"\
         "=============\n"
@@ -32,7 +32,7 @@ module Chelsea
             response += @pastel.red.bold("    #{k}:#{v}\n")
           end
         else
-          if !@options[:quiet]
+          if !@quiet
             response += @pastel.white("[#{i}/#{count}] - #{package} ") + @pastel.green.bold("No vulnerabilities found!\n")
             response += print_reverse_deps(reverse_deps[reverse_dep_coord], name, version)
           end

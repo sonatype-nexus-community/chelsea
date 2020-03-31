@@ -16,12 +16,12 @@ require 'pstore'
 
 module Chelsea
   class Gems
-    def initialize(file)
-      @file = file
-      if not _gemfile_lock_file_exists?
+    def initialize(file:, quiet: false, options: {})
+      @file, @quiet, @options = file, quiet, options
+      if not _gemfile_lock_file_exists? or file.nil?
         raise "Gemfile.lock not found, check --file path"
       end
-      @options = options
+      
       @pastel = Pastel.new
       @dependencies = Hash.new()
       @dependencies_versions = Hash.new()
@@ -40,11 +40,20 @@ module Chelsea
       else
         @formatter = Chelsea::TextFormatter.new(options)
       end
-
       @pastel = Pastel.new
       @deps = Chelsea::Deps.new({path: Pathname.new(@file)})
       @ossindex = Chelsea::OssIndex.new({})
+      path = Pathname.new(@file)
+      @lockfile = Bundler::LockfileParser.new(
+        File.read(path)
+      )
 
+    end
+
+    def get_db_store_location()
+      initial_path = File.join("#{Dir.home}", ".ossindex")
+      Dir.mkdir(initial_path) unless File.exists? initial_path
+      path = File.join(initial_path, "chelsea.pstore")
     end
 
     def execute(input: $stdin, output: $stdout) 
@@ -65,7 +74,7 @@ module Chelsea
     end
 
     def get_dependencies()
-      if !@options[:quiet]
+      if !@quiet
         format = "[#{@pastel.green(':spinner')}] " + @pastel.white("Parsing dependencies")
         spinner = TTY::Spinner.new(format, success_mark: @pastel.green('+'), hide_cursor: true)
         spinner.auto_spin()
@@ -78,7 +87,7 @@ module Chelsea
       @lockfile.specs.each do |gem|
         @dependencies[gem.name] = [gem.name, gem.version]
         rescue StandardError => e
-          if !@options[:quiet] then spinner.stop("...failed.") end
+          if !@quiet then spinner.stop("...failed.") end
           print_err "Parsing dependency line #{gem} failed."
       end
 
@@ -88,7 +97,7 @@ module Chelsea
     end
 
     def get_dependencies_versions()
-      if !@options[:quiet]
+      if !@quiet
         format = "[#{@pastel.green(':spinner')}] " + @pastel.white("Parsing versions")
         spinner = TTY::Spinner.new(format, success_mark: @pastel.green('+'), hide_cursor: true)
         spinner.auto_spin()
@@ -104,7 +113,7 @@ module Chelsea
         @dependencies_versions[p] = v
       end
       c = @dependencies_versions.count()
-      if !@options[:quiet]
+      if !@quiet
         spinner.success("...done.")
       end
       c
@@ -121,7 +130,7 @@ module Chelsea
     def get_vulns()
       require 'json'
       require 'rest-client'
-      if !@options[:quiet]
+      if !@quiet
         format = "[#{@pastel.green(':spinner')}] " + @pastel.white("Making request to OSS Index server")
         spinner = TTY::Spinner.new(format, success_mark: @pastel.green('+'), hide_cursor: true)
         spinner.auto_spin()
@@ -152,36 +161,36 @@ module Chelsea
           if r.code == 200
             @server_response = @server_response.concat(JSON.parse(r.body))
             save_values_to_db(JSON.parse(r.body))
-            if !@options[:quiet] then spinner.success("...done.") end
+            if !@quiet then spinner.success("...done.") end
             @server_response.count()
           else
-            if !@options[:quiet] then spinner.stop("...request failed.") end
+            if !@quiet then spinner.stop("...request failed.") end
             print_err "Error getting data from OSS Index server. Server returned non-success code #{r.code}."
             0
           end
         end
       else
-        if !@options[:quiet] then spinner.success("...done.") end
+        if !@quiet then spinner.success("...done.") end
         @server_response.count()
       end
     rescue SocketError => e
-      if !@options[:quiet] then spinner.stop("...request failed.") end
+      if !@@quiet then spinner.stop("...request failed.") end
       print_err "Socket error getting data from OSS Index server."
       0      
     rescue RestClient::RequestFailed => e
-      if !@options[:quiet] then spinner.stop("Request failed.") end
+      if !@quiet then spinner.stop("Request failed.") end
       print_err "Error getting data from OSS Index server:#{e.response}."
       0
     rescue RestClient::ResourceNotfound => e
-      if !@options[:quiet] then spinner.stop("...request failed.") end
+      if !@quiet then spinner.stop("...request failed.") end
       print_err "Error getting data from OSS Index server. Resource not found."
       0
     rescue Errno::ECONNREFUSED => e
-      if !@options[:quiet] then spinner.stop("...request failed.") end
+      if !@quiet then spinner.stop("...request failed.") end
       print_err "Error getting data from OSS Index server. Connection refused."
       0
     rescue StandardError => e
-      if !@options[:quiet] then spinner.stop("...request failed.") end 
+      if !@quiet then spinner.stop("...request failed.") end 
       print_err "UNKNOWN Error getting data from OSS Index server."
       0
     end

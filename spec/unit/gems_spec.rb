@@ -11,7 +11,7 @@ RSpec.describe Chelsea::Gems do
     it "can collect dependencies, query, and print results" do
       output = StringIO.new
       file = "spec/testdata/Gemfile.lock"
-      command = Chelsea::Gems.new(file)
+      command = Chelsea::Gems.new(file: file)
 
       command.execute(output: output)
 
@@ -22,6 +22,6 @@ RSpec.describe Chelsea::Gems do
   it "will exit if a invalid Gemfile.lock is passed" do
     output = StringIO.new
     file = "spec/Gemfile.lock"
-    expect{Chelsea::Gems.new(file)}.to raise_error(RuntimeError, "Gemfile.lock not found, check --file path")
+    expect{Chelsea::Gems.new({file: file})}.to raise_error(RuntimeError, "Gemfile.lock not found, check --file path")
   end
 end
