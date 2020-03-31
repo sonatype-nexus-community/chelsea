@@ -21,15 +21,15 @@ module Chelsea
 
     def to_h(reverse: false)
       if reverse
-        if @dependencies.count == 0
-          _get_dependencies
-        end
-        @dependencies
-      else
         if @reverse_dependencies.count == 0
           _get_reverse_dependencies
         end
         @reverse_dependencies
+      else
+        if @dependencies.count == 0
+          _get_dependencies
+        end
+        @dependencies
       end
     end
 
