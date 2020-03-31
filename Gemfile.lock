@@ -3,6 +3,7 @@ PATH
   specs:
     chelsea (0.0.3)
       bundler (>= 1.2.0, < 3)
+      ox (~> 2.13.2)
       pastel (~> 0.7.2)
       rest-client (~> 2.0.2)
       slop (~> 4.8.0)
@@ -27,6 +28,7 @@ GEM
       mime-types-data (~> 3.2015)
     mime-types-data (3.2019.1009)
     netrc (0.11.0)
+    ox (2.13.2)
     pastel (0.7.3)
       equatable (~> 0.6)
       tty-color (~> 0.5)

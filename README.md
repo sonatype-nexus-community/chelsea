@@ -30,13 +30,16 @@ $ chelsea
  \____/|_| |_| \___||_||___/ \___| \__,_|
                                          
                                          
-Version: 0.0.1
+Version: 0.0.3
 
 usage: chelsea [options] ...
 
 Options:
-    -f, --file  do the dang thing
-    --version   print the version
+    -h, --help    show usage
+    -q, --quiet   make chelsea only output vulnerable third party dependencies for text output (default: false)
+    -t, --format  choose what type of format you want your report in (default: text) (options: text, json, xml)
+    -f, --file    path to your Gemfile.lock
+    --version     print the version
 ```
 
 Most basic usage is:
