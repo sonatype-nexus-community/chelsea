@@ -6,6 +6,7 @@ require_relative 'dependency_exception'
 
 module Chelsea
   class Deps
+    # read lock file from disk
     def initialize(options)
       begin
         @lockfile = Bundler::LockfileParser.new(
@@ -14,33 +15,57 @@ module Chelsea
       rescue
         raise "Gemfile.lock not parseable, please check file or that it's path is valid"
       end
+      @dependencies = Hash.new()
+      @reverse_dependencies  = Hash.new()
     end
 
-    def get_dependencies()
-      dependencies = Hash.new()
+    def to_h(reverse: false)
+      if reverse
+        if @dependencies.count == 0
+          _get_dependencies
+        end
+        @dependencies
+      else
+        if @reverse_dependencies.count == 0
+          _get_reverse_dependencies
+        end
+        @reverse_dependencies
+      end
+    end
 
+    def self.to_coordinates(dep_hash)
+      return self._get_dependencies_versions_as_coordinates(dep_hash)
+    end
+
+    def self.to_purl(name, version)
+      return "pkg:gem/#{name}@#{version}"
+    end
+
+    protected
+
+    def _get_dependencies
       begin
         @lockfile.specs.each do |gem|
-          dependencies[gem.name] = [gem.name, gem.version]
+          @dependencies[gem.name] = [gem.name, gem.version]
         end
+        @dependencies
       rescue => e
         raise Chelsea::DependencyException e, "LockFileParseException"
       end
-
-      return dependencies
     end
 
-    def get_reverse_dependencies()
+    def _get_reverse_dependencies
       begin
         reverse = Gem::Commands::DependencyCommand.new
         reverse.options[:reverse_dependencies] = true
-        reverse_deps = reverse.reverse_dependencies(@lockfile.specs)
+        @reverse_dependencies = reverse.reverse_dependencies(@lockfile.specs).to_h
       rescue => e
         raise Chelsea::DependencyException e, "ReverseDependencyException"
       end
     end
 
-    def get_dependencies_versions_as_coordinates(dependencies)
+    def self._get_dependencies_versions_as_coordinates(dependencies)
+
       dependencies_versions = Hash.new()
 
       dependencies.each do |p, r|
@@ -58,14 +83,11 @@ module Chelsea
       coordinates["coordinates"] = Array.new()
 
       dependencies_versions.each do |p, v|
-        coordinates["coordinates"] << to_purl(p, v)
+        coordinates["coordinates"] << self.to_purl(p, v)
       end
 
-      return coordinates
-    end
 
-    def to_purl(name, version)
-      return "pkg:gem/#{name}@#{version}"
+      coordinates
     end
   end
 end

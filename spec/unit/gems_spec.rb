@@ -22,8 +22,6 @@ RSpec.describe Chelsea::Gems do
   it "will exit if a invalid Gemfile.lock is passed" do
     output = StringIO.new
     file = "spec/Gemfile.lock"
-    command = Chelsea::Gems.new(file)
-
-    expect{command.execute(output: output)}.to raise_error(RuntimeError, "Gemfile.lock not found, check --file path")
+    expect{Chelsea::Gems.new(file)}.to raise_error(RuntimeError, "Gemfile.lock not found, check --file path")
   end
 end

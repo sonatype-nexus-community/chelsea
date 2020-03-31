@@ -2,12 +2,15 @@ require 'chelsea/deps'
 require_relative '../spec_helper'
 
 RSpec.describe Chelsea::Deps do
+  before do
+    @dep_hash = get_dependency_hash
+  end
   it "can collect dependencies given a valid Gemfile.lock" do
     output = StringIO.new
     file = "spec/testdata/Gemfile.lock"
     deps = Chelsea::Deps.new({path: Pathname.new(file)})
 
-    dependencies = deps.get_dependencies()
+    dependencies = deps.to_h
 
     expect(dependencies.class).to eq(Hash)
     expect(dependencies.empty?).to eq(false)
@@ -18,7 +21,7 @@ RSpec.describe Chelsea::Deps do
     file = "spec/testdata/Gemfile.lock"
     deps = Chelsea::Deps.new({path: Pathname.new(file)})
 
-    coordinates = deps.get_dependencies_versions_as_coordinates(get_dependency_hash())
+    coordinates = Chelsea::Deps.to_coordinates(@dep_hash)
 
     expect(coordinates.class).to eq(Hash)
     expect(coordinates.empty?).to eq(false)
@@ -38,6 +41,6 @@ RSpec.describe Chelsea::Deps do
     file = "spec/testdata/Gemfile.lock"
     deps = Chelsea::Deps.new({path: Pathname.new(file)})
 
-    expect(deps.to_purl("name-thing", "1.0.0")).to eq("pkg:gem/name-thing@1.0.0")
+    expect(Chelsea::Deps.to_purl("name-thing", "1.0.0")).to eq("pkg:gem/name-thing@1.0.0")
   end
 end

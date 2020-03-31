@@ -10,7 +10,7 @@ module Chelsea
 
     def initialize(opts)
       @opts = opts
-      _validate
+      _validate_arguments
       _show_logo
     end
 
@@ -23,6 +23,8 @@ module Chelsea
       end
     end
 
+    # this is how you do static methods in ruby, because in a test we want to 
+    # check for version without opts, and heck, we don't even want a dang object!
     def self.version
       Chelsea::VERSION
     end
@@ -52,17 +54,17 @@ module Chelsea
       abort "please set one of #{switches}"
     end
 
-    def _validate(arguments)
-      if _number_of_required_flags_set(arguments) < 1 && !arguments[:file]
+    def _validate_arguments
+      if !_flags_set? && !opts.file?
         ## require at least one argument
         _flags_error
       end
     end
 
-    def _number_of_required_flags_set(arguments)
+    def _flags_set?
       # I'm still unsure what this is trying to express
-      valid_flags = flags.collect {|arg| arguments[arg] }.compact
-      valid_flags.count
+      valid_flags = _flags.collect {|arg| @opts[arg] }.compact
+      valid_flags.count > 1
     end
 
     def _flags

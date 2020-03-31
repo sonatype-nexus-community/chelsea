@@ -9,62 +9,36 @@ module Chelsea
   class Gems
     def initialize(file)
       @file = file
+      if not _gemfile_lock_file_exists?
+        raise "Gemfile.lock not found, check --file path"
+      end
       @pastel = Pastel.new
+      @deps = Chelsea::Deps.new({path: Pathname.new(@file)})
+      @ossindex = Chelsea::OssIndex.new({})
+
     end
 
     def execute(input: $stdin, output: $stdout)
-      if not gemfile_lock_file_exists()
-        raise "Gemfile.lock not found, check --file path"
-      end
-
-      deps = Chelsea::Deps.new({path: Pathname.new(@file)})
-      ossindex = Chelsea::OssIndex.new({})
-
       begin
-        spinner = TTY::Spinner.new(
-          "[#{@pastel.green(':spinner')}] " + @pastel.white("Parsing dependencies"), 
-          success_mark: @pastel.green('+'), 
-          hide_cursor: true
-        )
-        spinner.auto_spin()
+        deps_hash = _parse_deps
+        reverse_deps_hash = _parse_reverse_deps
+        spin("Parsing versions")
 
-        dependencies = Hash.new()   
-        dependencies = deps.get_dependencies()
+        # spinner.success("...done.")
 
-        spinner.success("...done. Parsed #{dependencies.count()} dependencies.")
+        spin("Making request to OSS Index server")
+        coordinates = _parse_versions(deps_hash)
+        server_response = @ossindex.query_ossindex_for_vulns(coordinates).to_a
 
-        reverse_deps = deps.get_reverse_dependencies()
-
-        spinner = TTY::Spinner.new(
-          "[#{@pastel.green(':spinner')}] " + @pastel.white("Parsing versions"), 
-          success_mark: @pastel.green('+'), 
-          hide_cursor: true
-        )
-        spinner.auto_spin()
-
-        coordinates = Hash.new()
-        coordinates = deps.get_dependencies_versions_as_coordinates(dependencies)
-
-        spinner.success("...done.")
-
-        spinner = TTY::Spinner.new(
-          "[#{@pastel.green(':spinner')}] " + @pastel.white("Making request to OSS Index server"), 
-          success_mark: @pastel.green('+'), 
-          hide_cursor: true
-        )
-        spinner.auto_spin()
-
-        server_response = Array.new
-        server_response = ossindex.query_ossindex_for_vulns(coordinates)
         if server_response.count() == 0
           spinner.stop("...failed.")
           print_err "No vulnerability data retrieved from server. Exiting."
           return
         end
 
-        spinner.success("...done.")
+        # spinner.success("...done.")
 
-        print_results(server_response, reverse_deps)
+        print_results(server_response, reverse_deps_hash)
       rescue Chelsea::OssIndexException => e
         spinner.stop("...failed.")
         print_err e
@@ -72,6 +46,21 @@ module Chelsea
     end
 
     private
+
+    def _parse_deps
+      spin("Parsing dependencies")
+      @deps.to_h
+      # spin.success("...done. Parsed #{dependencies.count()} dependencies.")
+    end
+
+    def _parse_reverse_deps
+      @deps.to_h(reverse: true)
+    end
+
+    def _parse_versions(deps_hash)
+      coordinates = Hash.new()
+      Chelsea::Deps.to_coordinates(deps_hash)
+    end
 
     def print_results(server_response, reverse_deps)
       puts ""
@@ -102,6 +91,15 @@ module Chelsea
       end
     end
 
+    def spin(msg)
+      spinner = TTY::Spinner.new(
+        "[#{@pastel.green(':spinner')}] " + @pastel.white(msg.to_s),
+        success_mark: @pastel.green('+'),
+        hide_cursor: true
+      )
+      spinner.auto_spin()
+    end
+
     def print_reverse_deps(reverse_deps, name, version)
       reverse_deps.each do |dep|
         dep.each do |gran|
@@ -123,11 +121,10 @@ module Chelsea
       puts @pastel.green.bold(s)
     end
 
-    def gemfile_lock_file_exists()
+    def _gemfile_lock_file_exists?
       if not ::File.file? @file
         return false
       else
-        path = Pathname.new(@file)
         return true
       end
     end
