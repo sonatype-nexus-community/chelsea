@@ -21,7 +21,7 @@ RSpec.describe Chelsea::Deps do
     file = "spec/testdata/Gemfile.lock"
     deps = Chelsea::Deps.new({path: Pathname.new(file)})
 
-    coordinates = Chelsea::Deps.to_coordinates(@dep_hash)
+    coordinates = deps.to_coordinates.to_h
 
     expect(coordinates.class).to eq(Hash)
     expect(coordinates.empty?).to eq(false)

@@ -7,34 +7,41 @@ require_relative 'dependency_exception'
 module Chelsea
   class Deps
     # read lock file from disk
-    def initialize(options)
+    def initialize(path: , quiet: false)
+      @path, @quiet = path, quiet
+
       begin
         @lockfile = Bundler::LockfileParser.new(
-          File.read(options[:path])
+          File.read(@path)
         )
       rescue
         raise "Gemfile.lock not parseable, please check file or that it's path is valid"
       end
-      @dependencies = Hash.new()
-      @reverse_dependencies  = Hash.new()
+
+      @dependencies = Hash.new
+      _get_dependencies
+
+      @reverse_dependencies = Hash.new
+      begin
+        @reverse_dependencies  = _get_reverse_dependencies
+      rescue Chelsea::DependencyException => e
+        if !@quiet
+          raise Chelsea::DependencyException "Reverse Dependency...failed."
+        end
+      end
+
     end
 
     def to_h(reverse: false)
       if reverse
-        if @reverse_dependencies.count == 0
-          _get_reverse_dependencies
-        end
-        @reverse_dependencies
+        @reverse_dependencies.to_h
       else
-        if @dependencies.count == 0
-          _get_dependencies
-        end
-        @dependencies
+        @dependencies.to_h
       end
     end
 
-    def self.to_coordinates(dep_hash)
-      return self._get_dependencies_versions_as_coordinates(dep_hash)
+    def to_coordinates
+      return _get_dependencies_versions_as_coordinates
     end
 
     def self.to_purl(name, version)
@@ -44,13 +51,17 @@ module Chelsea
     protected
 
     def _get_dependencies
-      begin
-        @lockfile.specs.each do |gem|
+      @lockfile.specs.each do |gem|\
+        begin
           @dependencies[gem.name] = [gem.name, gem.version]
+        rescue StandardError => e
+          raise Chelsea::DependencyException e, "Parsing dependency line #{gem} failed."
         end
+        raise "Parsing dependency line #{gem} failed."
+
         @dependencies
       rescue => e
-        raise Chelsea::DependencyException e, "LockFileParseException"
+
       end
     end
 
@@ -64,11 +75,11 @@ module Chelsea
       end
     end
 
-    def self._get_dependencies_versions_as_coordinates(dependencies)
+    def _get_dependencies_versions_as_coordinates
 
       dependencies_versions = Hash.new()
 
-      dependencies.each do |p, r|
+      @dependencies.to_h.each do |p, r|
         o =  r[0]
         v = r[1].to_s
         if v.split('.').length == 1 then
@@ -83,10 +94,8 @@ module Chelsea
       coordinates["coordinates"] = Array.new()
 
       dependencies_versions.each do |p, v|
-        coordinates["coordinates"] << self.to_purl(p, v)
+        coordinates["coordinates"] << self.class.to_purl(p,v)
       end
-
-
       coordinates
     end
   end

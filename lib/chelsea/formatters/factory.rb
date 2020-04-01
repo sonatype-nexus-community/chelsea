@@ -12,6 +12,5 @@ class FormatterFactory
         when 'xml'
           Chelsea::XMLFormatter.new(options)
         end
-  
-    end
+  end
 end
