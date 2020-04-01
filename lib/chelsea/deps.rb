@@ -38,14 +38,14 @@ module Chelsea
 
     def to_h(reverse: false)
       if reverse
-        @reverse_dependencies.to_h
+        @reverse_dependencies
       else
-        @dependencies.to_h
+        @dependencies
       end
     end
 
     def nil?
-      @dependencies.nil?
+      @dependencies.empty?
     end
 
     def self.to_purl(name, version)

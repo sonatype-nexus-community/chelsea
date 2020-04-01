@@ -1,5 +1,7 @@
 require 'slop'
 require 'pastel'
+require 'tty-font'
+
 require_relative 'version'
 require_relative 'gems'
 
@@ -10,6 +12,7 @@ module Chelsea
 
     def initialize(opts)
       @opts = opts
+      @pastel = Pastel.new
       _validate_arguments
       _show_logo
     end
@@ -76,8 +79,6 @@ module Chelsea
     end
 
     def _show_logo()
-      @pastel = Pastel.new
-      require 'tty-font'
       font = TTY::Font.new(:doom)
       puts @pastel.green(font.write("Chelsea"))
       puts @pastel.green("Version: " + version())
