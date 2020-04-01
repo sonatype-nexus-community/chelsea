@@ -34,8 +34,7 @@ module Chelsea
         print_err "No vulnerability data retrieved from server. Exiting."
         return
       end
-      print_result = @formatter.get_results(@deps)
-      @formatter.do_print(print_result)
+      @formatter.do_print(@formatter.get_results(@deps))
     end
 
     protected

@@ -91,10 +91,6 @@ module Chelsea
       end
     end
 
-    def get_user_agent()
-      "chelsea/#{Chelsea::VERSION}"
-    end
-
     # This method will take an array of values, and save them to a pstore database
     # and as well set a TTL of Time.now to be checked later
     def _save_values_to_db(values)
@@ -160,7 +156,7 @@ module Chelsea
           # Won't this return the first successful slice?
           chunked["coordinates"] = coords
           r = RestClient.post "https://ossindex.sonatype.org/api/v3/component-report", chunked.to_json,
-            {content_type: :json, accept: :json, 'User-Agent': get_user_agent()}
+            { content_type: :json, accept: :json, 'User-Agent': "chelsea/#{Chelsea::VERSION}" }
           if r.code == 200
             @server_response = @server_response.concat(JSON.parse(r.body))
             _save_values_to_db(JSON.parse(r.body))
