@@ -10,8 +10,8 @@ require 'pstore'
 
 module Chelsea
   class Deps
-    attr_reader :server_response, :reverse_dependencies
-    # read lock file from server_responsek
+    attr_reader :server_response, :reverse_dependencies, :coordinates
+
     def initialize(path: , quiet: false)
       @path, @quiet = path, quiet
 
