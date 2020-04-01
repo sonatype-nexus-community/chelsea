@@ -22,16 +22,16 @@ module Chelsea
       @pastel = Pastel.new
       @formatter = FormatterFactory.new.get_formatter(@options)
       @deps = Chelsea::Deps.new({path: Pathname.new(@file)})
-      @reverese_deps = @deps.to_h(reverse: true)
+      @reverse_deps = @deps.to_h(reverse: true)
     end
 
     def execute(input: $stdin, output: $stdout) 
       if @deps.nil?
-        print_err "No dependencies retrieved. Exiting."
+        _print_err "No dependencies retrieved. Exiting."
         return
       end
       if !@deps.server_response.count
-        print_err "No vulnerability data retrieved from server. Exiting."
+        _print_err "No vulnerability data retrieved from server. Exiting."
         return
       end
       @formatter.do_print(@formatter.get_results(@deps))
@@ -39,43 +39,11 @@ module Chelsea
 
     protected
 
-    def print_results
-      response = String.new
-      response += "\n"\
-                  "Audit Results\n"\
-                  "=============\n"
-      i = 0
-      count = @deps.server_response.count()
-
-      @deps.server_response.each do |r|
-        i += 1
-        package = r["coordinates"]
-        vulnerable = r["vulnerabilities"].length() > 0
-        coord = r["coordinates"].sub("pkg:gem/", "")
-        name = coord.split('@')[0]
-        version = coord.split('@')[1]
-        reverse_dep_coord = "#{name}-#{version}"
-        if vulnerable
-          response += @pastel.red("[#{i}/#{count}] - #{package} ") +  @pastel.red.bold("Vulnerable.\n")
-          response += print_reverse_deps(reverse_dep_coord, name)
-          r["vulnerabilities"].each do |k, v|
-            response += @pastel.red.bold("    #{k}:#{v}")
-          end
-        else
-          response += @pastel.white("[#{i}/#{count}] - #{package} ") + @pastel.green.bold("No vulnerabilities found!\n")
-          response += print_reverse_deps(reverse_dep_coord, name)
-        end
-      end
-
-      response
-    end
-
-
-    def print_err(s)
+    def _print_err(s)
       puts @pastel.red.bold(s)
     end
 
-    def print_success(s)
+    def _print_success(s)
       puts @pastel.green.bold(s)
     end
 
