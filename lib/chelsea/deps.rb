@@ -31,13 +31,6 @@ module Chelsea
       @store = PStore.new(_get_db_store_location())
     end
   
-    def audit
-      _get_dependencies
-      _get_reverse_dependencies
-      _get_dependencies_versions_as_coordinates
-      _get_vulns
-    end
-
     def to_h(reverse: false)
       if reverse
         @reverse_dependencies
@@ -58,9 +51,7 @@ module Chelsea
       "chelsea/#{Chelsea::VERSION}"
     end
 
-    protected
-
-    def _get_dependencies
+    def get_dependencies
       @lockfile.specs.each do |gem|\
         begin
           @dependencies[gem.name] = [gem.name, gem.version]
@@ -70,7 +61,7 @@ module Chelsea
       end
     end
 
-    def _get_reverse_dependencies
+    def get_reverse_dependencies
       begin
         reverse = Gem::Commands::DependencyCommand.new
         reverse.options[:reverse_dependencies] = true
@@ -80,7 +71,7 @@ module Chelsea
       end
     end
 
-    def _get_dependencies_versions_as_coordinates
+    def get_dependencies_versions_as_coordinates
       @dependencies.each do |p, r|
         o =  r[0]
         v = r[1].to_s
@@ -97,6 +88,32 @@ module Chelsea
       end
     end
 
+    # Makes multiple REST calls
+    def get_vulns()
+      _check_db_for_cached_values()
+
+      if @coordinates["coordinates"].count() > 0
+        chunked = Hash.new()
+        @coordinates["coordinates"].each_slice(128).to_a.each do |coords|
+          # Won't this return the first successful slice?
+          chunked["coordinates"] = coords
+          r = RestClient.post "https://ossindex.sonatype.org/api/v3/component-report", chunked.to_json,
+            { content_type: :json, accept: :json, 'User-Agent': user_agent }
+          if r.code == 200
+            @server_response = @server_response.concat(JSON.parse(r.body))
+            _save_values_to_db(JSON.parse(r.body))
+            @server_response.count()
+          else
+            0
+          end
+        end
+      else
+        #IDGI
+        @server_response.count()
+      end
+    end
+
+    protected
     # This method will take an array of values, and save them to a pstore database
     # and as well set a TTL of Time.now to be checked later
     def _save_values_to_db(values)
@@ -149,32 +166,6 @@ module Chelsea
         end
       end
       @coordinates = new_coords
-    end
-
-    # Makes multiple REST calls
-    def _get_vulns()
-
-      _check_db_for_cached_values()
-
-      if @coordinates["coordinates"].count() > 0
-        chunked = Hash.new()
-        @coordinates["coordinates"].each_slice(128).to_a.each do |coords|
-          # Won't this return the first successful slice?
-          chunked["coordinates"] = coords
-          r = RestClient.post "https://ossindex.sonatype.org/api/v3/component-report", chunked.to_json,
-            { content_type: :json, accept: :json, 'User-Agent': user_agent }
-          if r.code == 200
-            @server_response = @server_response.concat(JSON.parse(r.body))
-            _save_values_to_db(JSON.parse(r.body))
-            @server_response.count()
-          else
-            0
-          end
-        end
-      else
-        #IDGI
-        @server_response.count()
-      end
     end
   end
 end

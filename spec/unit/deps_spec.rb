@@ -21,7 +21,9 @@ RSpec.describe Chelsea::Deps do
      }).to_return(status: 200, body: OSS_INDEX_RESPONSE, headers: {})
 
     deps = Chelsea::Deps.new({path: Pathname.new(file)})
-    deps.audit
+    deps.get_dependencies
+    deps.get_reverse_dependencies
+    deps.get_dependencies_versions_as_coordinates
 
     expect(deps.to_h.class).to eq(Hash)
     expect(deps.to_h.empty?).to eq(false)
@@ -42,16 +44,18 @@ RSpec.describe Chelsea::Deps do
             'User-Agent'=>'chelsea/0.0.3'
           }).to_return(status: 200, body: OSS_INDEX_RESPONSE, headers: {})
     deps = Chelsea::Deps.new({path: Pathname.new(file)})
-    deps.audit
+    deps.get_dependencies
+    deps.get_reverse_dependencies
+    deps.get_dependencies_versions_as_coordinates
 
     coordinates = deps.coordinates.to_h
 
     expect(coordinates.class).to eq(Hash)
     expect(coordinates.empty?).to eq(false)
-    expect(coordinates["coordinates"].size).to eq(6)
+    expect(coordinates["coordinates"].size).to eq(30)
     expect(coordinates["coordinates"][0]).to eq("pkg:gem/addressable@2.7.0")
-    expect(coordinates["coordinates"][1]).to eq("pkg:gem/crack@0.4.3")
-    expect(coordinates["coordinates"][2]).to eq("pkg:gem/hashdiff@1.0.1")
+    expect(coordinates["coordinates"][1]).to eq("pkg:gem/chelsea@0.0.3")
+    expect(coordinates["coordinates"][2]).to eq("pkg:gem/crack@0.4.3")
   end
 
   it "will raises a RuntimeError with a custom message with an invalid file path" do
