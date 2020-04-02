@@ -54,6 +54,10 @@ module Chelsea
       return "pkg:gem/#{name}@#{version}"
     end
 
+    def user_agent
+      "chelsea/#{Chelsea::VERSION}"
+    end
+
     protected
 
     def _get_dependencies
@@ -158,7 +162,7 @@ module Chelsea
           # Won't this return the first successful slice?
           chunked["coordinates"] = coords
           r = RestClient.post "https://ossindex.sonatype.org/api/v3/component-report", chunked.to_json,
-            { content_type: :json, accept: :json, 'User-Agent': "chelsea/#{Chelsea::VERSION}" }
+            { content_type: :json, accept: :json, 'User-Agent': user_agent }
           if r.code == 200
             @server_response = @server_response.concat(JSON.parse(r.body))
             _save_values_to_db(JSON.parse(r.body))
