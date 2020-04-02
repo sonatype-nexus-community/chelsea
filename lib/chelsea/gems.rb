@@ -22,10 +22,10 @@ module Chelsea
       @pastel = Pastel.new
       @formatter = FormatterFactory.new.get_formatter(@options)
       @deps = Chelsea::Deps.new({path: Pathname.new(@file)})
-      @reverse_deps = @deps.to_h(reverse: true)
     end
 
     def execute(input: $stdin, output: $stdout) 
+      @deps.audit
       if @deps.nil?
         _print_err "No dependencies retrieved. Exiting."
         return

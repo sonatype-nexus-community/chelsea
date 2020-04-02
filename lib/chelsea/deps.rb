@@ -29,7 +29,9 @@ module Chelsea
       @coordinates = { 'coordinates' => [] }
       @server_response = []
       @store = PStore.new(_get_db_store_location())
-
+    end
+  
+    def audit
       _get_dependencies
       _get_reverse_dependencies
       _get_dependencies_versions_as_coordinates

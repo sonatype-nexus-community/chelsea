@@ -21,11 +21,10 @@ RSpec.describe Chelsea::Deps do
      }).to_return(status: 200, body: OSS_INDEX_RESPONSE, headers: {})
 
     deps = Chelsea::Deps.new({path: Pathname.new(file)})
+    deps.audit
 
-    dependencies = deps.to_h
-
-    expect(dependencies.class).to eq(Hash)
-    expect(dependencies.empty?).to eq(false)
+    expect(deps.to_h.class).to eq(Hash)
+    expect(deps.to_h.empty?).to eq(false)
   end
 
   it "can turn a dependencies hash into a valid coordinates object for OSS Index" do
@@ -43,6 +42,7 @@ RSpec.describe Chelsea::Deps do
             'User-Agent'=>'chelsea/0.0.3'
           }).to_return(status: 200, body: OSS_INDEX_RESPONSE, headers: {})
     deps = Chelsea::Deps.new({path: Pathname.new(file)})
+    deps.audit
 
     coordinates = deps.coordinates.to_h
 
