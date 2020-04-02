@@ -18,10 +18,10 @@ module Chelsea
     end
 
     def process!
-      if opts.file?
-        @gems = Chelsea::Gems.new(opts[:file])
+      if @opts.file?
+        @gems = Chelsea::Gems.new(file: @opts[:file])
         @gems.execute
-      elsif opts.help?
+      elsif @opts.help?
         puts _cli_flags
 
       end
@@ -54,14 +54,14 @@ module Chelsea
 
     def _flags_error
       # should be custom exception! 
-      switches = flags.collect {|f| "--#{f}"}
-      puts cli_flags
+      switches = _flags.collect {|f| "--#{f}"}
+      puts _cli_flags
       puts
       abort "please set one of #{switches}"
     end
 
     def _validate_arguments
-      if !_flags_set? && !opts.file?
+      if !_flags_set? && !@opts.file?
         ## require at least one argument
         _flags_error
       end
@@ -81,7 +81,7 @@ module Chelsea
     def _show_logo()
       font = TTY::Font.new(:doom)
       puts @pastel.green(font.write("Chelsea"))
-      puts @pastel.green("Version: " + version())
+      puts @pastel.green("Version: " + CLI::version)
     end
   end
 end
