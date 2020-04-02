@@ -38,14 +38,14 @@ module Chelsea
     end
 
     def audit
-      if !@quiet
+      unless @quiet
         spinner = _spin_msg "Parsing dependencies"
       end
 
       begin
         @deps.get_dependencies
       rescue StandardError => e
-        if !@quiet
+        unless @quiet
           spinner.stop
         end
         _print_err "Parsing dependency line #{gem} failed."
@@ -53,42 +53,42 @@ module Chelsea
 
       @deps.get_reverse_dependencies
 
-      if !@quiet
+      unless @quiet
         spinner = _spin_msg "Parsing Versions"
       end
       @deps.get_dependencies_versions_as_coordinates
-      if !@quiet
+      unless @quiet
         spinner.success("...done.")
       end
 
-      if !@quiet
+      unless @quiet
         spinner = _spin_msg "Making request to OSS Index server"
       end
 
       begin
         @deps.get_vulns
       rescue SocketError => e
-        if !@quiet
+        unless @quiet
           spinner.stop("...request failed.")
         end
         _print_err "Socket error getting data from OSS Index server."
       rescue RestClient::RequestFailed => e
-        if !@quiet
+        unless @quiet
           spinner.stop("...request failed.")
         end
         _print_err "Error getting data from OSS Index server:#{e.response}."
       rescue RestClient::ResourceNotfound => e
-        if !@quiet
+        unless @quiet
           spinner.stop("...request failed.")
         end
         _print_err "Error getting data from OSS Index server. Resource not found."
       rescue Errno::ECONNREFUSED => e
-        if !@quiet
+        unless @quiet
           spinner.stop("...request failed.")
         end
         _print_err "Error getting data from OSS Index server. Connection refused."
       rescue StandardError => e
-        if !@quiet
+        unless @quiet
           spinner.stop("...request failed.")
         end
         _print_err "UNKNOWN Error getting data from OSS Index server."
