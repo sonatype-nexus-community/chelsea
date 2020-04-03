@@ -2,135 +2,117 @@
 
 require 'pastel'
 require 'tty-spinner'
-require_relative 'oss_index'
+require 'bundler'
+require 'bundler/lockfile_parser'
+require 'rubygems'
+require 'rubygems/commands/dependency_command'
+require_relative 'version'
+require_relative 'formatters/factory'
 require_relative 'deps'
+
 
 module Chelsea
   class Gems
-    def initialize(file, options)
-      @file = file
-      @options = options
-      @pastel = Pastel.new
-    end
+    def initialize(file:, quiet: false, options: {})
+      @file, @quiet, @options = file, quiet, options
 
-    def execute(input: $stdin, output: $stdout)
-      if not gemfile_lock_file_exists()
+      if not _gemfile_lock_file_exists? or file.nil?
         raise "Gemfile.lock not found, check --file path"
       end
+      @pastel = Pastel.new
+      @formatter = FormatterFactory.new.get_formatter(@options)
+      @deps = Chelsea::Deps.new({path: Pathname.new(@file)})
+    end
 
-      deps = Chelsea::Deps.new({path: Pathname.new(@file)})
-      ossindex = Chelsea::OssIndex.new({})
+    def execute(input: $stdin, output: $stdout) 
+      audit
+      if @deps.nil?
+        _print_err "No dependencies retrieved. Exiting."
+        return
+      end
+      if !@deps.server_response.count
+        _print_err "No vulnerability data retrieved from server. Exiting."
+        return
+      end
+      @formatter.do_print(@formatter.get_results(@deps))
+    end
+
+    def audit
+      unless @quiet
+        spinner = _spin_msg "Parsing dependencies"
+      end
 
       begin
-        spinner = TTY::Spinner.new(
-          "[#{@pastel.green(':spinner')}] " + @pastel.white("Parsing dependencies"), 
-          success_mark: @pastel.green('+'), 
-          hide_cursor: true
-        )
-        spinner.auto_spin()
+        @deps.get_dependencies
+      rescue StandardError => e
+        unless @quiet
+          spinner.stop
+        end
+        _print_err "Parsing dependency line #{gem} failed."
+      end
 
-        dependencies = Hash.new()   
-        dependencies = deps.get_dependencies()
+      @deps.get_reverse_dependencies
 
-        spinner.success("...done. Parsed #{dependencies.count()} dependencies.")
-
-        reverse_deps = deps.get_reverse_dependencies()
-
-        spinner = TTY::Spinner.new(
-          "[#{@pastel.green(':spinner')}] " + @pastel.white("Parsing versions"), 
-          success_mark: @pastel.green('+'), 
-          hide_cursor: true
-        )
-        spinner.auto_spin()
-
-        coordinates = Hash.new()
-        coordinates = deps.get_dependencies_versions_as_coordinates(dependencies)
-
+      unless @quiet
+        spinner = _spin_msg "Parsing Versions"
+      end
+      @deps.get_dependencies_versions_as_coordinates
+      unless @quiet
         spinner.success("...done.")
+      end
 
-        spinner = TTY::Spinner.new(
-          "[#{@pastel.green(':spinner')}] " + @pastel.white("Making request to OSS Index server"), 
-          success_mark: @pastel.green('+'), 
-          hide_cursor: true
-        )
-        spinner.auto_spin()
+      unless @quiet
+        spinner = _spin_msg "Making request to OSS Index server"
+      end
 
-        server_response = Array.new
-        server_response = ossindex.query_ossindex_for_vulns(coordinates)
-        if server_response.count() == 0
-          spinner.stop("...failed.")
-          print_err "No vulnerability data retrieved from server. Exiting."
-          return
+      begin
+        @deps.get_vulns
+      rescue SocketError => e
+        unless @quiet
+          spinner.stop("...request failed.")
         end
-
-        spinner.success("...done.")
-
-        print_results(server_response, reverse_deps)
-      rescue Chelsea::OssIndexException => e
-        spinner.stop("...failed.")
-        print_err e
+        _print_err "Socket error getting data from OSS Index server."
+      rescue RestClient::RequestFailed => e
+        unless @quiet
+          spinner.stop("...request failed.")
+        end
+        _print_err "Error getting data from OSS Index server:#{e.response}."
+      rescue RestClient::ResourceNotfound => e
+        unless @quiet
+          spinner.stop("...request failed.")
+        end
+        _print_err "Error getting data from OSS Index server. Resource not found."
+      rescue Errno::ECONNREFUSED => e
+        unless @quiet
+          spinner.stop("...request failed.")
+        end
+        _print_err "Error getting data from OSS Index server. Connection refused."
+      rescue StandardError => e
+        unless @quiet
+          spinner.stop("...request failed.")
+        end
+        _print_err "UNKNOWN Error getting data from OSS Index server."
       end
     end
 
-    private
-
-    def print_results(server_response, reverse_deps)
-      puts ""
-      puts "Audit Results"
-      puts "============="
-
-      i = 0
-      count = server_response.count()
-
-      server_response.each do |r|
-        i += 1
-        package = r["coordinates"]
-        vulnerable = r["vulnerabilities"].length() > 0
-        coord = r["coordinates"].sub("pkg:gem/", "")
-        name = coord.split('@')[0]
-        version = coord.split('@')[1]
-        reverse_dep_coord = "#{name}-#{version}"
-        if vulnerable
-          puts @pastel.red("[#{i}/#{count}] - #{package} ") +  @pastel.red.bold("Vulnerable.")
-          print_reverse_deps(reverse_deps[reverse_dep_coord], name, version)
-          r["vulnerabilities"].each do |k, v|
-            puts @pastel.red.bold("    #{k}:#{v}")
-          end
-        else
-          puts(@pastel.white("[#{i}/#{count}] - #{package} ") + @pastel.green.bold("No vulnerabilities found!"))
-          print_reverse_deps(reverse_deps[reverse_dep_coord], name, version)
-        end
-      end
+    protected
+    def _spin_msg(msg)
+      format = "[#{@pastel.green(':spinner')}] " + @pastel.white(msg)
+      spinner = TTY::Spinner.new(format, success_mark: @pastel.green('+'), hide_cursor: true)
+      spinner.auto_spin()
+      spinner
     end
 
-    def print_reverse_deps(reverse_deps, name, version)
-      reverse_deps.each do |dep|
-        dep.each do |gran|
-          if gran.class == String && !gran.include?(name)
-            # There is likely a fun and clever way to check @server-results, etc... and see if a dep is in there
-            # Right now this looks at all Ruby deps, so it might find some in your Library, but that don't belong to your project
-            puts "\tRequired by: " + gran
-          else
-          end
-        end
-      end
-    end
-
-    def print_err(s)
+    def _print_err(s)
       puts @pastel.red.bold(s)
     end
 
-    def print_success(s)
+    def _print_success(s)
       puts @pastel.green.bold(s)
     end
 
-    def gemfile_lock_file_exists()
-      if not ::File.file? @file
-        return false
-      else
-        path = Pathname.new(@file)
-        return true
-      end
+    def _gemfile_lock_file_exists?
+      ::File.file? @file
     end
   end
 end
