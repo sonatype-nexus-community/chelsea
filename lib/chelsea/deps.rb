@@ -7,20 +7,20 @@ require 'json'
 require 'rest-client'
 require 'pstore'
 
-
 module Chelsea
   class Deps
-    attr_reader :server_response, :reverse_dependencies, :coordinates
+    attr_reader :server_response, :reverse_dependencies, :coordinates, :dependencies
 
     def initialize(path: , quiet: false)
       @path, @quiet = path, quiet
+      ENV['BUNDLE_GEMFILE'] = File.expand_path(path).chomp(".lock")
 
       begin
         @lockfile = Bundler::LockfileParser.new(
           File.read(@path)
         )
-      rescue
-        raise "Gemfile.lock not parseable, please check file or that it's path is valid"
+      rescue => e
+        raise "#{e} Gemfile.lock not parseable, please check file or that it's path is valid"
       end
 
       @dependencies = {}
@@ -44,7 +44,7 @@ module Chelsea
     end
 
     # Parses specs from lockfile instanct var and inserts into dependenices instance var
-    get_dependencies
+    def get_dependencies
       @lockfile.specs.each do |gem|\
         begin
           @dependencies[gem.name] = [gem.name, gem.version]

@@ -26,7 +26,7 @@ module Chelsea
 
     # Audits depenencies using deps library and prints results
     # using formatter library
-    def execute
+    def execute(input: $stdin, output: $stdout)
       audit
       if @deps.nil?
         _print_err "No dependencies retrieved. Exiting."
