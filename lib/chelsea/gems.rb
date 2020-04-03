@@ -24,7 +24,9 @@ module Chelsea
       @deps = Chelsea::Deps.new({path: Pathname.new(@file)})
     end
 
-    def execute(input: $stdin, output: $stdout) 
+    # Audits depenencies using deps library and prints results
+    # using formatter library
+    def execute
       audit
       if @deps.nil?
         _print_err "No dependencies retrieved. Exiting."
@@ -37,6 +39,8 @@ module Chelsea
       @formatter.do_print(@formatter.get_results(@deps))
     end
 
+    # Runs through auditing algorithm, raising exceptions
+    # on REST calls made by @deps.get_vulns
     def audit
       unless @quiet
         spinner = _spin_msg "Parsing dependencies"

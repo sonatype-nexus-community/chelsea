@@ -30,14 +30,6 @@ module Chelsea
       @server_response = []
       @store = PStore.new(_get_db_store_location())
     end
-  
-    def to_h(reverse: false)
-      if reverse
-        @reverse_dependencies
-      else
-        @dependencies
-      end
-    end
 
     def nil?
       @dependencies.empty?
@@ -51,7 +43,8 @@ module Chelsea
       "chelsea/#{Chelsea::VERSION}"
     end
 
-    def get_dependencies
+    # Parses specs from lockfile instanct var and inserts into dependenices instance var
+    get_dependencies
       @lockfile.specs.each do |gem|\
         begin
           @dependencies[gem.name] = [gem.name, gem.version]
@@ -61,6 +54,7 @@ module Chelsea
       end
     end
 
+    # Collects all reverse dependencies in reverse_dependencies instance var
     def get_reverse_dependencies
       begin
         reverse = Gem::Commands::DependencyCommand.new
@@ -71,6 +65,8 @@ module Chelsea
       end
     end
 
+    # Iterates over all dependencies and stores them
+    # in dependencies_versions and coordinates instance vars
     def get_dependencies_versions_as_coordinates
       @dependencies.each do |p, r|
         o =  r[0]
@@ -88,6 +84,8 @@ module Chelsea
       end
     end
 
+    # Makes REST calls to OSS for vulnerabilities 128 coordinates at a time
+    # Checks cache and stores results in cache
     def get_vulns()
       _check_db_for_cached_values()
 
