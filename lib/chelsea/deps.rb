@@ -19,8 +19,8 @@ module Chelsea
         @lockfile = Bundler::LockfileParser.new(
           File.read(@path)
         )
-      rescue => e
-        raise "#{e} Gemfile.lock not parseable, please check file or that it's path is valid"
+      rescue
+        raise "Gemfile.lock not parseable, please check file or that it's path is valid"
       end
 
       @dependencies = {}
