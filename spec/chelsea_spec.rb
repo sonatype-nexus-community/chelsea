@@ -15,6 +15,6 @@ end
 
 RSpec.describe Chelsea do
   it "has a version number" do
-    expect(Chelsea::CLI.new.version).not_to be nil
+    expect(Chelsea::CLI.version).not_to be nil
   end
 end

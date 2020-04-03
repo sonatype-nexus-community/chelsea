@@ -37,12 +37,14 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "tty-font", "~> 0.5.0"
   spec.add_dependency "tty-spinner", "~> 0.9.3"
-  spec.add_dependency "slop", "~> 4.8.0"
+  spec.add_dependency "slop", "~> 4.8.1"
   spec.add_dependency "pastel", "~> 0.7.2"
   spec.add_dependency "rest-client", "~> 2.0.2"
   spec.add_dependency "bundler", ">= 1.2.0", "< 3"
+  spec.add_dependency "ox", "~> 2.13.2"
 
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "rspec_junit_formatter", "~> 0.4.1"
+  spec.add_development_dependency "webmock", "~> 3.8.3"
 end
