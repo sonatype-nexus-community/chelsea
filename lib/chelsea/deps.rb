@@ -88,28 +88,20 @@ module Chelsea
       end
     end
 
-    # Makes multiple REST calls
     def get_vulns()
       _check_db_for_cached_values()
 
       if @coordinates["coordinates"].count() > 0
         chunked = Hash.new()
         @coordinates["coordinates"].each_slice(128).to_a.each do |coords|
-          # Won't this return the first successful slice?
           chunked["coordinates"] = coords
           r = RestClient.post "https://ossindex.sonatype.org/api/v3/component-report", chunked.to_json,
             { content_type: :json, accept: :json, 'User-Agent': user_agent }
           if r.code == 200
             @server_response = @server_response.concat(JSON.parse(r.body))
             _save_values_to_db(JSON.parse(r.body))
-            @server_response.count()
-          else
-            0
           end
         end
-      else
-        #IDGI
-        @server_response.count()
       end
     end
 
