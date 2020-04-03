@@ -2,14 +2,14 @@
 
 require 'pastel'
 require 'tty-spinner'
-require_relative 'oss_index'
-require_relative 'deps'
 require 'bundler'
 require 'bundler/lockfile_parser'
-require_relative 'version'
-require_relative 'formatters/factory'
 require 'rubygems'
 require 'rubygems/commands/dependency_command'
+require_relative 'version'
+require_relative 'formatters/factory'
+require_relative 'deps'
+
 
 module Chelsea
   class Gems
