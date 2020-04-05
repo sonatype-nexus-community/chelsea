@@ -19,11 +19,10 @@ module Chelsea
 
     def process!
       if @opts.file?
-        @gems = Chelsea::Gems.new(file: @opts[:file])
+        @gems = Chelsea::Gems.new(file: @opts[:file], @opts)
         @gems.execute
       elsif @opts.help?
         puts _cli_flags
-
       end
     end
 
@@ -82,6 +81,11 @@ module Chelsea
       font = TTY::Font.new(:doom)
       puts @pastel.green(font.write("Chelsea"))
       puts @pastel.green("Version: " + CLI::version)
+    end
+
+    def _try_load_config()
+      config = Chelsea::Config.new
+      oss_index_config = config.get_oss_index_config()
     end
   end
 end

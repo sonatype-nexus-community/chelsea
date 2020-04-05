@@ -34,6 +34,9 @@ module Chelsea
         _print_err "No vulnerability data retrieved from server. Exiting."
         return
       end
+      if @options[:whitelist]?
+        
+      end
       @formatter.do_print(@formatter.get_results(@deps))
     end
 
