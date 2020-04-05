@@ -102,14 +102,8 @@ module Chelsea
           if r.code == 200
             @server_response = @server_response.concat(JSON.parse(r.body))
             _save_values_to_db(JSON.parse(r.body))
-            @server_response.count()
-          else
-            0
           end
         end
-      else
-        #IDGI
-        @server_response.count()
       end
     end
 

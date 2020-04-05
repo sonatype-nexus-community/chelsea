@@ -20,7 +20,7 @@ module Chelsea
         raise "Gemfile.lock not found, check --file path"
       end
       @pastel = Pastel.new
-      @formatter = FormatterFactory.new.get_formatter(@options)
+      @formatter = FormatterFactory.new.get_formatter(format: @options[:format], options: @options)
       @deps = Chelsea::Deps.new({path: Pathname.new(@file)})
     end
 
@@ -34,8 +34,8 @@ module Chelsea
         _print_err "No vulnerability data retrieved from server. Exiting."
         return
       end
-      if @options[:whitelist]?
-        
+      if !@options[:whitelist]
+        puts "Hello"
       end
       @formatter.do_print(@formatter.get_results(@deps))
     end

@@ -19,7 +19,7 @@ module Chelsea
 
     def process!
       if @opts.file?
-        @gems = Chelsea::Gems.new(file: @opts[:file], @opts)
+        @gems = Chelsea::Gems.new(file: @opts[:file], quiet: false, options: @opts)
         @gems.execute
       elsif @opts.help?
         puts _cli_flags
@@ -40,6 +40,8 @@ module Chelsea
       opts.separator ""
       opts.separator 'Options:'
       opts.bool '-h', '--help', 'show usage'
+      opts.string '-u', '--user', 'Specify OSS Index Username'
+      opts.string '-p', '--token', 'Specify OSS Index API Token'
       opts.bool '-q', '--quiet', 'make chelsea only output vulnerable third party dependencies for text output (default: false)', default: false 
       opts.string '-t', '--format', 'choose what type of format you want your report in (default: text) (options: text, json, xml)', default: 'text'
       opts.string '-f', '--file', 'path to your Gemfile.lock'
