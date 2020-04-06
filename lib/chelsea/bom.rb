@@ -3,6 +3,9 @@ require "logger"
 
 class Bom < Bombuilder
   def self.build(specs, bom_file_path: './bom.xml')
+    # @gems and @licenses_list are used within
+    # Bombuilder.specs_list. If we want to leverage licenses,
+    # we should build the list
     @specs, @bom_file_path = specs, bom_file_path
     @gems = []
     @licenses_list = []
