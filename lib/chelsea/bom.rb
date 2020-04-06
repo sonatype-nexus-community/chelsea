@@ -2,16 +2,16 @@ require 'bom_builder'
 require "logger"
 
 class Bom < Bombuilder
-    def self.build(specs, bom_file_path: './bom.xml')
-        @specs, @bom_file_path = specs, bom_file_path
-        @gems = []
-        @licenses_list = []
-        @logger = Logger.new(STDOUT)
-        specs_list
-        _show_logo
-        File.open(@bom_file_path, "w") {|file| file.write(build_bom(@gems))}
-    end
-    def self._show_logo
+  def self.build(specs, bom_file_path: './bom.xml')
+    @specs, @bom_file_path = specs, bom_file_path
+    @gems = []
+    @licenses_list = []
+    @logger = Logger.new(STDOUT)
+    specs_list
+    _show_logo
+    File.open(@bom_file_path, "w") {|file| file.write(build_bom(@gems))}
+  end
+  def self._show_logo
     logo = %Q(
                         -o/                             
                     -+hNmNN-                            
@@ -39,5 +39,5 @@ dd.``  ``   /d-   oy.          `/yNNh/`             .yM+
                         :d/                               
 )
     puts logo
-    end
+  end
 end
