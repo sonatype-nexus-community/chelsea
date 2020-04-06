@@ -20,7 +20,7 @@ module Chelsea
 
     def process!
       if @opts.file?
-        @gems = Chelsea::Gems.new(file: @opts[:file], sbom: @opts[:sbom])
+        @gems = Chelsea::Gems.new(file: @opts[:file], quiet: @opts[:quiet], sbom: @opts[:sbom])
         @gems.execute
       elsif @opts.help?
         puts _cli_flags

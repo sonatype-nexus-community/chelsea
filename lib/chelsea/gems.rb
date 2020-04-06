@@ -36,7 +36,7 @@ module Chelsea
         return
       end
       @formatter.do_print(@formatter.get_results(@deps))
-      unless @sbom.nil?
+      if @sbom
         @deps.get_bom
       end
 
