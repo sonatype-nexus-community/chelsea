@@ -2,10 +2,12 @@ require 'bundler'
 require 'bundler/lockfile_parser'
 require 'rubygems'
 require 'rubygems/commands/dependency_command'
-require_relative 'dependency_exception'
 require 'json'
 require 'rest-client'
 require 'pstore'
+
+require_relative 'dependency_exception'
+require_relative 'bom'
 
 module Chelsea
   class Deps
@@ -52,6 +54,10 @@ module Chelsea
           raise Chelsea::DependencyException e, "Parsing dependency line #{gem} failed."
         end
       end
+    end
+
+    def get_bom
+      Bom.build(@lockfile.specs)
     end
 
     # Collects all reverse dependencies in reverse_dependencies instance var

@@ -13,9 +13,9 @@ require_relative 'deps'
 
 module Chelsea
   class Gems
-    def initialize(file:, quiet: false, options: {})
-      @file, @quiet, @options = file, quiet, options
-
+    attr_reader :depsv
+    def initialize(file:, quiet: false, sbom: false, options: {})
+      @file, @quiet, @sbom, @options = file, quiet, sbom, options
       if not _gemfile_lock_file_exists? or file.nil?
         raise "Gemfile.lock not found, check --file path"
       end
@@ -37,17 +37,27 @@ module Chelsea
         return
       end
       @formatter.do_print(@formatter.get_results(@deps))
+      unless @sbom.nil?
+        @deps.get_bom
+      end
+
     end
 
     # Runs through auditing algorithm, raising exceptions
     # on REST calls made by @deps.get_vulns
     def audit
+      # This spinner management is out of control
+      # we should wrap a block with start and stop messages,
+      # or use a stack to ensure all spinners stop.
       unless @quiet
         spinner = _spin_msg "Parsing dependencies"
       end
 
       begin
         @deps.get_dependencies
+        unless @quiet
+          spinner.stop
+        end
       rescue StandardError => e
         unless @quiet
           spinner.stop
@@ -71,6 +81,7 @@ module Chelsea
 
       begin
         @deps.get_vulns
+        spinner.stop("Finished")
       rescue SocketError => e
         unless @quiet
           spinner.stop("...request failed.")

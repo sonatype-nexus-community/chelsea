@@ -1,6 +1,7 @@
 require 'slop'
 require 'pastel'
 require 'tty-font'
+require 'bom_builder'
 
 require_relative 'version'
 require_relative 'gems'
@@ -19,15 +20,15 @@ module Chelsea
 
     def process!
       if @opts.file?
-        @gems = Chelsea::Gems.new(file: @opts[:file])
+        @gems = Chelsea::Gems.new(file: @opts[:file], sbom: @opts[:sbom])
         @gems.execute
       elsif @opts.help?
         puts _cli_flags
-
       end
     end
 
     # this is how you do static methods in ruby, because in a test we want to 
+
     # check for version without opts, and heck, we don't even want a dang object!
     def self.version
       Chelsea::VERSION
@@ -44,6 +45,7 @@ module Chelsea
       opts.bool '-q', '--quiet', 'make chelsea only output vulnerable third party dependencies for text output (default: false)', default: false 
       opts.string '-t', '--format', 'choose what type of format you want your report in (default: text) (options: text, json, xml)', default: 'text'
       opts.string '-f', '--file', 'path to your Gemfile.lock'
+      opts.bool '-b', '--sbom', 'generate an sbom'
       opts.on '--version', 'print the version' do
         puts version()
         exit
