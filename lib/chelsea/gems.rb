@@ -13,7 +13,6 @@ require_relative 'deps'
 
 module Chelsea
   class Gems
-    attr_reader :depsv
     def initialize(file:, quiet: false, sbom: false, options: {})
       @file, @quiet, @sbom, @options = file, quiet, sbom, options
       if not _gemfile_lock_file_exists? or file.nil?
