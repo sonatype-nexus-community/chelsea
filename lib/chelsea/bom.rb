@@ -9,7 +9,7 @@ module Chelsea
     end
 
     def to_s
-      Ox.dump(@xml)
+      Ox.dump(@xml).to_s
     end
 
     private

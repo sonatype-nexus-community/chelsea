@@ -23,7 +23,7 @@ module Chelsea
         @gems.execute
         if @opts.sbom?
           bom = @gems.generate_sbom
-          puts bom.to_s
+          puts bom
         end
       elsif @opts.help?
         puts _cli_flags
