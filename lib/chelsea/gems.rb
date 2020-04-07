@@ -25,7 +25,7 @@ module Chelsea
     end
 
     def generate_sbom
-      Chelsea::Bom.new(@deps.dependencies)
+      Chelsea::Bom.new(@deps)
     end
 
     # Audits depenencies using deps library and prints results

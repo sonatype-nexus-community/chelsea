@@ -34,7 +34,7 @@ module Chelsea
       doc << bom
 
       components = Ox::Element.new('components')
-      dependencies.each do |k, (name, version)|
+      dependencies.dependencies.each do |k, (name, version)|
         component = Ox::Element.new('component')
         component[:type] = 'library'
 
@@ -44,8 +44,12 @@ module Chelsea
         v = Ox::Element.new('version')
         v << version.version
 
+        purl = Ox::Element.new('purl')
+        purl << dependencies.class.to_purl(name, version.version)
+
         component << n
         component << v
+        component << purl
 
         components << component
       end
