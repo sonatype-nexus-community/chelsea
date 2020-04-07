@@ -4,6 +4,7 @@ require 'tty-font'
 
 require_relative 'version'
 require_relative 'gems'
+require_relative 'iq_client'
 
 module Chelsea
   ##
