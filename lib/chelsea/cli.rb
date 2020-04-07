@@ -21,10 +21,11 @@ module Chelsea
     def process!
       if @opts.file?
         @gems = Chelsea::Gems.new(file: @opts[:file], quiet: @opts[:quiet])
+        @iq = Chelsea::IQClient.new("testapp", "http://localhost:8070", "admin", "admin123")
         @gems.execute
         if @opts.sbom?
           bom = @gems.generate_sbom
-          puts bom
+          @iq.submit_sbom(bom)
         end
       elsif @opts.help?
         puts _cli_flags
