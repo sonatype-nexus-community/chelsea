@@ -7,7 +7,7 @@ module Chelsea
     def initialize(oss_index_user_name: "", oss_index_user_token: "")
       if oss_index_user_name.empty? || oss_index_user_token.empty?
         config = Chelsea::Config.new().get_oss_index_config()
-        if config == {}
+        if config != {}
           @oss_index_user_name, @oss_index_user_token = config["Username"], config["Token"]
         else
           @oss_index_user_name, @oss_index_user_token = oss_index_user_name, oss_index_user_token
