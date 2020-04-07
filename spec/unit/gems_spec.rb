@@ -11,7 +11,7 @@ RSpec.describe Chelsea::Gems do
     it "can collect dependencies, query, and print results" do
       output = StringIO.new
       file = "spec/testdata/Gemfile.lock"
-      command = Chelsea::Gems.new(file: file)
+      command = Chelsea::Gems.new(file: file, options: { :user => "", :token => "", :format => 'text' })
 
       command.execute(output: output)
 
