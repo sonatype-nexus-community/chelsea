@@ -8,9 +8,13 @@ module Chelsea
     end
 
     def get_oss_index_config()
-      oss_index_config = YAML.load(File.read(File.join(@oss_index_config_location, @oss_index_config_filename)))
+      if !File.exist? File.join(@oss_index_config_location, @oss_index_config_filename)
+        return {}
+      else
+        oss_index_config = YAML.load(File.read(File.join(@oss_index_config_location, @oss_index_config_filename)))
 
-      oss_index_config
+        oss_index_config
+      end
     end
 
     def get_white_list_vuln_config(white_list_config_path)
