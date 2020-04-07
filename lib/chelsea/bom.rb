@@ -1,4 +1,5 @@
 require 'ox'
+require 'securerandom'
 
 module Chelsea
   class Bom
@@ -13,6 +14,10 @@ module Chelsea
 
     private
 
+    def random_urn_uuid()
+      random_urn_uuid = "urn:uuid:" + SecureRandom.uuid
+    end
+
     def get_xml(dependencies)
       doc = Ox::Document.new
 
@@ -25,6 +30,7 @@ module Chelsea
       bom = Ox::Element.new('bom')
       bom[:xmlns] = 'http://cyclonedx.org/schema/bom/1.1'
       bom[:version] = '1'
+      bom[:serialNumber] = random_urn_uuid
       doc << bom
 
       components = Ox::Element.new('components')
