@@ -7,13 +7,13 @@ require 'json'
 require 'rest-client'
 require 'pstore'
 
-
 module Chelsea
   class Deps
-    attr_reader :server_response, :reverse_dependencies, :coordinates
+    attr_reader :server_response, :reverse_dependencies, :coordinates, :dependencies
 
     def initialize(path: , quiet: false)
       @path, @quiet = path, quiet
+      ENV['BUNDLE_GEMFILE'] = File.expand_path(path).chomp(".lock")
 
       begin
         @lockfile = Bundler::LockfileParser.new(
@@ -30,14 +30,6 @@ module Chelsea
       @server_response = []
       @store = PStore.new(_get_db_store_location())
     end
-  
-    def to_h(reverse: false)
-      if reverse
-        @reverse_dependencies
-      else
-        @dependencies
-      end
-    end
 
     def nil?
       @dependencies.empty?
@@ -51,6 +43,7 @@ module Chelsea
       "chelsea/#{Chelsea::VERSION}"
     end
 
+    # Parses specs from lockfile instanct var and inserts into dependenices instance var
     def get_dependencies
       @lockfile.specs.each do |gem|\
         begin
@@ -61,6 +54,7 @@ module Chelsea
       end
     end
 
+    # Collects all reverse dependencies in reverse_dependencies instance var
     def get_reverse_dependencies
       begin
         reverse = Gem::Commands::DependencyCommand.new
@@ -71,6 +65,8 @@ module Chelsea
       end
     end
 
+    # Iterates over all dependencies and stores them
+    # in dependencies_versions and coordinates instance vars
     def get_dependencies_versions_as_coordinates
       @dependencies.each do |p, r|
         o =  r[0]
@@ -88,14 +84,14 @@ module Chelsea
       end
     end
 
-    # Makes multiple REST calls
+    # Makes REST calls to OSS for vulnerabilities 128 coordinates at a time
+    # Checks cache and stores results in cache
     def get_vulns()
       _check_db_for_cached_values()
 
       if @coordinates["coordinates"].count() > 0
         chunked = Hash.new()
         @coordinates["coordinates"].each_slice(128).to_a.each do |coords|
-          # Won't this return the first successful slice?
           chunked["coordinates"] = coords
           r = RestClient.post "https://ossindex.sonatype.org/api/v3/component-report", chunked.to_json,
             { content_type: :json, accept: :json, 'User-Agent': user_agent }
