@@ -1,7 +1,6 @@
 require 'slop'
 require 'pastel'
 require 'tty-font'
-require 'bom_builder'
 
 require_relative 'version'
 require_relative 'gems'

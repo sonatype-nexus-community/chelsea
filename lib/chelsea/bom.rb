@@ -1,5 +1,4 @@
 require 'ox'
-require 'pry'
 
 module Chelsea
   class Bom
