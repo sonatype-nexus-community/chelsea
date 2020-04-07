@@ -9,12 +9,14 @@ require 'rubygems/commands/dependency_command'
 require_relative 'version'
 require_relative 'formatters/factory'
 require_relative 'deps'
+require_relative 'bom'
 
 
 module Chelsea
   class Gems
     def initialize(file:, quiet: false, sbom: false, options: {})
       @file, @quiet, @sbom, @options = file, quiet, sbom, options
+      @bom_file_path = './bom.xml'
       if not _gemfile_lock_file_exists? or file.nil?
         raise "Gemfile.lock not found, check --file path"
       end
@@ -37,9 +39,9 @@ module Chelsea
       end
       @formatter.do_print(@formatter.get_results(@deps))
       if @sbom
-        @deps.get_bom
+        bom = Chelsea::Bom.new(@deps.dependencies)
+        File.open(@bom_file_path, "w") { |file| file.write(bom.to_s) }
       end
-
     end
 
     # Runs through auditing algorithm, raising exceptions
