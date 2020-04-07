@@ -25,8 +25,8 @@ RSpec.describe Chelsea::Deps do
     deps.get_reverse_dependencies
     deps.get_dependencies_versions_as_coordinates
 
-    expect(deps.to_h.class).to eq(Hash)
-    expect(deps.to_h.empty?).to eq(false)
+    expect(deps.dependencies.class).to eq(Hash)
+    expect(deps.dependencies.empty?).to eq(false)
   end
 
   it "can turn a dependencies hash into a valid coordinates object for OSS Index" do
