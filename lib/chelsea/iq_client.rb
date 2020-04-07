@@ -26,7 +26,7 @@ module Chelsea
     end
 
     def _api_url
-      "#{@server_url}/api/v2/scan/applications/#{@public_application_id}/sources/jake"
+      "#{@server_url}/api/v2/scan/applications/#{@public_application_id}/sources/chelsea"
     end
   end
 end
