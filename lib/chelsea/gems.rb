@@ -14,9 +14,8 @@ require_relative 'bom'
 
 module Chelsea
   class Gems
-    def initialize(file:, quiet: false, sbom: false, options: {})
-      @file, @quiet, @sbom, @options = file, quiet, sbom, options
-      @bom_file_path = './bom.xml'
+    def initialize(file:, quiet: false, options: {})
+      @file, @quiet, @options = file, quiet, options
       if not _gemfile_lock_file_exists? or file.nil?
         raise "Gemfile.lock not found, check --file path"
       end
@@ -25,8 +24,13 @@ module Chelsea
       @deps = Chelsea::Deps.new({path: Pathname.new(@file)})
     end
 
+    def generate_sbom
+      Chelsea::Bom.new(@deps.dependencies)
+    end
+
     # Audits depenencies using deps library and prints results
     # using formatter library
+
     def execute(input: $stdin, output: $stdout)
       audit
       if @deps.nil?
@@ -38,10 +42,6 @@ module Chelsea
         return
       end
       @formatter.do_print(@formatter.get_results(@deps))
-      if @sbom
-        bom = Chelsea::Bom.new(@deps.dependencies)
-        File.open(@bom_file_path, "w") { |file| file.write(bom.to_s) }
-      end
     end
 
     # Runs through auditing algorithm, raising exceptions

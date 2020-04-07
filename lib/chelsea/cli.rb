@@ -19,8 +19,12 @@ module Chelsea
 
     def process!
       if @opts.file?
-        @gems = Chelsea::Gems.new(file: @opts[:file], quiet: @opts[:quiet], sbom: @opts[:sbom])
+        @gems = Chelsea::Gems.new(file: @opts[:file], quiet: @opts[:quiet])
         @gems.execute
+        if @opts.sbom?
+          bom = @gems.generate_sbom
+          puts bom.to_s
+        end
       elsif @opts.help?
         puts _cli_flags
       end
