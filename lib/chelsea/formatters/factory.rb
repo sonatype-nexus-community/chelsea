@@ -6,11 +6,11 @@ class FormatterFactory
     def get_formatter(format: 'text', options: {})
         case format
         when 'text'
-          Chelsea::TextFormatter.new(options)
+          Chelsea::TextFormatter.new()
         when 'json'
-          Chelsea::JsonFormatter.new(options)
+          Chelsea::JsonFormatter.new()
         when 'xml'
-          Chelsea::XMLFormatter.new(options)
+          Chelsea::XMLFormatter.new()
         end
   end
 end

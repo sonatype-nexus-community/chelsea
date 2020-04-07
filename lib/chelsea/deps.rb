@@ -2,16 +2,19 @@ require 'bundler'
 require 'bundler/lockfile_parser'
 require 'rubygems'
 require 'rubygems/commands/dependency_command'
-require_relative 'dependency_exception'
 require 'json'
 require 'rest-client'
 require 'pstore'
+
+require_relative 'dependency_exception'
+require_relative 'oss_index'
 
 module Chelsea
   class Deps
     attr_reader :server_response, :reverse_dependencies, :coordinates, :dependencies
 
-    def initialize(path: , quiet: false)
+    def initialize(path: , oss_index_client: , quiet: false)
+      @oss_index_client = oss_index_client
       @path, @quiet = path, quiet
       ENV['BUNDLE_GEMFILE'] = File.expand_path(path).chomp(".lock")
 
@@ -37,10 +40,6 @@ module Chelsea
 
     def self.to_purl(name, version)
       return "pkg:gem/#{name}@#{version}"
-    end
-
-    def user_agent
-      "chelsea/#{Chelsea::VERSION}"
     end
 
     # Parses specs from lockfile instanct var and inserts into dependenices instance var
@@ -93,12 +92,9 @@ module Chelsea
         chunked = Hash.new()
         @coordinates["coordinates"].each_slice(128).to_a.each do |coords|
           chunked["coordinates"] = coords
-          r = RestClient.post "https://ossindex.sonatype.org/api/v3/component-report", chunked.to_json,
-            { content_type: :json, accept: :json, 'User-Agent': user_agent }
-          if r.code == 200
-            @server_response = @server_response.concat(JSON.parse(r.body))
-            _save_values_to_db(JSON.parse(r.body))
-          end
+          res_json = @oss_index_client.call_oss_index(chunked)
+          @server_response = @server_response.concat(res_json)
+          _save_values_to_db(res_json)
         end
       end
     end
