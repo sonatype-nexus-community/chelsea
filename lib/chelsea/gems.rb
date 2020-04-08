@@ -60,11 +60,7 @@ module Chelsea
       begin
         @deps.get_dependencies
         unless @quiet
-<<<<<<< HEAD
-          spinner.stop
-=======
           spinner.success("...done.")
->>>>>>> master
         end
       rescue StandardError => e
         unless @quiet
@@ -89,13 +85,9 @@ module Chelsea
 
       begin
         @deps.get_vulns
-<<<<<<< HEAD
-        spinner.stop("Finished")
-=======
         unless @quiet
           spinner.success("...done.")
         end
->>>>>>> master
       rescue SocketError => e
         unless @quiet
           spinner.stop("...request failed.")

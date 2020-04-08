@@ -6,17 +6,9 @@ require 'json'
 require 'rest-client'
 require 'pstore'
 
-<<<<<<< HEAD
-require_relative 'dependency_exception'
-
-=======
-<<<<<<< HEAD
-=======
 require_relative 'dependency_exception'
 require_relative 'oss_index'
 
->>>>>>> 27c0113254ecac028c761b368cc36ab4d7613730
->>>>>>> master
 module Chelsea
   class Deps
     attr_reader :server_response, :reverse_dependencies, :coordinates, :dependencies
@@ -50,13 +42,6 @@ module Chelsea
       return "pkg:gem/#{name}@#{version}"
     end
 
-<<<<<<< HEAD
-    def user_agent
-      "chelsea/#{Chelsea::VERSION}"
-    end
-
-=======
->>>>>>> 27c0113254ecac028c761b368cc36ab4d7613730
     # Parses specs from lockfile instanct var and inserts into dependenices instance var
     def get_dependencies
       @lockfile.specs.each do |gem|\
@@ -107,18 +92,9 @@ module Chelsea
         chunked = Hash.new()
         @coordinates["coordinates"].each_slice(128).to_a.each do |coords|
           chunked["coordinates"] = coords
-<<<<<<< HEAD
-          r = RestClient.post "https://ossindex.sonatype.org/api/v3/component-report", chunked.to_json,
-            { content_type: :json, accept: :json, 'User-Agent': user_agent }
-          if r.code == 200
-            @server_response = @server_response.concat(JSON.parse(r.body))
-            _save_values_to_db(JSON.parse(r.body))
-          end
-=======
           res_json = @oss_index_client.call_oss_index(chunked)
           @server_response = @server_response.concat(res_json)
           _save_values_to_db(res_json)
->>>>>>> 27c0113254ecac028c761b368cc36ab4d7613730
         end
       end
     end
