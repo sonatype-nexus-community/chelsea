@@ -20,8 +20,8 @@ module Chelsea
         raise "Gemfile.lock not found, check --file path"
       end
       @pastel = Pastel.new
-      @formatter = FormatterFactory.new.get_formatter(@options)
-      @deps = Chelsea::Deps.new({path: Pathname.new(@file)})
+      @formatter = FormatterFactory.new.get_formatter(format: @options[:format], options: @options)
+      @deps = Chelsea::Deps.new({path: Pathname.new(@file), oss_index_client: Chelsea::OSSIndex.new(oss_index_user_name: @options[:user], oss_index_user_token: @options[:token])})
     end
 
     def generate_sbom
@@ -41,6 +41,9 @@ module Chelsea
         _print_err "No vulnerability data retrieved from server. Exiting."
         return
       end
+      # if !@options[:whitelist]
+
+      # end
       @formatter.do_print(@formatter.get_results(@deps))
     end
 
@@ -57,7 +60,11 @@ module Chelsea
       begin
         @deps.get_dependencies
         unless @quiet
+<<<<<<< HEAD
           spinner.stop
+=======
+          spinner.success("...done.")
+>>>>>>> master
         end
       rescue StandardError => e
         unless @quiet
@@ -82,7 +89,13 @@ module Chelsea
 
       begin
         @deps.get_vulns
+<<<<<<< HEAD
         spinner.stop("Finished")
+=======
+        unless @quiet
+          spinner.success("...done.")
+        end
+>>>>>>> master
       rescue SocketError => e
         unless @quiet
           spinner.stop("...request failed.")
