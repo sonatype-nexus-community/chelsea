@@ -45,27 +45,6 @@ module Chelsea
 
   protected
 
-<<<<<<< HEAD
-    def _cli_flags
-      opts = Slop::Options.new
-      opts.banner = "usage: chelsea [options] ..."
-      opts.separator ""
-      opts.separator 'Options:'
-      opts.bool '-h', '--help', 'show usage'
-      opts.bool '-q', '--quiet', 'make chelsea only output vulnerable third party dependencies for text output (default: false)', default: false 
-      opts.string '-t', '--format', 'choose what type of format you want your report in (default: text) (options: text, json, xml)', default: 'text'
-      opts.string '-f', '--file', 'path to your Gemfile.lock'
-      opts.bool '-b', '--sbom', 'generate an sbom'
-      opts.on '--version', 'print the version' do
-        puts version()
-        exit
-      end
-
-      opts
-    end
-
-=======
->>>>>>> master
     def _flags_error
       # should be custom exception! 
       switches = _flags.collect {|f| "--#{f}"}
