@@ -20,7 +20,7 @@ RSpec.describe Chelsea::Deps do
        'User-Agent'=>'chelsea/0.0.3'
      }).to_return(status: 200, body: OSS_INDEX_RESPONSE, headers: {})
 
-    deps = Chelsea::Deps.new({path: Pathname.new(file)})
+    deps = Chelsea::Deps.new({path: Pathname.new(file), oss_index_client: Chelsea::OSSIndex.new()})
     deps.get_dependencies
     deps.get_reverse_dependencies
     deps.get_dependencies_versions_as_coordinates
@@ -43,7 +43,7 @@ RSpec.describe Chelsea::Deps do
             'Host'=>'ossindex.sonatype.org',
             'User-Agent'=>'chelsea/0.0.3'
           }).to_return(status: 200, body: OSS_INDEX_RESPONSE, headers: {})
-    deps = Chelsea::Deps.new({path: Pathname.new(file)})
+    deps = Chelsea::Deps.new({path: Pathname.new(file), oss_index_client: Chelsea::OSSIndex.new()})
     deps.get_dependencies
     deps.get_reverse_dependencies
     deps.get_dependencies_versions_as_coordinates
@@ -61,7 +61,7 @@ RSpec.describe Chelsea::Deps do
   it "will raises a RuntimeError with a custom message with an invalid file path" do
     output = StringIO.new
     file = "invalid/path"
-    expect{Chelsea::Deps.new({path: Pathname.new(file)})}.to raise_error(RuntimeError, "Gemfile.lock not parseable, please check file or that it's path is valid")
+    expect{Chelsea::Deps.new({path: Pathname.new(file), oss_index_client: Chelsea::OSSIndex.new()})}.to raise_error(RuntimeError, "Gemfile.lock not parseable, please check file or that it's path is valid")
   end
 
   it "can turn a name and version into a valid purl" do
