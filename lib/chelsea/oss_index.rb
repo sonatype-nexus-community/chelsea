@@ -4,9 +4,8 @@ require 'rest-client'
 module Chelsea
   class OSSIndex
 
-    def initialize(oss_index_user_name: , oss_index_user_token: )
-      @oss_index_user_name = oss_index_user_name || ""
-      @oss_index_user_token = oss_index_user_token || ""
+    def initialize(oss_index_user_name: '', oss_index_user_token: '')
+      @oss_index_user_name,  @oss_index_user_token= oss_index_user_name, oss_index_user_token
     end
 
     def call_oss_index(coords)

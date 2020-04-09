@@ -6,7 +6,7 @@ module Chelsea
   @@oss_index_config_filename = ".oss-index-config"
 
   def self.config(options={})
-    unless options[:user].empty? || options[:token].empty?
+    unless options[:user].nil? || options[:token].nil?
       Chelsea::OSSIndex.new(
         oss_index_user_name: options[:user],
         oss_index_user_token: options[:token]

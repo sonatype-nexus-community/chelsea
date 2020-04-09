@@ -7,8 +7,8 @@ opts =
     Slop.parse do |o|
       o.string '-f', '--file', 'path to your Gemfile.lock'
       o.bool '-c', '--config', 'Set persistent config for OSS Index'
-      o.string '-u', '--user', 'Specify OSS Index Username', default: ''
-      o.string '-p', '--token', 'Specify OSS Index API Token', default: ''
+      o.string '-u', '--user', 'Specify OSS Index Username'
+      o.string '-p', '--token', 'Specify OSS Index API Token'
       o.string '-a', '--application', 'Specify the IQ application id', default: 'testapp'
       o.string '-i', '--server', 'Specific the IQ server url', default: 'http://localhost:8070'
       o.string '-iu', '--iquser', 'Specify the IQ username', default: 'admin'
