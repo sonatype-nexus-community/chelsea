@@ -12,26 +12,21 @@ require_relative 'oss_index'
 module Chelsea
   class Deps
     attr_reader :server_response, :reverse_dependencies, :coordinates, :dependencies
-
     def initialize(path: , oss_index_client: , quiet: false)
       @oss_index_client = oss_index_client
       @path, @quiet = path, quiet
       ENV['BUNDLE_GEMFILE'] = File.expand_path(path).chomp(".lock")
-
-      begin
-        @lockfile = Bundler::LockfileParser.new(
-          File.read(@path)
-        )
-      rescue
-        raise "Gemfile.lock not parseable, please check file or that it's path is valid"
-      end
-
       @dependencies = {}
       @reverse_dependencies = {}
       @dependencies_versions = {}
       @coordinates = { 'coordinates' => [] }
       @server_response = []
       @store = PStore.new(_get_db_store_location())
+      begin
+        @lockfile = Bundler::LockfileParser.new(File.read(@path))
+      rescue
+        raise "Gemfile.lock not parseable, please check file or that it's path is valid"
+      end
     end
 
     def nil?

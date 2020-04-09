@@ -82,8 +82,7 @@ module Chelsea
     end
 
     def _set_config()
-      config = Chelsea::Config.new
-      config.get_oss_index_config_from_command_line()
+      config = Chelsea::get_oss_index_config_from_command_line
     end
   end
 end
