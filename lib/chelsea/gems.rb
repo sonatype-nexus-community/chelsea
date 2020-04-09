@@ -21,7 +21,12 @@ module Chelsea
       end
       @pastel = Pastel.new
       @formatter = FormatterFactory.new.get_formatter(format: @options[:format], options: @options)
-      @deps = Chelsea::Deps.new({path: Pathname.new(@file), oss_index_client: Chelsea::OSSIndex.new(oss_index_user_name: @options[:user], oss_index_user_token: @options[:token])})
+      @deps = Chelsea::Deps.new(
+        path: Pathname.new(@file),
+        oss_index_client: Chelsea::OSSIndex.new(
+          oss_index_user_name: @options[:user],
+          oss_index_user_token: @options[:token])
+      )
     end
 
     def generate_sbom

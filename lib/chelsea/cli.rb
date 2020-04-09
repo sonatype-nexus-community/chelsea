@@ -21,7 +21,7 @@ module Chelsea
 
     def process!
       if @opts.config?
-        _try_set_config()
+        _set_config()
       end
       if @opts.file?
         @gems = Chelsea::Gems.new(file: @opts[:file], quiet: @opts[:quiet], options: @opts)
@@ -76,12 +76,12 @@ module Chelsea
       puts @pastel.green("Version: " + CLI::version)
     end
 
-    def _try_load_config()
+    def _load_config()
       config = Chelsea::Config.new
       oss_index_config = config.get_oss_index_config()
     end
 
-    def _try_set_config()
+    def _set_config()
       config = Chelsea::Config.new
       config.get_oss_index_config_from_command_line()
     end

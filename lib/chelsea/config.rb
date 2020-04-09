@@ -2,7 +2,7 @@ require 'yaml'
 
 module Chelsea
   class Config
-    def initialize(opts = {})
+    def initialize(opts: {})
       @oss_index_config_location = File.join("#{Dir.home}", ".ossindex")
       @oss_index_config_filename = ".oss-index-config"
     end
