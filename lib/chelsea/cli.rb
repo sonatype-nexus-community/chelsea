@@ -25,9 +25,9 @@ module Chelsea
       end
       if @opts.file?
         @gems = Chelsea::Gems.new(file: @opts[:file], quiet: @opts[:quiet], options: @opts)
-        @iq = Chelsea::IQClient.new("testapp", "http://localhost:8070", "admin", "admin123")
         @gems.execute
         if @opts.sbom?
+          @iq = Chelsea::IQClient.new(@opts[:application], @opts[:server], @opts[:iquser], @opts[:iqpass])
           bom = @gems.generate_sbom
           @iq.submit_sbom(bom)
         end
