@@ -20,7 +20,7 @@ RSpec.describe Chelsea::Gems do
   context 'given an invalid Gemfile.lock' do
     file = "spec/Gemfile.lock"
     it "will exit with a RuntimeError" do
-      expect{Chelsea::Gems.new({file: file})}.to raise_error(RuntimeError, "Gemfile.lock not found, check --file path")
+      expect{Chelsea::Gems.new(file: file)}.to raise_error(RuntimeError, "Gemfile.lock not found, check --file path")
     end
   end
 
