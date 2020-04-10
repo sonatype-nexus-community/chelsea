@@ -29,7 +29,7 @@ module Chelsea
     end
 
     def _headers
-      { 'User-Agent' => _user_agent, }
+      { 'User-Agent' => _user_agent }
     end
 
     def _api_url

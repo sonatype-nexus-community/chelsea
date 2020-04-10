@@ -1,7 +1,8 @@
 require 'chelsea/bom'
 require 'chelsea/deps'
 require 'ox'
-require_relative '../spec_helper'
+require 'spec_helper'
+
 RSpec.describe Chelsea::Bom do
   before do
      @deps = get_test_dependencies

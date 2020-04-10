@@ -1,5 +1,5 @@
 require 'chelsea/deps'
-require_relative '../spec_helper'
+require 'spec_helper'
 
 RSpec.describe Chelsea::Deps do
   before do

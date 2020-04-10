@@ -1,5 +1,5 @@
 require 'chelsea/gems'
-require_relative '../spec_helper'
+require 'spec_helper'
 
 RSpec.describe Chelsea::Gems do
   describe "when talking to OSS Index" do

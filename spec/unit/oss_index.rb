@@ -1,7 +1,7 @@
-require 'chelsea/iq_client'
-require 'spec_helper'
+require 'chelsea/oss_index'
+require_relative 'spec_helper'
 
-RSpec.describe Chelsea::IQClient do
+RSpec.describe Chelsea::OSSIndex do
 
   context 'with defaults' do
     # Check that defaults get set
