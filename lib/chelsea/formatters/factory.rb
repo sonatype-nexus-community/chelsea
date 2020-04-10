@@ -3,7 +3,7 @@ require_relative 'xml'
 require_relative 'text'
 
 class FormatterFactory
-    def get_formatter(format: 'text', options: {})
+    def get_formatter(format: 'text')
         case format
         when 'text'
           Chelsea::TextFormatter.new()

@@ -12,13 +12,13 @@ require_relative 'bom'
 
 module Chelsea
   class Gems
-    def initialize(file:, quiet: false, options: {})
+    def initialize(file:, quiet: false, options: { :format=>'text' })
       @file, @quiet, @options = file, quiet, options
       if not _gemfile_lock_file_exists? or file.nil?
         raise "Gemfile.lock not found, check --file path"
       end
       @pastel = Pastel.new
-      @formatter = FormatterFactory.new.get_formatter(format: @options[:format], options: @options)
+      @formatter = FormatterFactory.new.get_formatter(format: @options[:format])
       @client = Chelsea::client(@options)
       @deps = Chelsea::Deps.new(
         path: Pathname.new(@file),
