@@ -15,7 +15,7 @@ def get_test_dependencies
        'User-Agent'=>'chelsea/0.0.3'
      }).to_return(status: 200, body: OSS_INDEX_RESPONSE, headers: {})
   file = "spec/testdata/Gemfile.lock"
-  deps = Chelsea::Deps.new({path: Pathname.new(file), oss_index_client: Chelsea::client())
+  deps = Chelsea::Deps.new({path: Pathname.new(file), oss_index_client: Chelsea::client()})
   deps.get_dependencies
   deps
 end
