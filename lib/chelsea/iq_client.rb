@@ -4,7 +4,7 @@ require 'json'
 module Chelsea
   class IQClient
 
-    def initialize(public_application_id, server_url, username, auth_token, internal_application_id: '')
+    def initialize(public_application_id: 'testapp', server_url: 'http://localhost:8070', username: 'admin', auth_token: 'admin123', internal_application_id: '')
       @public_application_id, @server_url, @username, @auth_token, @internal_application_id = public_application_id, server_url, username, auth_token, internal_application_id
     end
 

@@ -12,7 +12,7 @@ require_relative 'bom'
 
 module Chelsea
   class Gems
-    def initialize(file:, quiet: false, options: { :format=>'text' })
+    def initialize(file:, quiet: false, options: {})
       @file, @quiet, @options = file, quiet, options
       if not _gemfile_lock_file_exists? or file.nil?
         raise "Gemfile.lock not found, check --file path"

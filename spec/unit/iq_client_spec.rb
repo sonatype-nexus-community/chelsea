@@ -1,9 +1,19 @@
-require 'chelsea/iq_client'
+require 'chelsea'
 require 'spec_helper'
 
 RSpec.describe Chelsea::IQClient do
 
   context 'with defaults' do
+    client = Chelsea::IQClient.new
+    it 'should instantiate the client' do
+      expect(client.class).to eq Chelsea::IQClient
+    end
+    context 'with an generated dependencies sbom' do
+      it 'should be able to submit an sbom' do
+        deps = get_test_dependencies
+        bom = Chelsea::Bom.new(deps)  
+      end
+    end
     # Check that defaults get set
   end
   context 'with cli arguments' do

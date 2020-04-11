@@ -1,60 +1,66 @@
-require 'ox'
 require 'securerandom'
+require 'ox'
 
 module Chelsea
+  # Class to convext dependencies to BOM xml
   class Bom
-    attr_reader :xml
+    attr_accessor :xml
     def initialize(dependencies)
-      @xml = get_xml(dependencies)
+      # Put off request until call
+      @dependencies = dependencies
+      @xml = _get_xml
     end
 
     def to_s
       Ox.dump(@xml).to_s
     end
 
-    private
-
     def random_urn_uuid()
-      random_urn_uuid = "urn:uuid:" + SecureRandom.uuid
+      'urn:uuid:' + SecureRandom.uuid
     end
 
-    def get_xml(dependencies)
+    private
+
+    def _get_xml
       doc = Ox::Document.new
+      doc << _root_xml
+      bom = _bom_xml
+      doc << bom
+      components = Ox::Element.new('components')
+      @dependencies.dependencies.each do |_, (name, version)|
+        components << _component_xml(name, version)
+      end
+      bom << components
+      doc
+    end
 
-      instruct = Ox::Instruct.new(:xml)
-      instruct[:version] = '1.0'
-      instruct[:encoding] = 'UTF-8'
-      instruct[:standalone] = 'yes'
-      doc << instruct
-
+    def _bom_xml
       bom = Ox::Element.new('bom')
       bom[:xmlns] = 'http://cyclonedx.org/schema/bom/1.1'
       bom[:version] = '1'
       bom[:serialNumber] = random_urn_uuid
-      doc << bom
+      bom
+    end
 
-      components = Ox::Element.new('components')
-      dependencies.dependencies.each do |k, (name, version)|
-        component = Ox::Element.new('component')
-        component[:type] = 'library'
+    def _root_xml
+      instruct = Ox::Instruct.new(:xml)
+      instruct[:version] = '1.0'
+      instruct[:encoding] = 'UTF-8'
+      instruct[:standalone] = 'yes'
+      instruct
+    end
 
-        n = Ox::Element.new('name')
-        n << name
-
-        v = Ox::Element.new('version')
-        v << version.version
-
-        purl = Ox::Element.new('purl')
-        purl << dependencies.class.to_purl(name, version.version)
-
-        component << n
-        component << v
-        component << purl
-
-        components << component
-      end
-      bom << components
-      doc
+    def _component_xml(name, version)
+      component = Ox::Element.new('component')
+      component[:type] = 'library'
+      n = Ox::Element.new('name')
+      n << name
+      v = Ox::Element.new('version')
+      v << version.version
+      purl = Ox::Element.new('purl')
+      purl << @dependencies.class.to_purl(name, version.version)
+      component << n << v << purl
+      component
     end
 
     def self._show_logo
