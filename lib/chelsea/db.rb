@@ -10,7 +10,7 @@ module Chelsea
     # and as well set a TTL of Time.now to be checked later
     def save_values_to_db(values)
       values.each do |val|
-        next unless _get_cached_value_from_db(val['coordinates']).nil?
+        next unless get_cached_value_from_db(val['coordinates']).nil?
 
         new_val = val.dup
         new_val['ttl'] = Time.now
@@ -29,29 +29,11 @@ module Chelsea
     # Checks pstore to see if a coordinate exists, and if it does also
     # checks to see if it's ttl has expired. Returns nil unless a record
     # is valid in the cache (ttl has not expired) and found
-    def _get_cached_value_from_db(coordinate)
-      record = @store.transaction { @store[coordinate] }
+    def get_cached_value_from_db(val)
+      record = @store.transaction { @store[val] }
       return if record.nil?
 
       (Time.now - record['ttl']) / 3600 > 12 ? nil : record
-    end
-
-    # Goes through the list of @coordinates and checks pstore for them, if it finds a valid coord
-    # it will add it to the server response. If it does not, it will append the coord to a new hash
-    # and eventually set @coordinates to the new hash, so we query OSS Index on only coords not in cache
-    def check_db_for_cached_values(coordinates)
-      new_coords = {}
-      new_coords['coordinates'] = []
-      server_response = []
-      coordinates['coordinates'].each do |coord|
-        record = _get_cached_value_from_db(coord)
-        if !record.nil?
-          server_response << record
-        else
-          new_coords['coordinates'].push(coord)
-        end
-      end
-      [new_coords, server_response]
     end
   end
 end

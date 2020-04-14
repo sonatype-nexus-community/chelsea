@@ -14,18 +14,19 @@ module Chelsea
 
     # Makes REST calls to OSS for vulnerabilities 128 coordinates at a time
     # Checks cache and stores results in cache
+
     def get_vulns(coordinates)
-      remaining_coordinates, server_response = @db.check_db_for_cached_values(coordinates)
+      remaining_coordinates, cached_server_response = _cache(coordinates)
       unless remaining_coordinates['coordinates'].count.positive?
-        return server_response
+        return cached_server_response
       end
 
       remaining_coordinates['coordinates'].each_slice(128).to_a.each do |coords|
         res_json = call_oss_index({ 'coordinates' => coords })
-        server_response = server_response.concat(res_json)
+        cached_server_response = cached_server_response.concat(res_json)
         @db.save_values_to_db(res_json)
       end
-      server_response
+      cached_server_response
     end
 
     def call_oss_index(coords)
@@ -34,6 +35,20 @@ module Chelsea
     end
 
     private
+
+    def _cache(coordinates)
+      new_coords = { 'coordinates' => [] }
+      cached_server_response = []
+      coordinates['coordinates'].each do |coord|
+        record = @db.get_cached_value_from_db(coord)
+        if !record.nil?
+          cached_server_response << record
+        else
+          new_coords['coordinates'].push(coord)
+        end
+      end
+      [new_coords, cached_server_response]
+    end
 
     def _headers
       { :content_type => :json, :accept => :json, 'User-Agent' => _user_agent }
