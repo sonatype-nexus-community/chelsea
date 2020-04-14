@@ -16,7 +16,7 @@ module Chelsea
         oss_index_user_token: options[:token]
       )
     else
-      Chelsea::OSSIndex.new(get_oss_index_config)
+      Chelsea::OSSIndex.new(oss_index_config)
     end
   end
 
@@ -25,7 +25,7 @@ module Chelsea
     @@oss_index_client
   end
 
-  def self.get_oss_index_config
+  def self.oss_index_config
     if !File.exist? File.join(@@oss_index_config_location, @@oss_index_config_filename)
       { oss_index_user_name: '', oss_index_user_token: '' }
     else
@@ -49,7 +49,7 @@ module Chelsea
     end
   end
 
-  def self.get_oss_index_config_from_command_line
+  def self.read_oss_index_config_from_command_line
     config = {}
 
     puts 'What username do you want to authenticate as (ex: your email address)? '

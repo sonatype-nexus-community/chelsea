@@ -85,11 +85,11 @@ module Chelsea
 
     def _load_config
       config = Chelsea::Config.new
-      config.get_oss_index_config
+      config.oss_index_config
     end
 
     def _set_config
-      Chelsea.get_oss_index_config_from_command_line
+      Chelsea.oss_index_config_from_command_line
     end
   end
 end
