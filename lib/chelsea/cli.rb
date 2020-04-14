@@ -21,10 +21,9 @@ module Chelsea
     def process!
       if @opts.config?
         _set_config # move to init
-        exit
-      end
-      if @opts.file? # don't process unless there was a file
+      elsif @opts.file? # don't process unless there was a file
         _process_file
+        _submit_sbom if @opts.sbom?
       elsif @opts.help? # quit on opts.help earlier
         puts _cli_flags # this doesn't exist
       end
@@ -36,6 +35,17 @@ module Chelsea
 
     private
 
+    def _submit_sbom
+      iq = Chelsea::IQClient.new(
+        @opts[:application],
+        @opts[:server],
+        @opts[:iquser],
+        @opts[:iqpass]
+      )
+      bom = Chelsea::Bom.new(@gems.deps)
+      iq.submit_sbom(bom)
+    end
+
     def _process_file
       gems = Chelsea::Gems.new(
         file: @opts[:file],
@@ -43,16 +53,6 @@ module Chelsea
         options: @opts
       )
       gems.execute # should be more like collect
-      return unless @opts.sbom?
-
-      @iq = Chelsea::IQClient.new(
-        @opts[:application],
-        @opts[:server],
-        @opts[:iquser],
-        @opts[:iqpass]
-      )
-      bom = Chelsea::Bom.new(@gems.deps)
-      @iq.submit_sbom(bom)
     end
 
     def _flags_error
