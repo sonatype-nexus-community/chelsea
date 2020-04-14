@@ -13,6 +13,7 @@ require_relative 'bom'
 
 module Chelsea
   class Gems
+    attr_accessor :deps
     def initialize(file:, quiet: false, options: {})
       @quiet = quiet
       unless File.file?(file) || file.nil?
