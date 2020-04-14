@@ -38,7 +38,7 @@ module Chelsea
         user: @username,
         password: @auth_token
       )
-      res = JSON.parse(resource.get(headers))
+      res = JSON.parse(resource.get(_headers))
       res['applications'][0]['id']
     end
 
