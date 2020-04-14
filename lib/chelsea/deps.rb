@@ -38,9 +38,10 @@ module Chelsea
       reverse = Gem::Commands::DependencyCommand.new
       reverse.options[:reverse_dependencies] = true
       # We want to filter the reverses dependencies by specs in lockfile
-      spec_names = @lockfile.specs.map { |i| i.to_s.split }.map { |n, v| "#{n}-#{v.delete('()')}" }
+      spec_names = @lockfile.specs.map { |i| i.to_s.split }.map { |n, _| "#{n}" }
       reverse.reverse_dependencies(@lockfile.specs).to_h.transform_values do |reverse_dep|
-        reverse_dep.select { |name, dep, req, _| spec_names.include?(name) }
+        # Add filtering if version meets range
+        reverse_dep.select { |name, dep, req, _| spec_names.include?(name.split("-")[0]) }
       end
     end
 
