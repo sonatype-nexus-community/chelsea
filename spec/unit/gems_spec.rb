@@ -10,10 +10,8 @@ RSpec.describe Chelsea::Gems do
     context 'given a valid Gemfile.lock' do
       file = 'spec/testdata/Gemfile.lock'
       it 'can collect dependencies, query, and print results' do
-        output = StringIO.new
         command = Chelsea::Gems.new(file: file)
-        command.execute(output: output)
-        expect(output.string).to eq('')
+        expect { command.execute }.to_not raise_error
       end
     end
   end

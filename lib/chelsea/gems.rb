@@ -27,7 +27,7 @@ module Chelsea
     # Audits depenencies using deps library and prints results
     # using formatter library
 
-    def execute(input: $stdin, output: $stdout)
+    def execute
       server_response, dependencies, reverse_dependencies = audit
       if dependencies.nil?
         _print_err 'No dependencies retrieved. Exiting.'
@@ -115,7 +115,7 @@ module Chelsea
     def _spin_msg(msg)
       format = "[#{@pastel.green(':spinner')}] " + @pastel.white(msg)
       spinner = TTY::Spinner.new(format, success_mark: @pastel.green('+'), hide_cursor: true)
-      spinner.auto_spin()
+      spinner.auto_spin
       spinner
     end
 
