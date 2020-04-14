@@ -26,13 +26,13 @@ RSpec.describe Chelsea::Deps do
   end
   context 'given an invalid path' do
     file = 'invalid/path'
-    # it 'raises a RuntimeError with a message indicating invalid file path' do
-    #   expect{ process_deps_from_gemfile(file) }
-    #     .to raise_error(
-    #       RuntimeError,
-    #       'Gemfile.lock not parseable, please check file or that it\'s path is valid'
-    #     )
-    # end
+    it 'raises a RuntimeError with a message indicating invalid file path' do
+      expect{ process_deps_from_gemfile(file) }
+        .to raise_error(
+          Errno::ENOENT,
+          'No such file or directory @ rb_sysopen - invalid/path'
+        )
+    end
   end
 
   it 'can turn a name and version into a valid purl' do
