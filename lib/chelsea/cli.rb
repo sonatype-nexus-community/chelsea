@@ -16,23 +16,23 @@ module Chelsea
       @opts = opts
       @pastel = Pastel.new
       _validate_arguments
-      _show_logo
+      _show_logo # Move to formatter
     end
 
     def process!
       if @opts.config?
-        _set_config()
+        _set_config # move to init
       end
-      if @opts.file?
+      if @opts.file? # don't process unless there was a file
         @gems = Chelsea::Gems.new(file: @opts[:file], quiet: @opts[:quiet], options: @opts)
-        @gems.execute
+        @gems.execute # should be more like collect
         if @opts.sbom?
           @iq = Chelsea::IQClient.new(@opts[:application], @opts[:server], @opts[:iquser], @opts[:iqpass])
-          bom = @gems.generate_sbom
+          bom = Chelsea::Bom.new(@gems.deps)
           @iq.submit_sbom(bom)
         end
-      elsif @opts.help?
-        puts _cli_flags
+      elsif @opts.help? # quit on opts.help earlier
+        puts _cli_flags # this doesn't exist
       end
     end
 
@@ -67,22 +67,22 @@ module Chelsea
 
     def _flags
       # Seems wrong, should all be handled by bin
-      [:file, :help, :config]
+      %i[file help config]
     end
 
-    def _show_logo()
+    def _show_logo
       font = TTY::Font.new(:doom)
-      puts @pastel.green(font.write("Chelsea"))
-      puts @pastel.green("Version: " + CLI::version)
+      puts @pastel.green(font.write('Chelsea'))
+      puts @pastel.green('Version: ' + CLI.version)
     end
 
-    def _load_config()
+    def _load_config
       config = Chelsea::Config.new
-      oss_index_config = config.get_oss_index_config()
+      config.get_oss_index_config()
     end
 
-    def _set_config()
-      config = Chelsea::get_oss_index_config_from_command_line
+    def _set_config
+      Chelsea.get_oss_index_config_from_command_line
     end
   end
 end

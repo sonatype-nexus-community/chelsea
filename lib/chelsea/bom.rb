@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'securerandom'
 require 'ox'
 
@@ -6,7 +8,6 @@ module Chelsea
   class Bom
     attr_accessor :xml
     def initialize(dependencies)
-      # Put off request until call
       @dependencies = dependencies
       @xml = _get_xml
     end
@@ -15,7 +16,7 @@ module Chelsea
       Ox.dump(@xml).to_s
     end
 
-    def random_urn_uuid()
+    def random_urn_uuid
       'urn:uuid:' + SecureRandom.uuid
     end
 
@@ -63,32 +64,32 @@ module Chelsea
       component
     end
 
-    def self._show_logo
+    def _show_logo
       logo = %Q(
-                          -o/                             
-                      -+hNmNN-                            
-    .:+osyhddddyso/-``ody+-  .NN.                           
-  /mMMdhssooooooosyhdmhs/.    /Mm-                          
-  oMs`                `.-:.    oMNs.                     .  
-  `N.           `.              .+hNh+`                 +N. 
-   yo -m`  -d` `dm.                `:smd+.            `yMM. 
-   -m`mM/ -mN/`ddMs                    -sNh/         .dy-M- 
-    dmdsd/m--dmo Nh   `o:      /o`       `+md-      :m/  N: 
-    /y `Nd`  do  my   .dMy.  .hMy`         `oN+    om-   m: 
-        +    .  `No     +NN+oNm:             .d+ `hd`    d: 
-                `Mo      .dMMy     SBOM       `d+ms`     d: 
-        `.      -M+     `yMhmNo`    BABY      `hN/-      d/ 
-    /:  yd  /o  -M/    /NN/  +Nm:            +Nd.-mo     m+ 
-    dm`/mmo-NMo /M-  .dMs`    `o/          /mN+   `hh.   N+ 
-   -MMdN//NNhhMysm    /-                `+mMs`      +mo  N+ 
-  sN/Ny  hd``yMMh                    :yNNs.         `sm+M+ 
-  dd.``  ``   /d-   oy.          `/yNNh/`             .yM+ 
-   `yNy/`            oMm`     `/sdMdo-                   .. 
-     `/ymmys+///++shN+/Nm.   /NMNo.                         
-         `-/+ooo+/:.`  :NN- /MMo`                           
-                        -NNoNM+                             
-                         :MMM+                              
-                          :d/                               
+                          -o/
+                      -+hNmNN-
+    .:+osyhddddyso/-``ody+-  .NN.
+  /mMMdhssooooooosyhdmhs/.    /Mm-
+  oMs`                `.-:.    oMNs.                     .
+  `N.           `.              .+hNh+`                 +N.
+   yo -m`  -d` `dm.                `:smd+.            `yMM.
+   -m`mM/ -mN/`ddMs                    -sNh/         .dy-M-
+    dmdsd/m--dmo Nh   `o:      /o`       `+md-      :m/  N:
+    /y `Nd`  do  my   .dMy.  .hMy`         `oN+    om-   m:
+        +    .  `No     +NN+oNm:             .d+ `hd`    d:
+                `Mo      .dMMy     SBOM       `d+ms`     d:
+        `.      -M+     `yMhmNo`    BABY      `hN/-      d/
+    /:  yd  /o  -M/    /NN/  +Nm:            +Nd.-mo     m+
+    dm`/mmo-NMo /M-  .dMs`    `o/          /mN+   `hh.   N+
+   -MMdN//NNhhMysm    /-                `+mMs`      +mo  N+
+  sN/Ny  hd``yMMh                    :yNNs.         `sm+M+
+  dd.``  ``   /d-   oy.          `/yNNh/`             .yM+
+   `yNy/`            oMm`     `/sdMdo-                   ..
+     `/ymmys+///++shN+/Nm.   /NMNo.
+         `-/+ooo+/:.`  :NN- /MMo`
+                        -NNoNM+
+                         :MMM+
+                          :d/
   )
       puts logo
     end

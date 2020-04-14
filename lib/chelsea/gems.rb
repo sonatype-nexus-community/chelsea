@@ -13,40 +13,34 @@ require_relative 'bom'
 module Chelsea
   class Gems
     def initialize(file:, quiet: false, options: {})
-      @file, @quiet, @options = file, quiet, options
-      if not _gemfile_lock_file_exists? or file.nil?
-        raise "Gemfile.lock not found, check --file path"
+      @quiet = quiet
+      unless File.file? file || file.nil?
+        raise 'Gemfile.lock not found, check --file path'
       end
+
       @pastel = Pastel.new
-      @formatter = FormatterFactory.new.get_formatter(format: @options[:format])
-      @client = Chelsea::client(@options)
+      @formatter = FormatterFactory.new.get_formatter(format: options[:format])
+      @client = Chelsea.client(options)
       @deps = Chelsea::Deps.new(
-        path: Pathname.new(@file),
+        path: Pathname.new(file),
         oss_index_client: @client
       )
-    end
-
-    def generate_sbom
-      Chelsea::Bom.new(@deps)
     end
 
     # Audits depenencies using deps library and prints results
     # using formatter library
 
     def execute(input: $stdin, output: $stdout)
-      audit
+      server_response = audit
       if @deps.nil?
-        _print_err "No dependencies retrieved. Exiting."
+        _print_err 'No dependencies retrieved. Exiting.'
         return
       end
-      if !@deps.server_response.count
-        _print_err "No vulnerability data retrieved from server. Exiting."
+      if server_response.nil?
+        _print_err 'No vulnerability data retrieved from server. Exiting.'
         return
       end
-      # if !@options[:whitelist]
-
-      # end
-      @formatter.do_print(@formatter.get_results(@deps))
+      @formatter.do_print(@formatter.get_results(server_response, @deps.reverse_dependencies))
     end
 
     # Runs through auditing algorithm, raising exceptions
@@ -86,7 +80,7 @@ module Chelsea
       end
 
       begin
-        @deps.get_vulns
+        server_response = @client.get_vulns(@deps.coordinates)
         unless @quiet
           spinner.success("...done.")
         end
@@ -100,7 +94,7 @@ module Chelsea
           spinner.stop("...request failed.")
         end
         _print_err "Error getting data from OSS Index server:#{e.response}."
-      rescue RestClient::ResourceNotfound => e
+      rescue RestClient::ResourceNotFound => e
         unless @quiet
           spinner.stop("...request failed.")
         end
@@ -116,9 +110,11 @@ module Chelsea
         end
         _print_err "UNKNOWN Error getting data from OSS Index server."
       end
+      server_response
     end
 
     protected
+
     def _spin_msg(msg)
       format = "[#{@pastel.green(':spinner')}] " + @pastel.white(msg)
       spinner = TTY::Spinner.new(format, success_mark: @pastel.green('+'), hide_cursor: true)
