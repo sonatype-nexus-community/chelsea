@@ -11,7 +11,7 @@ RSpec.describe Chelsea::IQClient do
     context 'with an generated dependencies sbom' do
       it 'should be able to submit an sbom' do
         deps = get_test_dependencies
-        bom = Chelsea::Bom.new(deps)  
+        bom = Chelsea::Bom.new(deps)
       end
     end
     # Check that defaults get set

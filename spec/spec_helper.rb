@@ -41,7 +41,7 @@ def get_test_dependencies
   deps.dependencies
 end
 
-def get_coordinates()
+def get_coordinates
   coordinates = Hash.new
   coordinates["coordinates"] = Array.new
   coordinates["coordinates"] << "pkg:gem/chelsea@0.0.3"
