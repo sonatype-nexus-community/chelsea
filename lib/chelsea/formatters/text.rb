@@ -30,7 +30,7 @@ module Chelsea
           response += @pastel.red("[#{i}/#{count}] - #{package} ") + @pastel.red.bold("Vulnerable.\n")
           response += _get_reverse_deps(reverse_deps, name)
           r['vulnerabilities'].each do |k, v|
-            response += @pastel.red.bold("    #{k}:#{v}\n")
+            response += _format_vuln(v)
           end
         else
           if !@quiet
@@ -47,17 +47,18 @@ module Chelsea
       puts results
     end
 
-    # Right now this looks at all Ruby deps, so it might find some in your Library, but that don't belong to your project
+    def _format_vuln(vuln)
+      @pastel.red.bold("\n#{vuln}\n")
+    end
+
     def _get_reverse_deps(coord, name)
-      response = String.new
-      coord.each do |dep|
+      coord.each_with_object(String.new) do |dep, s|
         dep.each do |gran|
           if gran.class == String && !gran.include?(name)
-            response += "\tRequired by: #{gran}\n"
+            s << "\tRequired by: #{gran}\n"
           end
         end
       end
-      response
     end
   end
 end

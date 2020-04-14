@@ -18,9 +18,10 @@ module Chelsea
       unless File.file?(file) || file.nil?
         raise 'Gemfile.lock not found, check --file path'
       end
+      _silence_stderr if @quiet
 
       @pastel = Pastel.new
-      @formatter = FormatterFactory.new.get_formatter(format: options[:format])
+      @formatter = FormatterFactory.new.get_formatter(format: options[:format], quiet: @quiet)
       @client = Chelsea.client(options)
       @deps = Chelsea::Deps.new(path: Pathname.new(file))
     end
@@ -48,71 +49,50 @@ module Chelsea
       # This spinner management is out of control
       # we should wrap a block with start and stop messages,
       # or use a stack to ensure all spinners stop.
-      unless @quiet
-        spinner = _spin_msg 'Parsing dependencies'
-      end
+      spinner = _spin_msg 'Parsing dependencies'
 
       begin
         dependencies = @deps.dependencies
-        unless @quiet
-          spinner.success('...done.')
-        end
+        spinner.success('...done.')
       rescue StandardError => e
-        unless @quiet
-          spinner.stop
-        end
+        spinner.stop
         _print_err "Parsing dependency line #{gem} failed."
       end
 
       reverse_dependencies = @deps.reverse_dependencies
 
-      unless @quiet
-        spinner = _spin_msg 'Parsing Versions'
-      end
+      spinner = _spin_msg 'Parsing Versions'
       coordinates = @deps.coordinates
-      unless @quiet
-        spinner.success('...done.')
-      end
-
-      unless @quiet
-        spinner = _spin_msg 'Making request to OSS Index server'
-      end
+      spinner.success('...done.')
+      spinner = _spin_msg 'Making request to OSS Index server'
 
       begin
         server_response = @client.get_vulns(coordinates)
-        unless @quiet
-          spinner.success('...done.')
-        end
+        spinner.success('...done.')
       rescue SocketError => e
-        unless @quiet
-          spinner.stop('...request failed.')
-        end
+        spinner.stop('...request failed.')
         _print_err 'Socket error getting data from OSS Index server.'
       rescue RestClient::RequestFailed => e
-        unless @quiet
-          spinner.stop('...request failed.')
-        end
+        spinner.stop('...request failed.')
         _print_err "Error getting data from OSS Index server:#{e.response}."
       rescue RestClient::ResourceNotFound => e
-        unless @quiet
-          spinner.stop('...request failed.')
-        end
+        spinner.stop('...request failed.')
         _print_err 'Error getting data from OSS Index server. Resource not found.'
       rescue Errno::ECONNREFUSED => e
-        unless @quiet
-          spinner.stop('...request failed.')
-        end
+        spinner.stop('...request failed.')
         _print_err 'Error getting data from OSS Index server. Connection refused.'
       rescue StandardError => e
-        unless @quiet
-          spinner.stop('...request failed.')
-        end
+        spinner.stop('...request failed.')
         _print_err 'UNKNOWN Error getting data from OSS Index server.'
       end
       [server_response, dependencies, reverse_dependencies]
     end
 
     protected
+
+    def _silence_stderr
+      $stderr.reopen('/dev/null', 'w')
+    end
 
     def _spin_msg(msg)
       format = "[#{@pastel.green(':spinner')}] " + @pastel.white(msg)

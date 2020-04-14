@@ -4,6 +4,7 @@ require 'rubygems'
 require 'rubygems/commands/dependency_command'
 require 'json'
 require 'rest-client'
+
 require_relative 'dependency_exception'
 require_relative 'oss_index'
 
@@ -36,7 +37,11 @@ module Chelsea
     def reverse_dependencies
       reverse = Gem::Commands::DependencyCommand.new
       reverse.options[:reverse_dependencies] = true
-      reverse.reverse_dependencies(@lockfile.specs).to_h
+      # We want to filter the reverses dependencies by specs in lockfile
+      spec_names = @lockfile.specs.map { |i| i.to_s.split }.map { |n, v| "#{n}-#{v.delete('()')}" }
+      reverse.reverse_dependencies(@lockfile.specs).to_h.transform_values do |reverse_dep|
+        reverse_dep.select { |name, dep, req, _| spec_names.include?(name) }
+      end
     end
 
     # Iterates over all dependencies and stores them
