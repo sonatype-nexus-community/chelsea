@@ -1,5 +1,4 @@
 require 'pastel'
-require 'pry'
 require_relative 'formatter'
 
 module Chelsea
