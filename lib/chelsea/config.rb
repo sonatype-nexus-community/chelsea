@@ -31,7 +31,7 @@ module Chelsea
     else
       conf_hash = YAML.safe_load(
         File.read(
-          File.join(@@oss_index_config_location, @@oss_index_config_filename)
+          File.join(@oss_index_config_location, @oss_index_config_filename)
         )
       )
       {
