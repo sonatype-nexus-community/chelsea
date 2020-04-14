@@ -41,7 +41,11 @@ module Chelsea
 
     def _resource
       if !@oss_index_user_name.empty? && !@oss_index_user_token.empty?
-        RestClient::Resource.new _api_url, user: @oss_index_user_name, password: @oss_index_user_token
+        RestClient::Resource.new(
+          _api_url,
+          user: @oss_index_user_name,
+          password: @oss_index_user_token
+        )
       else
         RestClient::Resource.new _api_url
       end
