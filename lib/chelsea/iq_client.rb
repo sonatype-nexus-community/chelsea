@@ -21,7 +21,17 @@ module Chelsea
         user: @options[:username],
         password: @options[:auth_token]
       )
-      resource.post sbom.to_s, _headers.merge(content_type: 'application/xml')
+      res = resource.post sbom.to_s, _headers.merge(content_type: 'application/xml')
+      res.code == 202 ? status_url(res) : nil
+    end
+
+    def poll_iq_server(status_url)
+      resource = RestClient::Resource.new(
+        "#{@options[:server_url]}/#{status_url}",
+        user: @options[:username],
+        password: @options[:auth_token]
+      )
+      resource.get _headers
     end
 
     def status_url(res)
