@@ -8,7 +8,7 @@ module Chelsea
       @pastel = Pastel.new
     end
 
-    def get_results(dependencies)
+    def get_results(server_response, reverse_dependencies)
       response = String.new
       if !@quiet
         response += "\n"\
@@ -17,25 +17,25 @@ module Chelsea
       end
 
       i = 0
-      count = dependencies.server_response.count()
-      dependencies.server_response.each do |r|
+      count = server_response.count()
+      server_response.each do |r|
         i += 1
-        package = r["coordinates"]
-        vulnerable = r["vulnerabilities"].length() > 0
-        coord = r["coordinates"].sub("pkg:gem/", "")
+        package = r['coordinates']
+        vulnerable = r['vulnerabilities'].length.positive?
+        coord = r['coordinates'].sub('pkg:gem/', '')
         name = coord.split('@')[0]
         version = coord.split('@')[1]
-        reverse_deps = dependencies.reverse_dependencies["#{name}-#{version}"]
+        reverse_deps = reverse_dependencies["#{name}-#{version}"]
         if vulnerable
-          response += @pastel.red("[#{i}/#{count}] - #{package} ") +  @pastel.red.bold("Vulnerable.\n")
-          response += _get_reverse_deps(reverse_deps, name)
-          r["vulnerabilities"].each do |k, v|
-            response += @pastel.red.bold("    #{k}:#{v}\n")
+          response += @pastel.red("[#{i}/#{count}] - #{package} ") + @pastel.red.bold("Vulnerable.\n")
+          response += _get_reverse_deps(reverse_deps, name) if reverse_deps
+          r['vulnerabilities'].each do |k, v|
+            response += _format_vuln(v)
           end
         else
           if !@quiet
             response += @pastel.white("[#{i}/#{count}] - #{package} ") + @pastel.green.bold("No vulnerabilities found!\n")
-            response += _get_reverse_deps(reverse_deps, name)
+            response += _get_reverse_deps(reverse_deps, name) if reverse_deps
           end
         end
       end
@@ -47,17 +47,18 @@ module Chelsea
       puts results
     end
 
-    # Right now this looks at all Ruby deps, so it might find some in your Library, but that don't belong to your project
-    def _get_reverse_deps(coord, name)
-      response = String.new
-      coord.each do |dep|
+    def _format_vuln(vuln)
+      @pastel.red.bold("\n#{vuln}\n")
+    end
+
+    def _get_reverse_deps(coords, name)
+      coords.each_with_object(String.new) do |dep, s|
         dep.each do |gran|
           if gran.class == String && !gran.include?(name)
-            response += "\tRequired by: #{gran}\n"
+            s << "\tRequired by: #{gran}\n"
           end
         end
       end
-      response
     end
   end
 end

@@ -4,50 +4,66 @@ require 'tty-font'
 
 require_relative 'version'
 require_relative 'gems'
+require_relative 'iq_client'
 require_relative 'config'
 
 module Chelsea
   ##
   # This class provides an interface to the oss index, gems and deps
   class CLI
-
     def initialize(opts)
       @opts = opts
       @pastel = Pastel.new
       _validate_arguments
-      _show_logo
+      _show_logo # Move to formatter
     end
 
     def process!
       if @opts.config?
-        _try_set_config()
-      end
-      if @opts.file?
-        @gems = Chelsea::Gems.new(file: @opts[:file], quiet: false, options: @opts)
-        @gems.execute
+        _set_config # move to init
+      elsif @opts.file? # don't process unless there was a file
+        _process_file
+        _submit_sbom if @opts.sbom?
+      elsif @opts.help? # quit on opts.help earlier
+        puts _cli_flags # this doesn't exist
       end
     end
 
-    # this is how you do static methods in ruby, because in a test we want to 
-    # check for version without opts, and heck, we don't even want a dang object!
     def self.version
       Chelsea::VERSION
     end
 
-  protected
+    private
+
+    def _submit_sbom
+      iq = Chelsea::IQClient.new(
+        @opts[:application],
+        @opts[:server],
+        @opts[:iquser],
+        @opts[:iqpass]
+      )
+      bom = Chelsea::Bom.new(@gems.deps)
+      iq.submit_sbom(bom)
+    end
+
+    def _process_file
+      gems = Chelsea::Gems.new(
+        file: @opts[:file],
+        quiet: @opts[:quiet],
+        options: @opts
+      )
+      gems.execute # should be more like collect
+    end
 
     def _flags_error
-      # should be custom exception! 
-      switches = _flags.collect {|f| "--#{f}"}
-
+      switches = _flags.collect { |f| "--#{f}" }
       abort "please set one of #{switches}"
     end
 
     def _validate_arguments
-      if !_flags_set? && !@opts.file?
-        ## require at least one argument
-        _flags_error
-      end
+      return unless !_flags_set? && !@opts.file?
+
+      _flags_error
     end
 
     def _flags_set?
@@ -58,23 +74,22 @@ module Chelsea
 
     def _flags
       # Seems wrong, should all be handled by bin
-      [:file, :help, :config]
+      %i[file help config]
     end
 
-    def _show_logo()
+    def _show_logo
       font = TTY::Font.new(:doom)
-      puts @pastel.green(font.write("Chelsea"))
-      puts @pastel.green("Version: " + CLI::version)
+      puts @pastel.green(font.write('Chelsea'))
+      puts @pastel.green('Version: ' + CLI.version)
     end
 
-    def _try_load_config()
+    def _load_config
       config = Chelsea::Config.new
-      oss_index_config = config.get_oss_index_config()
+      config.oss_index_config
     end
 
-    def _try_set_config()
-      config = Chelsea::Config.new
-      config.get_oss_index_config_from_command_line()
+    def _set_config
+      Chelsea.oss_index_config_from_command_line
     end
   end
 end

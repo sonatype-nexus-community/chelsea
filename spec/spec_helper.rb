@@ -2,6 +2,45 @@ require 'webmock/rspec'
 
 WebMock.disable_net_connect!(allow_localhost: true)
 
+def process_deps_from_gemfile(file)
+  deps = Chelsea::Deps.new({ path: Pathname.new(file) })
+  dependencies = deps.dependencies
+  reverse_dependencies = deps.reverse_dependencies
+  coordinates = deps.coordinates
+  [dependencies, reverse_dependencies, coordinates]
+end
+
+def stub_oss_response
+  stub_request(:post, "https://ossindex.sonatype.org/api/v3/component-report").
+  with(
+     body: "{\"coordinates\":[\"pkg:gem/addressable@2.7.0\",\"pkg:gem/crack@0.4.3\",\"pkg:gem/hashdiff@1.0.1\",\"pkg:gem/public_suffix@4.0.3\",\"pkg:gem/safe_yaml@1.0.5\",\"pkg:gem/webmock@3.8.3\"]}",
+     headers: {
+     'Accept'=>'application/json',
+     'Accept-Encoding'=>'gzip, deflate',
+     'Content-Length'=>'172',
+     'Content-Type'=>'application/json',
+     'Host'=>'ossindex.sonatype.org',
+     'User-Agent'=>'chelsea/0.0.3'
+   }).to_return(status: 200, body: OSS_INDEX_RESPONSE, headers: {})
+end
+
+def get_test_dependencies
+  stub_request(:post, "https://ossindex.sonatype.org/api/v3/component-report").
+    with(
+       body: "{\"coordinates\":[\"pkg:gem/addressable@2.7.0\",\"pkg:gem/crack@0.4.3\",\"pkg:gem/hashdiff@1.0.1\",\"pkg:gem/public_suffix@4.0.3\",\"pkg:gem/safe_yaml@1.0.5\",\"pkg:gem/webmock@3.8.3\"]}",
+       headers: {
+       'Accept'=>'application/json',
+       'Accept-Encoding'=>'gzip, deflate',
+       'Content-Length'=>'172',
+       'Content-Type'=>'application/json',
+       'Host'=>'ossindex.sonatype.org',
+       'User-Agent'=>'chelsea/0.0.3'
+     }).to_return(status: 200, body: OSS_INDEX_RESPONSE, headers: {})
+  file = "spec/testdata/Gemfile.lock"
+  deps = Chelsea::Deps.new({ path: Pathname.new(file) })
+  deps.dependencies
+end
+
 def get_coordinates()
   coordinates = Hash.new
   coordinates["coordinates"] = Array.new
