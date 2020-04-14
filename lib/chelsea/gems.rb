@@ -15,7 +15,7 @@ module Chelsea
   class Gems
     def initialize(file:, quiet: false, options: {})
       @quiet = quiet
-      unless File.file? file || file.nil?
+      unless File.file?(file) || file.nil?
         raise 'Gemfile.lock not found, check --file path'
       end
 
@@ -38,7 +38,8 @@ module Chelsea
         _print_err 'No vulnerability data retrieved from server. Exiting.'
         return
       end
-      @formatter.do_print(@formatter.get_results(server_response, reverse_dependencies))
+      results = @formatter.get_results(server_response, reverse_dependencies)
+      @formatter.do_print(results)
     end
 
     # Runs through auditing algorithm, raising exceptions
@@ -115,7 +116,11 @@ module Chelsea
 
     def _spin_msg(msg)
       format = "[#{@pastel.green(':spinner')}] " + @pastel.white(msg)
-      spinner = TTY::Spinner.new(format, success_mark: @pastel.green('+'), hide_cursor: true)
+      spinner = TTY::Spinner.new(
+        format,
+        success_mark: @pastel.green('+'),
+        hide_cursor: true
+      )
       spinner.auto_spin
       spinner
     end
