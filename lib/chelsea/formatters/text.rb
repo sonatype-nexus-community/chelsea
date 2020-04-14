@@ -1,4 +1,5 @@
 require 'pastel'
+require 'pry'
 require_relative 'formatter'
 
 module Chelsea
@@ -28,14 +29,14 @@ module Chelsea
         reverse_deps = reverse_dependencies["#{name}-#{version}"]
         if vulnerable
           response += @pastel.red("[#{i}/#{count}] - #{package} ") + @pastel.red.bold("Vulnerable.\n")
-          response += _get_reverse_deps(reverse_deps, name)
+          response += _get_reverse_deps(reverse_deps, name) if reverse_deps
           r['vulnerabilities'].each do |k, v|
             response += _format_vuln(v)
           end
         else
           if !@quiet
             response += @pastel.white("[#{i}/#{count}] - #{package} ") + @pastel.green.bold("No vulnerabilities found!\n")
-            response += _get_reverse_deps(reverse_deps, name)
+            response += _get_reverse_deps(reverse_deps, name) if reverse_deps
           end
         end
       end
@@ -51,8 +52,8 @@ module Chelsea
       @pastel.red.bold("\n#{vuln}\n")
     end
 
-    def _get_reverse_deps(coord, name)
-      coord.each_with_object(String.new) do |dep, s|
+    def _get_reverse_deps(coords, name)
+      coords.each_with_object(String.new) do |dep, s|
         dep.each do |gran|
           if gran.class == String && !gran.include?(name)
             s << "\tRequired by: #{gran}\n"
