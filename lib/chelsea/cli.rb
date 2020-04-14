@@ -22,8 +22,8 @@ module Chelsea
       if @opts.config?
         _set_config # move to init
       elsif @opts.file? # don't process unless there was a file
-        _process_file
-        _submit_sbom if @opts.sbom?
+        gems = _process_file
+        _submit_sbom(gems) if @opts.sbom?
       elsif @opts.help? # quit on opts.help earlier
         puts _cli_flags # this doesn't exist
       end
@@ -35,14 +35,16 @@ module Chelsea
 
     private
 
-    def _submit_sbom
+    def _submit_sbom(gems)
       iq = Chelsea::IQClient.new(
-        @opts[:application],
-        @opts[:server],
-        @opts[:iquser],
-        @opts[:iqpass]
+        options: {
+          public_application_id: @opts[:application],
+          server_url: @opts[:server],
+          username: @opts[:iquser],
+          auth_token: @opts[:iqpass]
+        }
       )
-      bom = Chelsea::Bom.new(@gems.deps)
+      bom = Chelsea::Bom.new(gems.deps.dependencies)
       iq.submit_sbom(bom)
     end
 
@@ -53,6 +55,7 @@ module Chelsea
         options: @opts
       )
       gems.execute # should be more like collect
+      gems
     end
 
     def _flags_error
@@ -89,7 +92,7 @@ module Chelsea
     end
 
     def _set_config
-      Chelsea.oss_index_config_from_command_line
+      Chelsea.read_oss_index_config_from_command_line
     end
   end
 end
