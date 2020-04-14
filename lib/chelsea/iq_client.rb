@@ -21,7 +21,7 @@ module Chelsea
         user: @options[:username],
         password: @options[:auth_token]
       )
-      resource.post sbom.to_s, {'User-Agent' => _user_agent, :content_type => 'application/xml'}
+      resource.post sbom.to_s, _headers.merge(content_type: 'application/xml')
     end
 
     def status_url(res)
