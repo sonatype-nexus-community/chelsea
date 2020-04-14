@@ -5,6 +5,10 @@ module Chelsea
   @@oss_index_config_location = File.join(Dir.home.to_s, '.ossindex')
   @@oss_index_config_filename = '.oss-index-config'
 
+  def self.to_purl(name, version)
+    "pkg:gem/#{name}@#{version}"
+  end
+
   def self.config(options = {})
     if !options[:user].nil? && !options[:token].nil?
       Chelsea::OSSIndex.new(

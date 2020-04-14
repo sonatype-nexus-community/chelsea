@@ -28,7 +28,7 @@ module Chelsea
       bom = _bom_xml
       doc << bom
       components = Ox::Element.new('components')
-      @dependencies.dependencies.each do |_, (name, version)|
+      @dependencies.each do |_, (name, version)|
         components << _component_xml(name, version)
       end
       bom << components
@@ -59,7 +59,7 @@ module Chelsea
       v = Ox::Element.new('version')
       v << version.version
       purl = Ox::Element.new('purl')
-      purl << @dependencies.class.to_purl(name, version.version)
+      purl << Chelsea.to_purl(name, version.version)
       component << n << v << purl
       component
     end

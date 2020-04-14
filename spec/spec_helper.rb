@@ -3,11 +3,11 @@ require 'webmock/rspec'
 WebMock.disable_net_connect!(allow_localhost: true)
 
 def process_deps_from_gemfile(file)
-  deps = Chelsea::Deps.new({path: Pathname.new(file), oss_index_client: Chelsea::OSSIndex.new()})
-  deps.get_dependencies
-  deps.get_reverse_dependencies
-  deps.get_dependencies_versions_as_coordinates
-  deps
+  deps = Chelsea::Deps.new({ path: Pathname.new(file) })
+  dependencies = deps.dependencies
+  reverse_dependencies = deps.reverse_dependencies
+  coordinates = deps.dependencies_versions_as_coordinates(dependencies)
+  [dependencies, reverse_dependencies, coordinates]
 end
 
 def stub_oss_response
@@ -37,9 +37,8 @@ def get_test_dependencies
        'User-Agent'=>'chelsea/0.0.3'
      }).to_return(status: 200, body: OSS_INDEX_RESPONSE, headers: {})
   file = "spec/testdata/Gemfile.lock"
-  deps = Chelsea::Deps.new({path: Pathname.new(file), oss_index_client: Chelsea::client()})
-  deps.get_dependencies
-  deps
+  deps = Chelsea::Deps.new({ path: Pathname.new(file) })
+  deps.dependencies
 end
 
 def get_coordinates()

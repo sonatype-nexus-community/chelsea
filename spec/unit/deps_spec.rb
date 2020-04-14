@@ -6,15 +6,15 @@ RSpec.describe Chelsea::Deps do
     file = 'spec/testdata/Gemfile.lock'
     it 'can collect dependencies' do
       stub_oss_response
-      deps = process_deps_from_gemfile(file)
-      expect(deps.dependencies.class).to eq(Hash)
-      expect(deps.dependencies.empty?).to eq(false)
+      dependencies, = process_deps_from_gemfile(file)
+      expect(dependencies.class).to eq(Hash)
+      expect(dependencies.empty?).to eq(false)
     end
 
     it 'can generate a valid coordinates object for OSS Index' do
       stub_oss_response
-      deps = process_deps_from_gemfile(file)
-      coordinates = deps.coordinates.to_h
+      dependencies, reverse_dependencies, coordinates = process_deps_from_gemfile(file)
+      coordinates = coordinates.to_h
 
       expect(coordinates.class).to eq(Hash)
       expect(coordinates.empty?).to eq(false)

@@ -21,18 +21,15 @@ module Chelsea
       @pastel = Pastel.new
       @formatter = FormatterFactory.new.get_formatter(format: options[:format])
       @client = Chelsea.client(options)
-      @deps = Chelsea::Deps.new(
-        path: Pathname.new(file),
-        oss_index_client: @client
-      )
+      @deps = Chelsea::Deps.new(path: Pathname.new(file))
     end
 
     # Audits depenencies using deps library and prints results
     # using formatter library
 
     def execute(input: $stdin, output: $stdout)
-      server_response = audit
-      if @deps.nil?
+      server_response, dependencies, reverse_dependencies = audit
+      if dependencies.nil?
         _print_err 'No dependencies retrieved. Exiting.'
         return
       end
@@ -40,7 +37,7 @@ module Chelsea
         _print_err 'No vulnerability data retrieved from server. Exiting.'
         return
       end
-      @formatter.do_print(@formatter.get_results(server_response, @deps.reverse_dependencies))
+      @formatter.do_print(@formatter.get_results(server_response, reverse_dependencies))
     end
 
     # Runs through auditing algorithm, raising exceptions
@@ -54,7 +51,7 @@ module Chelsea
       end
 
       begin
-        @deps.get_dependencies
+        dependencies = @deps.dependencies
         unless @quiet
           spinner.success("...done.")
         end
@@ -65,12 +62,12 @@ module Chelsea
         _print_err "Parsing dependency line #{gem} failed."
       end
 
-      @deps.get_reverse_dependencies
+      reverse_dependencies = @deps.reverse_dependencies
 
       unless @quiet
         spinner = _spin_msg "Parsing Versions"
       end
-      @deps.get_dependencies_versions_as_coordinates
+      coordinates = @deps.dependencies_versions_as_coordinates(dependencies)
       unless @quiet
         spinner.success("...done.")
       end
@@ -80,7 +77,7 @@ module Chelsea
       end
 
       begin
-        server_response = @client.get_vulns(@deps.coordinates)
+        server_response = @client.get_vulns(coordinates)
         unless @quiet
           spinner.success("...done.")
         end
@@ -110,7 +107,7 @@ module Chelsea
         end
         _print_err "UNKNOWN Error getting data from OSS Index server."
       end
-      server_response
+      [server_response, dependencies, reverse_dependencies]
     end
 
     protected
