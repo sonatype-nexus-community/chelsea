@@ -49,13 +49,13 @@ module Chelsea
       # we should wrap a block with start and stop messages,
       # or use a stack to ensure all spinners stop.
       unless @quiet
-        spinner = _spin_msg "Parsing dependencies"
+        spinner = _spin_msg 'Parsing dependencies'
       end
 
       begin
         dependencies = @deps.dependencies
         unless @quiet
-          spinner.success("...done.")
+          spinner.success('...done.')
         end
       rescue StandardError => e
         unless @quiet
@@ -67,47 +67,47 @@ module Chelsea
       reverse_dependencies = @deps.reverse_dependencies
 
       unless @quiet
-        spinner = _spin_msg "Parsing Versions"
+        spinner = _spin_msg 'Parsing Versions'
       end
       coordinates = @deps.coordinates
       unless @quiet
-        spinner.success("...done.")
+        spinner.success('...done.')
       end
 
       unless @quiet
-        spinner = _spin_msg "Making request to OSS Index server"
+        spinner = _spin_msg 'Making request to OSS Index server'
       end
 
       begin
         server_response = @client.get_vulns(coordinates)
         unless @quiet
-          spinner.success("...done.")
+          spinner.success('...done.')
         end
       rescue SocketError => e
         unless @quiet
-          spinner.stop("...request failed.")
+          spinner.stop('...request failed.')
         end
-        _print_err "Socket error getting data from OSS Index server."
+        _print_err 'Socket error getting data from OSS Index server.'
       rescue RestClient::RequestFailed => e
         unless @quiet
-          spinner.stop("...request failed.")
+          spinner.stop('...request failed.')
         end
         _print_err "Error getting data from OSS Index server:#{e.response}."
       rescue RestClient::ResourceNotFound => e
         unless @quiet
-          spinner.stop("...request failed.")
+          spinner.stop('...request failed.')
         end
-        _print_err "Error getting data from OSS Index server. Resource not found."
+        _print_err 'Error getting data from OSS Index server. Resource not found.'
       rescue Errno::ECONNREFUSED => e
         unless @quiet
-          spinner.stop("...request failed.")
+          spinner.stop('...request failed.')
         end
-        _print_err "Error getting data from OSS Index server. Connection refused."
+        _print_err 'Error getting data from OSS Index server. Connection refused.'
       rescue StandardError => e
         unless @quiet
-          spinner.stop("...request failed.")
+          spinner.stop('...request failed.')
         end
-        _print_err "UNKNOWN Error getting data from OSS Index server."
+        _print_err 'UNKNOWN Error getting data from OSS Index server.'
       end
       [server_response, dependencies, reverse_dependencies]
     end
