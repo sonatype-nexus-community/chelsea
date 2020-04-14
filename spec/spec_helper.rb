@@ -6,7 +6,7 @@ def process_deps_from_gemfile(file)
   deps = Chelsea::Deps.new({ path: Pathname.new(file) })
   dependencies = deps.dependencies
   reverse_dependencies = deps.reverse_dependencies
-  coordinates = deps.dependencies_versions_as_coordinates(dependencies)
+  coordinates = deps.coordinates
   [dependencies, reverse_dependencies, coordinates]
 end
 

@@ -5,6 +5,7 @@ require 'bundler'
 require 'bundler/lockfile_parser'
 require 'rubygems'
 require 'rubygems/commands/dependency_command'
+
 require_relative 'version'
 require_relative 'formatters/factory'
 require_relative 'deps'
@@ -67,7 +68,7 @@ module Chelsea
       unless @quiet
         spinner = _spin_msg "Parsing Versions"
       end
-      coordinates = @deps.dependencies_versions_as_coordinates(dependencies)
+      coordinates = @deps.coordinates
       unless @quiet
         spinner.success("...done.")
       end
@@ -125,10 +126,6 @@ module Chelsea
 
     def _print_success(s)
       puts @pastel.green.bold(s)
-    end
-
-    def _gemfile_lock_file_exists?
-      ::File.file? @file
     end
   end
 end

@@ -27,14 +27,14 @@ module Chelsea
         version = coord.split('@')[1]
         reverse_deps = reverse_dependencies["#{name}-#{version}"]
         if vulnerable
-          response += @pastel.red("[#{i}/#{count}] - #{package} ") + @pastel.red.bold('Vulnerable.\n')
+          response += @pastel.red("[#{i}/#{count}] - #{package} ") + @pastel.red.bold("Vulnerable.\n")
           response += _get_reverse_deps(reverse_deps, name)
           r['vulnerabilities'].each do |k, v|
             response += @pastel.red.bold("    #{k}:#{v}\n")
           end
         else
           if !@quiet
-            response += @pastel.white("[#{i}/#{count}] - #{package} ") + @pastel.green.bold('No vulnerabilities found!\n')
+            response += @pastel.white("[#{i}/#{count}] - #{package} ") + @pastel.green.bold("No vulnerabilities found!\n")
             response += _get_reverse_deps(reverse_deps, name)
           end
         end

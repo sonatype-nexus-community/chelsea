@@ -16,15 +16,14 @@ module Chelsea
     # Checks cache and stores results in cache
     def get_vulns(coordinates)
       remaining_coordinates, server_response = @db.check_db_for_cached_values(coordinates)
+      unless remaining_coordinates['coordinates'].count.positive?
+        return server_response
+      end
 
-      return unless remaining_coordinates['coordinates'].count.positive?
-
-      chunked = {}
       remaining_coordinates['coordinates'].each_slice(128).to_a.each do |coords|
-        chunked['coordinates'] = coords
-        res_json = call_oss_index(chunked)
+        res_json = call_oss_index({ 'coordinates' => coords })
         server_response = server_response.concat(res_json)
-        _save_values_to_db(res_json)
+        @db.save_values_to_db(res_json)
       end
       server_response
     end

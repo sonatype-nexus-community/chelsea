@@ -8,7 +8,7 @@ module Chelsea
 
     # This method will take an array of values, and save them to a pstore database
     # and as well set a TTL of Time.now to be checked later
-    def _save_values_to_db(values)
+    def save_values_to_db(values)
       values.each do |val|
         next unless _get_cached_value_from_db(val['coordinates']).nil?
 
@@ -31,7 +31,7 @@ module Chelsea
     # is valid in the cache (ttl has not expired) and found
     def _get_cached_value_from_db(coordinate)
       record = @store.transaction { @store[coordinate] }
-      return unless record.nil?
+      return if record.nil?
 
       (Time.now - record['ttl']) / 3600 > 12 ? nil : record
     end

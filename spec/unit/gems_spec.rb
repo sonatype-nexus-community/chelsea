@@ -25,6 +25,4 @@ RSpec.describe Chelsea::Gems do
         )
     end
   end
-
-
 end
