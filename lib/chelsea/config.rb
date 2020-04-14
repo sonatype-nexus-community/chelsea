@@ -2,8 +2,8 @@ require 'yaml'
 require_relative 'oss_index'
 
 module Chelsea
-  @@oss_index_config_location = File.join(Dir.home.to_s, '.ossindex')
-  @@oss_index_config_filename = '.oss-index-config'
+  @oss_index_config_location = File.join(Dir.home.to_s, '.ossindex')
+  @oss_index_config_filename = '.oss-index-config'
 
   def self.to_purl(name, version)
     "pkg:gem/#{name}@#{version}"
@@ -21,12 +21,12 @@ module Chelsea
   end
 
   def self.client(options = {})
-    @@oss_index_client ||= config(options)
-    @@oss_index_client
+    @client ||= config(options)
+    @client
   end
 
   def self.oss_index_config
-    if !File.exist? File.join(@@oss_index_config_location, @@oss_index_config_filename)
+    if !File.exist? File.join(@oss_index_config_location, @oss_index_config_filename)
       { oss_index_user_name: '', oss_index_user_token: '' }
     else
       conf_hash = YAML.safe_load(
@@ -43,7 +43,7 @@ module Chelsea
 
   def get_white_list_vuln_config(white_list_config_path)
     if white_list_config_path.nil?
-      YAML.safe_load(File.read(File.join(Dir.pwd, "chelsea-ignore.yaml")))
+      YAML.safe_load(File.read(File.join(Dir.pwd, 'chelsea-ignore.yaml')))
     else
       YAML.safe_load(File.read(white_list_config_path))
     end
@@ -61,13 +61,11 @@ module Chelsea
     _write_oss_index_config_file(config)
   end
 
-  private
-
   def self._write_oss_index_config_file(config)
-    unless File.exist? @@oss_index_config_location
+    unless File.exist? @oss_index_config_location
       Dir.mkdir(@oss_index_config_location)
     end
-    File.open(File.join(@@oss_index_config_location, @@oss_index_config_filename), "w") do |file|
+    File.open(File.join(@oss_index_config_location, @oss_index_config_filename), "w") do |file|
       file.write config.to_yaml
     end
   end
