@@ -1,3 +1,4 @@
+require 'json'
 require 'webmock/rspec'
 
 WebMock.disable_net_connect!(allow_localhost: true)
@@ -10,18 +11,68 @@ def process_deps_from_gemfile(file)
   [dependencies, reverse_dependencies, coordinates]
 end
 
+def _json_headers
+  {
+    'Accept' => 'application/json',
+    'Accept-Encoding' => 'gzip, deflate',
+    'Content-Length' => '172',
+    'Content-Type' => 'application/json',
+    'Host' => 'ossindex.sonatype.org',
+    'User-Agent' => 'chelsea/0.0.8'
+  }
+end
+
+def stub_sbom
+  stub_request(
+    :post,
+    'http://localhost:8070/api/v2/scan/applications/4537e6fe68c24dd5ac83efd97d4fc2f4/sources/chelsea'
+  )
+    .to_return(
+      body: JSON.unparse({}),
+      status: 200,
+      headers: _json_headers
+    )
+end
+
+def stub_iq_response
+  stub_request(
+    :get,
+    'http://localhost:8070/api/v2/applications?publicId=testapp'
+  )
+    .to_return(
+      body:
+        JSON.unparse(
+          {
+            applications:
+            [
+              {
+                id: '4537e6fe68c24dd5ac83efd97d4fc2f4',
+                publicId: 'MyApplicationID',
+                name: 'MyApplication',
+                organizationId: 'bb41817bd3e2403a8a52fe8bcd8fe25a',
+                contactUserName: 'NewAppContact',
+                applicationTags: [
+                    {
+                      id: '9beee80c6fc148dfa51e8b0359ee4d4e',
+                      tagId: 'cfea8fa79df64283bd64e5b6b624ba48',
+                      applicationId: '4bb67dcfc86344e3a483832f8c496419'
+                    }
+                ]
+              }
+            ]
+          }
+        ),
+      status: 200,
+      headers: _json_headers
+    )
+end
+
 def stub_oss_response
   stub_request(:post, "https://ossindex.sonatype.org/api/v3/component-report").
   with(
      body: "{\"coordinates\":[\"pkg:gem/addressable@2.7.0\",\"pkg:gem/crack@0.4.3\",\"pkg:gem/hashdiff@1.0.1\",\"pkg:gem/public_suffix@4.0.3\",\"pkg:gem/safe_yaml@1.0.5\",\"pkg:gem/webmock@3.8.3\"]}",
-     headers: {
-     'Accept'=>'application/json',
-     'Accept-Encoding'=>'gzip, deflate',
-     'Content-Length'=>'172',
-     'Content-Type'=>'application/json',
-     'Host'=>'ossindex.sonatype.org',
-     'User-Agent'=>'chelsea/0.0.3'
-   }).to_return(status: 200, body: OSS_INDEX_RESPONSE, headers: {})
+     headers: _json_headers
+  ).to_return(status: 200, body: OSS_INDEX_RESPONSE, headers: {})
 end
 
 def get_test_dependencies

@@ -3,25 +3,23 @@ require 'spec_helper'
 
 RSpec.describe Chelsea::Deps do
   context 'given a valid Gemfile.lock' do
-    file = 'spec/testdata/Gemfile.lock'
-    it 'can collect dependencies' do
+    before(:all) {
       stub_oss_response
-      dependencies, = process_deps_from_gemfile(file)
-      expect(dependencies.class).to eq(Hash)
-      expect(dependencies.empty?).to eq(false)
+      file = 'spec/testdata/Gemfile.lock'
+      @dependencies, @reverse_dependencies, @coordinates = process_deps_from_gemfile(file)
+    }
+    it 'can collect dependencies' do
+      expect(@dependencies.class).to eq(Hash)
+      expect(@dependencies.empty?).to eq(false)
     end
 
     it 'can generate a valid coordinates object for OSS Index' do
-      stub_oss_response
-      dependencies, reverse_dependencies, coordinates = process_deps_from_gemfile(file)
-      coordinates = coordinates.to_h
-
-      expect(coordinates.class).to eq(Hash)
-      expect(coordinates.empty?).to eq(false)
-      expect(coordinates['coordinates'].size).to eq(30)
-      expect(coordinates['coordinates'][0]).to eq('pkg:gem/addressable@2.7.0')
-      expect(coordinates['coordinates'][1]).to eq('pkg:gem/chelsea@0.0.3')
-      expect(coordinates['coordinates'][2]).to eq('pkg:gem/crack@0.4.3')
+      expect(@coordinates.class).to eq(Hash)
+      expect(@coordinates.empty?).to eq(false)
+      expect(@coordinates['coordinates'].size).to eq(30)
+      expect(@coordinates['coordinates'][0]).to eq('pkg:gem/addressable@2.7.0')
+      expect(@coordinates['coordinates'][1]).to eq('pkg:gem/chelsea@0.0.3')
+      expect(@coordinates['coordinates'][2]).to eq('pkg:gem/crack@0.4.3')
     end
   end
   context 'given an invalid path' do

@@ -15,7 +15,7 @@ module Chelsea
     end
 
     def submit_sbom(sbom)
-      @internal_application_id = _get_internal_application_id()
+      @internal_application_id = _get_internal_application_id
       resource = RestClient::Resource.new(
         _api_url,
         user: @options[:username],
@@ -47,7 +47,7 @@ module Chelsea
     end
 
     def _api_url
-      "#{@options[:server_url]}/api/v2/scan/applications/#{@@internal_application_id}/sources/chelsea"
+      "#{@options[:server_url]}/api/v2/scan/applications/#{@internal_application_id}/sources/chelsea"
     end
 
     def _internal_application_id_api_url

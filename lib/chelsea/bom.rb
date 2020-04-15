@@ -6,10 +6,12 @@ require 'ox'
 module Chelsea
   # Class to convext dependencies to BOM xml
   class Bom
-    attr_accessor :xml
     def initialize(dependencies)
       @dependencies = dependencies
-      @xml = _get_xml
+    end
+
+    def xml
+      @xml ||= _get_xml
     end
 
     def to_s
