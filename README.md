@@ -35,11 +35,20 @@ Version: 0.0.3
 usage: chelsea [options] ...
 
 Options:
-    -h, --help    show usage
-    -q, --quiet   make chelsea only output vulnerable third party dependencies for text output (default: false)
-    -t, --format  choose what type of format you want your report in (default: text) (options: text, json, xml)
-    -f, --file    path to your Gemfile.lock
-    --version     print the version
+    -f, --file         path to your Gemfile.lock
+    -c, --config       Set persistent config for OSS Index
+    -u, --user         Specify OSS Index Username
+    -p, --token        Specify OSS Index API Token
+    -a, --application  Specify the IQ application id
+    -i, --server       Specify the IQ server url
+    -iu, --iquser      Specify the IQ username
+    -it, --iqpass      Specify the IQ auth token
+    -w, --whitelist    Set path to vulnerability whitelist file
+    -q, --quiet        make chelsea only output vulnerable third party dependencies for text output (default: false)
+    -t, --format       choose what type of format you want your report in (default: text) (options: text, json, xml)
+    -b, --sbom         generate an sbom
+    --version          print the version
+    -h, --help         show usage
 ```
 
 Most basic usage is:

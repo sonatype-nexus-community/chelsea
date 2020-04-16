@@ -10,7 +10,7 @@ opts =
       o.string '-u', '--user', 'Specify OSS Index Username'
       o.string '-p', '--token', 'Specify OSS Index API Token'
       o.string '-a', '--application', 'Specify the IQ application id', default: 'testapp'
-      o.string '-i', '--server', 'Specific the IQ server url', default: 'http://localhost:8070'
+      o.string '-i', '--server', 'Specify the IQ server url', default: 'http://localhost:8070'
       o.string '-iu', '--iquser', 'Specify the IQ username', default: 'admin'
       o.string '-it', '--iqpass', 'Specify the IQ auth token', default: 'admin123'
       o.string '-w', '--whitelist', 'Set path to vulnerability whitelist file'
