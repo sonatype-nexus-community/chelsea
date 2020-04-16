@@ -14,7 +14,7 @@ require_relative 'bom'
 module Chelsea
   class Gems
     attr_accessor :deps
-    def initialize(file:, quiet: false, options: {})
+    def initialize(file:, quiet: false, options: {'format': 'text'})
       @quiet = quiet
       unless File.file?(file) || file.nil?
         raise 'Gemfile.lock not found, check --file path'
