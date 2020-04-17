@@ -24,7 +24,7 @@ module Chelsea
       )
       res = resource.post(
         sbom.to_s,
-        headers.merge(content_type: 'application/xml')
+        _headers.merge(content_type: 'application/xml')
       )
       @status_url = _status_url(res)
       res.code == 202
