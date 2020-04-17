@@ -21,9 +21,11 @@ module Chelsea
     def process!
       if @opts.config?
         _set_config # move to init
-      elsif @opts.file? # don't process unless there was a file
+      elsif @opts.file? && @opts.iq?
+        gems = _process_file_iq
+        _submit_sbom(gems)
+      elsif @opts.file?
         gems = _process_file
-        _submit_sbom(gems) if @opts.sbom?
       elsif @opts.help? # quit on opts.help earlier
         puts _cli_flags # this doesn't exist
       end
@@ -44,22 +46,11 @@ module Chelsea
           auth_token: @opts[:iqpass]
         }
       )
-      bom = Chelsea::Bom.new(gems.deps.dependencies)
+      bom = Chelsea::Bom.new(gems.deps.dependencies).collect
       status_url = iq.submit_sbom(bom)
 
       if status_url
-        loop do
-          begin
-            res = iq.poll_iq_server(status_url)
-            if res.code == 200
-              puts JSON.parse(res.body)
-              break
-            end
-          rescue
-            print "."
-            sleep(1)
-          end
-        end
+        iq.poll(status_url)
       end
     end
 
@@ -70,6 +61,16 @@ module Chelsea
         options: @opts
       )
       gems.execute # should be more like collect
+      gems
+    end
+
+    def _process_file_iq
+      gems = Chelsea::Gems.new(
+        file: @opts[:file],
+        quiet: @opts[:quiet],
+        options: @opts
+      )
+      gems.collect_iq
       gems
     end
 

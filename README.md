@@ -30,7 +30,7 @@ $ chelsea
  \____/|_| |_| \___||_||___/ \___| \__,_|
                                          
                                          
-Version: 0.0.3
+Version: 0.0.10
 
 usage: chelsea [options] ...
 
@@ -46,7 +46,7 @@ Options:
     -w, --whitelist    Set path to vulnerability whitelist file
     -q, --quiet        make chelsea only output vulnerable third party dependencies for text output (default: false)
     -t, --format       choose what type of format you want your report in (default: text) (options: text, json, xml)
-    -b, --sbom         generate an sbom
+    -b, --iq           Use Nexus IQ Server to audit your application
     --version          print the version
     -h, --help         show usage
 ```

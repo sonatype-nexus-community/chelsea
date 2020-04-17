@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 require 'pastel'
-require 'tty-spinner'
 require 'bundler'
 require 'bundler/lockfile_parser'
 require 'rubygems'
@@ -10,6 +9,7 @@ require_relative 'version'
 require_relative 'formatters/factory'
 require_relative 'deps'
 require_relative 'bom'
+require_relative 'spinner'
 
 module Chelsea
   class Gems
@@ -25,6 +25,7 @@ module Chelsea
       @formatter = FormatterFactory.new.get_formatter(format: options[:format], quiet: @quiet)
       @client = Chelsea.client(options)
       @deps = Chelsea::Deps.new(path: Pathname.new(file))
+      @spinner = Chelsea::Spinner.new
     end
 
     # Audits depenencies using deps library and prints results
@@ -44,46 +45,51 @@ module Chelsea
       @formatter.do_print(results)
     end
 
+    def collect_iq
+      dependencies = @deps.dependencies
+      dependencies
+    end
+
     # Runs through auditing algorithm, raising exceptions
     # on REST calls made by @deps.get_vulns
     def audit
       # This spinner management is out of control
       # we should wrap a block with start and stop messages,
       # or use a stack to ensure all spinners stop.
-      spinner = _spin_msg 'Parsing dependencies'
+      spin = @spinner.spin_msg 'Parsing dependencies'
 
       begin
         dependencies = @deps.dependencies
-        spinner.success('...done.')
+        spin.success('...done.')
       rescue StandardError => e
-        spinner.stop
+        spin.stop
         _print_err "Parsing dependency line #{gem} failed."
       end
 
       reverse_dependencies = @deps.reverse_dependencies
 
-      spinner = _spin_msg 'Parsing Versions'
+      spin = @spinner.spin_msg 'Parsing Versions'
       coordinates = @deps.coordinates
-      spinner.success('...done.')
-      spinner = _spin_msg 'Making request to OSS Index server'
+      spin.success('...done.')
+      spin = @spinner.spin_msg 'Making request to OSS Index server'
 
       begin
         server_response = @client.get_vulns(coordinates)
-        spinner.success('...done.')
+        spin.success('...done.')
       rescue SocketError => e
-        spinner.stop('...request failed.')
+        spin.stop('...request failed.')
         _print_err 'Socket error getting data from OSS Index server.'
       rescue RestClient::RequestFailed => e
-        spinner.stop('...request failed.')
+        spin.stop('...request failed.')
         _print_err "Error getting data from OSS Index server:#{e.response}."
       rescue RestClient::ResourceNotFound => e
-        spinner.stop('...request failed.')
+        spin.stop('...request failed.')
         _print_err 'Error getting data from OSS Index server. Resource not found.'
       rescue Errno::ECONNREFUSED => e
-        spinner.stop('...request failed.')
+        spin.stop('...request failed.')
         _print_err 'Error getting data from OSS Index server. Connection refused.'
       rescue StandardError => e
-        spinner.stop('...request failed.')
+        spin.stop('...request failed.')
         _print_err 'UNKNOWN Error getting data from OSS Index server.'
       end
       [server_response, dependencies, reverse_dependencies]
@@ -93,17 +99,6 @@ module Chelsea
 
     def _silence_stderr
       $stderr.reopen('/dev/null', 'w')
-    end
-
-    def _spin_msg(msg)
-      format = "[#{@pastel.green(':spinner')}] " + @pastel.white(msg)
-      spinner = TTY::Spinner.new(
-        format,
-        success_mark: @pastel.green('+'),
-        hide_cursor: true
-      )
-      spinner.auto_spin
-      spinner
     end
 
     def _print_err(s)
