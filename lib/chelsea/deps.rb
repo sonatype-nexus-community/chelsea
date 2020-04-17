@@ -5,9 +5,6 @@ require 'rubygems/commands/dependency_command'
 require 'json'
 require 'rest-client'
 
-require_relative 'dependency_exception'
-require_relative 'oss_index'
-
 module Chelsea
   class Deps
     def initialize(path:, quiet: false)

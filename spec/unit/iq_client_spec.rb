@@ -39,10 +39,4 @@ RSpec.describe Chelsea::IQClient do
       expect(@client.post_sbom(bom)).to eq true
     end
   end
-  context 'with a configuration file' do
-    # Check that configuration files get set
-  end
-  context 'with a config file and cli arguments' do
-    # Check that cli args override config
-  end
 end
