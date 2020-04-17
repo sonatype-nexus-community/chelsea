@@ -3,6 +3,7 @@ require 'json'
 
 module Chelsea
   class IQClient
+
     DEFAULT_OPTIONS = {
       public_application_id: 'testapp',
       server_url: 'http://localhost:8070',
@@ -14,7 +15,7 @@ module Chelsea
       @options = options
     end
 
-    def submit_sbom(sbom)
+    def post_sbom(sbom)
       @internal_application_id = _get_internal_application_id
       resource = RestClient::Resource.new(
         _api_url,
@@ -22,10 +23,11 @@ module Chelsea
         password: @options[:auth_token]
       )
       res = resource.post sbom.to_s, _headers.merge(content_type: 'application/xml')
-      res.code == 202 ? status_url(res) : nil
+      @status_url = _status_url(res)
+      res.code == 202
     end
 
-    def poll_iq_server(status_url)
+    def status(status_url)
       resource = RestClient::Resource.new(
         "#{@options[:server_url]}/#{status_url}",
         user: @options[:username],
@@ -34,12 +36,29 @@ module Chelsea
       resource.get _headers
     end
 
-    def status_url(res)
+    def _status_url(res)
       res = JSON.parse(res.body)
       res['statusUrl']
     end
 
     private
+
+    def _poll_status
+      return unless @status_url
+
+      loop do
+        begin
+          res = check_status(@status_url)
+          if res.code == 200
+            puts JSON.parse(res.body)
+            break
+          end
+        rescue RestClient::ResourceNotFound => _e
+          print '.'
+          sleep(1)
+        end
+      end
+    end
 
     def _get_internal_application_id
       resource = RestClient::Resource.new(

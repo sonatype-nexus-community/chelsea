@@ -16,7 +16,7 @@ RSpec.describe Chelsea::IQClient do
         bom = Chelsea::Bom.new(deps)
         stub_iq_response
         stub_sbom
-        @client.submit_sbom(bom)
+        @client.post_sbom(bom)
       end
     end
     # Check that defaults get set
