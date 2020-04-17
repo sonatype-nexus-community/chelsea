@@ -5,7 +5,7 @@ require 'slop'
 opts =
   begin
     Slop.parse do |o|
-      o.string '-f', '--file', 'path to your Gemfile.lock'
+      o.string '-f', '--file', 'Path to your Gemfile.lock'
       o.bool '-c', '--config', 'Set persistent config for OSS Index'
       o.string '-u', '--user', 'Specify OSS Index Username'
       o.string '-p', '--token', 'Specify OSS Index API Token'
@@ -14,14 +14,14 @@ opts =
       o.string '-iu', '--iquser', 'Specify the IQ username', default: 'admin'
       o.string '-it', '--iqpass', 'Specify the IQ auth token', default: 'admin123'
       o.string '-w', '--whitelist', 'Set path to vulnerability whitelist file'
-      o.bool '-q', '--quiet', 'make chelsea only output vulnerable third party dependencies for text output (default: false)', default: false 
-      o.string '-t', '--format', 'choose what type of format you want your report in (default: text) (options: text, json, xml)', default: 'text'
-      o.bool '-b', '--sbom', 'generate an sbom'
-      o.on '--version', 'print the version' do
+      o.bool '-q', '--quiet', 'Make chelsea only output vulnerable third party dependencies for text output (default: false)', default: false 
+      o.string '-t', '--format', 'Choose what type of format you want your report in (default: text) (options: text, json, xml)', default: 'text'
+      o.bool '-b', '--iq', 'Use Nexus IQ Server to audit your project'
+      o.on '--version', 'Print the version' do
           puts Chelsea::VERSION
           exit
       end
-      o.on '-h', '--help', 'show usage' do
+      o.on '-h', '--help', 'Show usage' do
         puts(o)
         exit
       end
