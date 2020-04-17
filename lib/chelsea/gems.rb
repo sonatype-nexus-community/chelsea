@@ -12,17 +12,21 @@ require_relative 'deps'
 require_relative 'bom'
 
 module Chelsea
+  # Class to collect and audit packages from a Gemfile.lock
   class Gems
     attr_accessor :deps
-    def initialize(file:, quiet: false, options: {'format': 'text'})
+    def initialize(file:, quiet: false, options: { 'format': 'text' })
       @quiet = quiet
       unless File.file?(file) || file.nil?
         raise 'Gemfile.lock not found, check --file path'
       end
+
       _silence_stderr if @quiet
 
       @pastel = Pastel.new
-      @formatter = FormatterFactory.new.get_formatter(format: options[:format], quiet: @quiet)
+      @formatter = FormatterFactory.new.get_formatter(
+        format: options[:format],
+        quiet: @quiet)
       @client = Chelsea.client(options)
       @deps = Chelsea::Deps.new(path: Pathname.new(file))
     end
