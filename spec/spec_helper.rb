@@ -22,22 +22,22 @@ def _json_headers
   }
 end
 
-def stub_sbom
+def stub_sbom(server_url: 'localhost:8070', **opts)
   stub_request(
     :post,
-    'http://localhost:8070/api/v2/scan/applications/4537e6fe68c24dd5ac83efd97d4fc2f4/sources/chelsea'
+    "http://#{server_url}/api/v2/scan/applications/4537e6fe68c24dd5ac83efd97d4fc2f4/sources/chelsea"
   )
     .to_return(
       body: JSON.unparse({}),
-      status: 200,
+      status: 202,
       headers: _json_headers
     )
 end
 
-def stub_iq_response
+def stub_iq_response(server_url: 'localhost:8070', public_application_id: 'testapp', **opts)
   stub_request(
     :get,
-    'http://localhost:8070/api/v2/applications?publicId=testapp'
+    "http://#{server_url}/api/v2/applications?publicId=#{public_application_id}"
   )
     .to_return(
       body:
@@ -62,17 +62,14 @@ def stub_iq_response
             ]
           }
         ),
-      status: 200,
+      status: 202,
       headers: _json_headers
     )
 end
 
 def stub_oss_response
-  stub_request(:post, "https://ossindex.sonatype.org/api/v3/component-report").
-  with(
-     body: "{\"coordinates\":[\"pkg:gem/addressable@2.7.0\",\"pkg:gem/crack@0.4.3\",\"pkg:gem/hashdiff@1.0.1\",\"pkg:gem/public_suffix@4.0.3\",\"pkg:gem/safe_yaml@1.0.5\",\"pkg:gem/webmock@3.8.3\"]}",
-     headers: _json_headers
-  ).to_return(status: 200, body: OSS_INDEX_RESPONSE, headers: {})
+  stub_request(:post, "https://ossindex.sonatype.org/api/v3/component-report")
+    .to_return(status: 200, body: OSS_INDEX_RESPONSE, headers: {})
 end
 
 def get_test_dependencies

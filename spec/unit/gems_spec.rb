@@ -4,8 +4,7 @@ require 'spec_helper'
 RSpec.describe Chelsea::Gems do
   describe 'when talking to OSS Index' do
     before(:all) {
-      stub_request(:post, 'https://ossindex.sonatype.org/api/v3/component-report')
-        .to_return(status: 200, body: OSS_INDEX_RESPONSE, headers: {})
+      stub_oss_response
     }
     context 'given a valid Gemfile.lock' do
       file = 'spec/testdata/Gemfile.lock'

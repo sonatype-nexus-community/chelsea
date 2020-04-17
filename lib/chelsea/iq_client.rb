@@ -22,7 +22,10 @@ module Chelsea
         user: @options[:username],
         password: @options[:auth_token]
       )
-      res = resource.post sbom.to_s, _headers.merge(content_type: 'application/xml')
+      res = resource.post(
+        sbom.to_s,
+        headers.merge(content_type: 'application/xml')
+      )
       @status_url = _status_url(res)
       res.code == 202
     end

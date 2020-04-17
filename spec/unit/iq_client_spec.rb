@@ -16,13 +16,28 @@ RSpec.describe Chelsea::IQClient do
         bom = Chelsea::Bom.new(deps)
         stub_iq_response
         stub_sbom
-        @client.post_sbom(bom)
+        expect(@client.post_sbom(bom)).to eq true
       end
     end
     # Check that defaults get set
   end
   context 'with cli arguments' do
-    # Check that cli args get set
+    before(:all) {
+      @opts = {
+        public_application_id: 'appid',
+        server_url: 'server_url',
+        username: 'iquser',
+        auth_token: 'iqpass'
+      }
+      @client = Chelsea::IQClient.new(options: @opts)
+    }
+    it 'should be able to submit an sbom' do
+      deps = get_test_dependencies
+      bom = Chelsea::Bom.new(deps)
+      stub_iq_response(**@opts)
+      stub_sbom(**@opts)
+      expect(@client.post_sbom(bom)).to eq true
+    end
   end
   context 'with a configuration file' do
     # Check that configuration files get set
