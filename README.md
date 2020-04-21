@@ -77,23 +77,6 @@ Audit Results will show a list of your third party dependencies, their reverse d
 
 Running with `--quiet` will only output any vulnerable dependencies found, similar to:
 
-<<<<<<< HEAD
-Options:
-    -f, --file         path to your Gemfile.lock
-    -c, --config       Set persistent config for OSS Index
-    -u, --user         Specify OSS Index Username
-    -p, --token        Specify OSS Index API Token
-    -a, --application  Specify the IQ application id
-    -i, --server       Specify the IQ server url
-    -iu, --iquser      Specify the IQ username
-    -it, --iqpass      Specify the IQ auth token
-    -w, --whitelist    Set path to vulnerability whitelist file
-    -q, --quiet        make chelsea only output vulnerable third party dependencies for text output (default: false)
-    -t, --format       choose what type of format you want your report in (default: text) (options: text, json, xml)
-    -b, --sbom         generate an sbom
-    --version          print the version
-    -h, --help         show usage
-=======
 ```
  _____  _            _                   
 /  __ \| |          | |                  
@@ -115,7 +98,6 @@ Version: 0.0.11
         Required by: unf-0.1.4
         Required by: unf_ext-0.0.7.7
         Required by: unf_ext-0.0.7.6
->>>>>>> master
 ```
 
 This can be useful if you are only interested in seeing your vulnerable dependencies, and not the whole list.
