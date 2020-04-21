@@ -61,13 +61,14 @@ module Chelsea
     end
 
     def _color_based_on_cvss_score(cvssScore, text)
-      if cvssScore > 0 && cvssScore < 4
-        @pastel.cyan.bold(text)
-      elsif cvssScore > 4 && cvssScore < 6
+      case cvssScore
+      when 0..4
+        @pastel.cyan.bold(text)    
+      when 4..6
         @pastel.yellow.bold(text)
-      elsif cvssScore > 6 && cvssScore < 8
+      when 6..8
         @pastel.orange.bold(text)
-      elsif cvssScore > 8
+      else
         @pastel.red.bold(text)
       end
     end
