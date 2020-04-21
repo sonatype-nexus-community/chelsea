@@ -46,6 +46,8 @@ module Chelsea
       end
       results = @formatter.get_results(server_response, reverse_dependencies)
       @formatter.do_print(results)
+
+      server_response.map { |r| r['vulnerabilities'].length.positive? }.any? ? (exit 1) : (exit 0)
     end
 
     # Runs through auditing algorithm, raising exceptions
