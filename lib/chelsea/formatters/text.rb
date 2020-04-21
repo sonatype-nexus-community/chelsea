@@ -62,11 +62,11 @@ module Chelsea
 
     def _color_based_on_cvss_score(cvssScore, text)
       case cvssScore
-      when 0..4
+      when 0..3
         @pastel.cyan.bold(text)    
-      when 4..6
+      when 4..5
         @pastel.yellow.bold(text)
-      when 6..8
+      when 6..7
         @pastel.orange.bold(text)
       else
         @pastel.red.bold(text)
