@@ -21,6 +21,10 @@ module Chelsea
     def process!
       if @opts.config?
         _set_config # move to init
+      elsif @opts.clear?
+        require_relative 'db'
+        Chelsea::DB.new().clear_cache
+        puts "OSS Index cache cleared"
       elsif @opts.file? && @opts.iq?
         dependencies = _process_file_iq
         _submit_sbom(dependencies)
