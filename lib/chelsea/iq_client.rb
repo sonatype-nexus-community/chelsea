@@ -123,8 +123,9 @@ module Chelsea
         user: @options[:username],
         password: @options[:auth_token]
       )
-      res = JSON.parse(resource.get(_headers))
-      res['applications'][0]['id']
+      res = resource.get _headers
+      body = JSON.parse(res)
+      body['applications'][0]['id']
     end
 
     def _headers
