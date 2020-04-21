@@ -3,7 +3,6 @@
 require_relative 'config'
 require 'rest-client'
 require_relative 'db'
-require 'byebug'
 
 module Chelsea
   class OSSIndex
