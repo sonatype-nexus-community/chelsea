@@ -3,6 +3,7 @@
 require_relative 'config'
 require 'rest-client'
 require_relative 'db'
+require 'byebug'
 
 module Chelsea
   class OSSIndex
@@ -30,6 +31,7 @@ module Chelsea
         cached_server_response = cached_server_response.concat(res_json)
         @db.save_values_to_db(res_json)
       end
+
       cached_server_response
     end
 
