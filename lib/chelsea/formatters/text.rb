@@ -29,8 +29,9 @@ module Chelsea
         if vulnerable
           response += @pastel.red("[#{i}/#{count}] - #{package} ") + @pastel.red.bold("Vulnerable.\n")
           response += _get_reverse_deps(reverse_deps, name) if reverse_deps
-          r['vulnerabilities'].each do |v|
-            response += _format_vuln(v)
+          r['vulnerabilities'].each do |k, _|
+            puts k
+            response += _format_vuln(k)
           end
         else
           if !@quiet
