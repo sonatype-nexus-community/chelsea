@@ -37,6 +37,9 @@ jobs:
           name: Install gem
           command: gem install ./chelsea-*.gem
       - run:
+          name: Clear cache
+          command: chelsea --clear
+      - run:
           name: Dogfood
           command: chelsea --file Gemfile.lock
       - store_test_results:

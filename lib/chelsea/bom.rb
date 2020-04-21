@@ -4,16 +4,23 @@ require 'securerandom'
 require 'ox'
 
 module Chelsea
-  # Class to convext dependencies to BOM xml
+  # Class to convert dependencies to SBOM xml
   class Bom
-    attr_accessor :xml
     def initialize(dependencies)
       @dependencies = dependencies
-      @xml = _get_xml
+    end
+
+    def collect
+      xml
+      to_s
+    end
+
+    def xml
+      @xml ||= _get_xml
     end
 
     def to_s
-      Ox.dump(@xml).to_s
+      Ox.dump(@xml)
     end
 
     def random_urn_uuid

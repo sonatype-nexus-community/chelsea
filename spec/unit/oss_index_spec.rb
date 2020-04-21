@@ -1,9 +1,14 @@
 require 'chelsea/oss_index'
-require_relative 'spec_helper'
+require 'spec_helper'
 
 RSpec.describe Chelsea::OSSIndex do
-
   context 'with defaults' do
+    before(:all) {
+      @oss = Chelsea::OSSIndex.new
+    }
+    it 'should instantiate the OSS Index client' do
+      expect(@oss.class).to eq Chelsea::OSSIndex
+    end
     # Check that defaults get set
   end
   context 'with cli arguments' do

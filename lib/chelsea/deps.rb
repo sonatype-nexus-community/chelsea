@@ -5,9 +5,6 @@ require 'rubygems/commands/dependency_command'
 require 'json'
 require 'rest-client'
 
-require_relative 'dependency_exception'
-require_relative 'oss_index'
-
 module Chelsea
   class Deps
     def initialize(path:, quiet: false)
@@ -38,11 +35,17 @@ module Chelsea
       reverse = Gem::Commands::DependencyCommand.new
       reverse.options[:reverse_dependencies] = true
       # We want to filter the reverses dependencies by specs in lockfile
-      spec_names = @lockfile.specs.map { |i| i.to_s.split }.map { |n, _| "#{n}" }
-      reverse.reverse_dependencies(@lockfile.specs).to_h.transform_values do |reverse_dep|
-        # Add filtering if version meets range
-        reverse_dep.select { |name, dep, req, _| spec_names.include?(name.split("-")[0]) }
+      spec_names = @lockfile.specs.map { |i| i.to_s.split }.map do |n, _v|
+        n.to_s
       end
+      reverse
+        .reverse_dependencies(@lockfile.specs)
+        .to_h
+        .transform_values do |reverse_dep|
+          reverse_dep.select do |name, _dep, _req, _|
+            spec_names.include?(name.split('-')[0])
+          end
+        end
     end
 
     # Iterates over all dependencies and stores them

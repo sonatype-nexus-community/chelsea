@@ -20,6 +20,15 @@ module Chelsea
       end
     end
 
+    # This method will delete all values in the pstore db
+    def clear_cache
+      @store.transaction do
+        @store.roots.each do |root|
+          @store.delete(root)
+        end
+      end
+    end
+
     def _get_db_store_location()
       initial_path = File.join(Dir.home.to_s, '.ossindex')
       Dir.mkdir(initial_path) unless File.exist? initial_path

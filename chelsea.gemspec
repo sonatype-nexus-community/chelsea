@@ -43,8 +43,9 @@ Gem::Specification.new do |spec|
   spec.add_dependency "bundler", ">= 1.2.0", "< 3"
   spec.add_dependency "ox", "~> 2.13.2"
 
-  spec.add_development_dependency "rake", "~> 10.0"
+  spec.add_development_dependency "rake", "~> 12.3"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "rspec_junit_formatter", "~> 0.4.1"
   spec.add_development_dependency "webmock", "~> 3.8.3"
+  spec.add_development_dependency "byebug", "~> 11.1.2"
 end

@@ -18,6 +18,8 @@ module Chelsea
 
       i = 0
       count = server_response.count()
+      server_response.sort! {|x| x['vulnerabilities'].count}
+
       server_response.each do |r|
         i += 1
         package = r['coordinates']
@@ -29,8 +31,8 @@ module Chelsea
         if vulnerable
           response += @pastel.red("[#{i}/#{count}] - #{package} ") + @pastel.red.bold("Vulnerable.\n")
           response += _get_reverse_deps(reverse_deps, name) if reverse_deps
-          r['vulnerabilities'].each do |k, v|
-            response += _format_vuln(v)
+          r['vulnerabilities'].each do |k, _|
+            response += _format_vuln(k)
           end
         else
           if !@quiet
@@ -48,7 +50,29 @@ module Chelsea
     end
 
     def _format_vuln(vuln)
-      @pastel.red.bold("\n#{vuln}\n")
+      cvssScore = vuln['cvssScore']
+      vuln_response = "\n\tVulnerability Details:\n"
+      vuln_response += _color_based_on_cvss_score(cvssScore, "\n\tID: #{vuln['id']}\n")
+      vuln_response += _color_based_on_cvss_score(cvssScore, "\n\tTitle: #{vuln['title']}\n")
+      vuln_response += _color_based_on_cvss_score(cvssScore, "\n\tDescription: #{vuln['description']}\n")
+      vuln_response += _color_based_on_cvss_score(cvssScore, "\n\tCVSS Score: #{vuln['cvssScore']}\n")
+      vuln_response += _color_based_on_cvss_score(cvssScore, "\n\tCVSS Vector: #{vuln['cvssVector']}\n")
+      vuln_response += _color_based_on_cvss_score(cvssScore, "\n\tCVE: #{vuln['cve']}\n")
+      vuln_response += _color_based_on_cvss_score(cvssScore, "\n\tReference: #{vuln['reference']}\n\n")
+      vuln_response
+    end
+
+    def _color_based_on_cvss_score(cvssScore, text)
+      case cvssScore
+      when 0..3
+        @pastel.cyan.bold(text)    
+      when 4..5
+        @pastel.yellow.bold(text)
+      when 6..7
+        @pastel.orange.bold(text)
+      else
+        @pastel.red.bold(text)
+      end
     end
 
     def _get_reverse_deps(coords, name)

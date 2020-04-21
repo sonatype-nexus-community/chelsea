@@ -6,6 +6,7 @@ opts =
   begin
     Slop.parse do |o|
       o.string '-f', '--file', 'Path to your Gemfile.lock'
+      o.bool '-x', '--clear', 'Clear OSS Index cache'
       o.bool '-c', '--config', 'Set persistent config for OSS Index'
       o.string '-u', '--user', 'Specify OSS Index Username'
       o.string '-p', '--token', 'Specify OSS Index API Token'
