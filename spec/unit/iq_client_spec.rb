@@ -1,5 +1,6 @@
 require 'chelsea'
 require 'spec_helper'
+require 'byebug'
 
 RSpec.describe Chelsea::IQClient do
 
@@ -16,7 +17,7 @@ RSpec.describe Chelsea::IQClient do
         bom = Chelsea::Bom.new(deps)
         stub_iq_response
         stub_sbom
-        expect(@client.post_sbom(bom)).to eq true
+        expect(@client.post_sbom(bom)).to eq "api/v2/scan/applications/4537e6fe68c24dd5ac83efd97d4fc2f4/status/9cee2b6366fc4d328edc318eae46b2cb"
       end
     end
     # Check that defaults get set
@@ -36,7 +37,7 @@ RSpec.describe Chelsea::IQClient do
       bom = Chelsea::Bom.new(deps)
       stub_iq_response(**@opts)
       stub_sbom(**@opts)
-      expect(@client.post_sbom(bom)).to eq true
+      expect(@client.post_sbom(bom)).to eq "api/v2/scan/applications/4537e6fe68c24dd5ac83efd97d4fc2f4/status/9cee2b6366fc4d328edc318eae46b2cb"
     end
   end
 end

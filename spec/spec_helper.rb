@@ -28,7 +28,7 @@ def stub_sbom(server_url: 'localhost:8070', **opts)
     "http://#{server_url}/api/v2/scan/applications/4537e6fe68c24dd5ac83efd97d4fc2f4/sources/chelsea"
   )
     .to_return(
-      body: JSON.unparse({}),
+      body: JSON.unparse({"statusUrl": "api/v2/scan/applications/4537e6fe68c24dd5ac83efd97d4fc2f4/status/9cee2b6366fc4d328edc318eae46b2cb"}),
       status: 202,
       headers: _json_headers
     )
@@ -62,7 +62,7 @@ def stub_iq_response(server_url: 'localhost:8070', public_application_id: 'testa
             ]
           }
         ),
-      status: 202,
+      status: 200,
       headers: _json_headers
     )
 end
