@@ -12,11 +12,13 @@ module Chelsea
   def self.config(options = {})
     if !options[:user].nil? && !options[:token].nil?
       Chelsea::OSSIndex.new(
-        oss_index_user_name: options[:user],
-        oss_index_user_token: options[:token]
+        options: {
+          oss_index_user_name: options[:user],
+          oss_index_user_token: options[:token]
+        }
       )
     else
-      Chelsea::OSSIndex.new(oss_index_config)
+      Chelsea::OSSIndex.new(options: oss_index_config)
     end
   end
 

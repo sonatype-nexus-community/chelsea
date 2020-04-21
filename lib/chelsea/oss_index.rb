@@ -6,9 +6,13 @@ require_relative 'db'
 
 module Chelsea
   class OSSIndex
-    def initialize(oss_index_user_name: '', oss_index_user_token: '')
-      @oss_index_user_name = oss_index_user_name
-      @oss_index_user_token = oss_index_user_token
+    DEFAULT_OPTIONS = {
+      oss_index_username: '',
+      oss_index_user_token: ''
+    }
+    def initialize(options: DEFAULT_OPTIONS)
+      @oss_index_user_name = options[:oss_index_user_name]
+      @oss_index_user_token = options[:oss_index_user_token]
       @db = DB.new
     end
 
@@ -31,6 +35,7 @@ module Chelsea
 
     def call_oss_index(coords)
       r = _resource.post coords.to_json, _headers
+      puts JSON.parse(r.body)
       r.code == 200 ? JSON.parse(r.body) : {}
     end
 
