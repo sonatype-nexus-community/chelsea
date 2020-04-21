@@ -22,10 +22,10 @@ module Chelsea
       if @opts.config?
         _set_config # move to init
       elsif @opts.file? && @opts.iq?
-        gems = _process_file_iq
-        _submit_sbom(gems)
+        dependencies = _process_file_iq
+        _submit_sbom(dependencies)
       elsif @opts.file?
-        gems = _process_file
+        _process_file
       elsif @opts.help? # quit on opts.help earlier
         puts _cli_flags # this doesn't exist
       end
@@ -61,8 +61,7 @@ module Chelsea
         quiet: @opts[:quiet],
         options: @opts
       )
-      gems.execute # should be more like collect
-      gems
+      gems.execute ? (exit 1) : (exit 0)
     end
 
     def _process_file_iq

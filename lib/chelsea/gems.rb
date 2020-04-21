@@ -48,7 +48,7 @@ module Chelsea
       results = @formatter.get_results(server_response, reverse_dependencies)
       @formatter.do_print(results)
 
-      server_response.map { |r| r['vulnerabilities'].length.positive? }.any? ? (exit 1) : (exit 0)
+      server_response.map { |r| r['vulnerabilities'].length.positive? }.any?
     end
 
     def collect_iq
