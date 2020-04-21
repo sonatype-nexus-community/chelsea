@@ -35,7 +35,6 @@ module Chelsea
 
     def call_oss_index(coords)
       r = _resource.post coords.to_json, _headers
-      puts JSON.parse(r.body)
       r.code == 200 ? JSON.parse(r.body) : {}
     end
 
