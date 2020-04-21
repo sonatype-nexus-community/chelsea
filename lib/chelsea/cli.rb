@@ -47,11 +47,12 @@ module Chelsea
         }
       )
       bom = Chelsea::Bom.new(gems.deps.dependencies).collect
-      status_url = iq.submit_sbom(bom)
 
-      if status_url
-        iq.poll(status_url)
-      end
+      status_url = iq.post_sbom(bom)
+      
+      return unless status_url
+
+      iq.poll_status(status_url)
     end
 
     def _process_file
