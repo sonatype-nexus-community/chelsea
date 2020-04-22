@@ -1,12 +1,13 @@
-# Chelsea
-
 <p align="center">
     <img src="https://github.com/sonatype-nexus-community/chelsea/blob/master/docs/images/chelsea.png" width="350"/>
 </p>
+<p align="center">
+    <a href="https://rubygems.org/gems/chelsea"><img src="https://img.shields.io/gem/v/chelsea" /></a>
+    <a href="https://gitter.im/sonatype-nexus-community/chelsea?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge"><img src="https://badges.gitter.im/sonatype-nexus-community/chelsea.svg" /></a>
+    <a href="https://circleci.com/gh/sonatype-nexus-community/chelsea"><img src="https://circleci.com/gh/sonatype-nexus-community/chelsea.svg?style=shield" /></a>
+</p>
 
-![Gem](https://img.shields.io/gem/v/chelsea)
-[![Gitter](https://badges.gitter.im/sonatype-nexus-community/chelsea.svg)](https://gitter.im/sonatype-nexus-community/chelsea?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
-[![CircleCI](https://circleci.com/gh/sonatype-nexus-community/chelsea.svg?style=shield)](https://circleci.com/gh/sonatype-nexus-community/chelsea)
+# Chelsea
 
 Chelsea is a CLI application written in Ruby, designed to allow you to scan your RubyGem powered projects and report on any vulnerabilities in your third party dependencies. It is powered by [Sonatype's OSS Index.](https://ossindex.sonatype.org/)
 
