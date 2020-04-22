@@ -112,7 +112,7 @@ module Chelsea
     end
 
     def _set_config
-      Chelsea.read_oss_index_config_from_command_line
+      Chelsea.read_config_from_command_line
     end
   end
 end
