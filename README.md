@@ -127,6 +127,33 @@ Chelsea will cache results from OSS Index, preventing Rate Limiting to occur in 
 
 Chelsea will prompt you to save your config, provide your username (email address that you registered on OSS Index with), and API Token, save those, and voila! Your rate limiting should be sufficient for most use cases at this point. If it isn't, get in touch via our GitHub issues, and we can take a look at your use case and potentially partner!
 
+### Usage with Nexus IQ Server
+
+Chelsea can as well work with Sonatype's Nexus IQ Server, allowing you to set policy related to your open source consumption, letting you fine tune what you consume.
+
+To use with Nexus IQ Server, run Chelsea like so:
+
+`chelsea --file Gemfile.lock --application yourpublicapplicationid --iq`
+
+Output after running will look like so, assuming you have no policy violations:
+
+```
+$ chelsea --file Gemfile.lock --application testapp --iq
+ _____  _            _                   
+/  __ \| |          | |                  
+| /  \/| |__    ___ | | ___   ___   __ _ 
+| |    | '_ \  / _ \| |/ __| / _ \ / _` |
+| \__/\| | | ||  __/| |\__ \|  __/| (_| |
+ \____/|_| |_| \___||_||___/ \___| \__,_|
+                                         
+                                         
+Version: 0.0.13
+[+] Submitting sbom to Nexus IQ Server ...done.
+[+] Polling Nexus IQ Server for results ...done.
+Hi! Chelsea here, no policy violations for this audit!
+Report URL: http://localhost:8070/ui/links/application/testapp/report/0e0f469269534b7a809304b5f68cdd88
+```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
