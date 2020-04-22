@@ -1,5 +1,9 @@
 # Chelsea
 
+<p align="center">
+    <img src="https://github.com/sonatype-nexus-community/chelsea/blob/master/docs/images/chelsea.png" width="350"/>
+</p>
+
 ![Gem](https://img.shields.io/gem/v/chelsea)
 [![Gitter](https://badges.gitter.im/sonatype-nexus-community/chelsea.svg)](https://gitter.im/sonatype-nexus-community/chelsea?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![CircleCI](https://circleci.com/gh/sonatype-nexus-community/chelsea.svg?style=shield)](https://circleci.com/gh/sonatype-nexus-community/chelsea)
