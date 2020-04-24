@@ -13,8 +13,9 @@ module Chelsea
       @lockfile = Bundler::LockfileParser.new(File.read(path))
     end
 
-    def nil?
-      @dependencies.empty?
+    def audit
+      lockfile_as_dependencies
+      filter_reverse_dependencies
     end
 
     def self.to_purl(name, version)
@@ -24,43 +25,60 @@ module Chelsea
     # Parses specs from lockfile instanct var and
     # inserts into dependenices instance var
     def dependencies
-      @lockfile.specs.each_with_object({}) do |gem, h|
-        h[gem.name] = [gem.name, gem.version]
-      end
+      @dependencies ||= lockfile_as_dependencies
+      @dependencies
     end
 
-    # Collects all reverse dependencies in reverse_dependencies instance var
-    # this rescue block honks
     def reverse_dependencies
-      _reverse_command
-        .transform_values! do |reverse_dep|
-          reverse_dep.select do |name, _dep, _req, _|
-            _lockfile_specs.include?(name.split('-')[0])
-          end
-        end
+      @reverse_dependencies ||= filter_reverse_dependencies
+      @reverse_dependencies
+    end
+
+    def coordinates
+      @coordinates ||= dependencies_as_coordinates
+      @coordinates
     end
 
     # Iterates over all dependencies and stores them
-    # in dependencies_versions and coordinates instance vars
-    def coordinates
+    # in dependencies_versions giand coordinates instance vars
+    def dependencies_as_coordinates
       dependencies
         .each_with_object({ 'coordinates' => [] }) do |(name, v), coords|
         coords['coordinates'] << self.class.to_purl(name, v[1])
       end
     end
 
-    def _reverse_command
+    # Collects all reverse dependencies in reverse_dependencies instance var
+    # this rescue block honks
+    def filter_reverse_dependencies
+      spec_names = lockfile_specs
+      reverse_command
+        .transform_values! do |reverse_dep|
+          reverse_dep.select do |name, _dep, _req, _|
+            spec_names.include?(name.split('-')[0])
+          end
+        end
+    end
+
+    private
+
+    def lockfile_specs
+      @lockfile.specs.map { |i| i.to_s.split }.map do |n, _v|
+        n.to_s
+      end
+    end
+
+    def reverse_command
       reverse = Gem::Commands::DependencyCommand.new
       reverse.options[:reverse_dependencies] = true
       reverse.options[:pipe_format] = true
       reverse.reverse_dependencies(@lockfile.specs)
     end
 
-    def _lockfile_specs
-      @spec_names ||= @lockfile.specs.map { |i| i.to_s.split }.map do |n, _v|
-        n.to_s
+    def lockfile_as_dependencies
+      @lockfile.specs.each_with_object({}) do |gem, h|
+        h[gem.name] = [gem.name, gem.version]
       end
-      @spec_names
     end
   end
 end
