@@ -8,9 +8,9 @@ RSpec.describe Chelsea::JsonFormatter do
     server_response.push(populate_server_response("test", "test", "test")) 
     server_response.push(populate_server_response("test2", "test2", "test2"))
     server_response.push(populate_server_response_vulnerability(populate_server_response("pkg:npm/js-yaml@1.0.0", "YAML 1.2 parser and serializer", "https://ossindex.sonatype.org/component/pkg:npm/js-yaml@1.0.0")))
-    command = Chelsea::JsonFormatter.new({})
+    command = Chelsea::JsonFormatter.new(server_response: server_response, reverse_dependencies: {})
 
-    json = command.get_results(server_response, {})
+    json = command.results
 
     expect(json.class).to eq(String)
 

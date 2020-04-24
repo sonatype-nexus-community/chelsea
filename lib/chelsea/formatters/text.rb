@@ -3,15 +3,11 @@ require_relative 'formatter'
 
 module Chelsea
   class TextFormatter < Formatter
-    def initialize(quiet: false)
-      @quiet = quiet
-      @pastel = Pastel.new
-    end
 
-    def get_results(server_response, reverse_dependencies)
-      response = String.new
-      if !@quiet
-        response += "\n"\
+    def parse_results(server_response, reverse_dependencies)
+      results = String.new
+      unless @quiet
+        results += "\n"\
         "Audit Results\n"\
         "=============\n"
       end
@@ -29,24 +25,23 @@ module Chelsea
         version = coord.split('@')[1]
         reverse_deps = reverse_dependencies["#{name}-#{version}"]
         if vulnerable
-          response += @pastel.red("[#{i}/#{count}] - #{package} ") + @pastel.red.bold("Vulnerable.\n")
-          response += _get_reverse_deps(reverse_deps, name) if reverse_deps
+          results += @pastel.red("[#{i}/#{count}] - #{package} ") + @pastel.red.bold("Vulnerable.\n")
+          results += _get_reverse_deps(reverse_deps, name) if reverse_deps
           r['vulnerabilities'].each do |k, _|
-            response += _format_vuln(k)
+            results += _format_vuln(k)
           end
         else
-          if !@quiet
-            response += @pastel.white("[#{i}/#{count}] - #{package} ") + @pastel.green.bold("No vulnerabilities found!\n")
-            response += _get_reverse_deps(reverse_deps, name) if reverse_deps
+          unless @quiet
+            results += @pastel.white("[#{i}/#{count}] - #{package} ") + @pastel.green.bold("No vulnerabilities found!\n")
+            results += _get_reverse_deps(reverse_deps, name) if reverse_deps
           end
         end
       end
-
-      response
+      results
     end
 
-    def do_print(results)
-      puts results
+    def do_print
+      puts @results
     end
 
     def _format_vuln(vuln)

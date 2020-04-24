@@ -25,11 +25,12 @@ module Chelsea
         require_relative 'db'
         Chelsea::DB.new().clear_cache
         puts "OSS Index cache cleared"
-      elsif @opts.file? && @opts.iq?
-        dependencies = _process_file_iq
-        _submit_sbom(dependencies)
       elsif @opts.file?
-        _process_file
+        if  @opts.iq?
+          _submit_sbom(_process_file_iq)
+        else
+          _process_file
+        end
       elsif @opts.help? # quit on opts.help earlier
         puts _cli_flags # this doesn't exist
       end
@@ -53,7 +54,6 @@ module Chelsea
       bom = Chelsea::Bom.new(gems.deps.dependencies).collect
 
       status_url = iq.post_sbom(bom)
-      
       return unless status_url
 
       iq.poll_status(status_url)
@@ -74,8 +74,7 @@ module Chelsea
         quiet: @opts[:quiet],
         options: @opts
       )
-      gems.collect_iq
-      gems
+      gems.deps.dependencies
     end
 
     def _flags_error

@@ -17,6 +17,7 @@ module Chelsea
     attr_accessor :deps
     def initialize(file:, quiet: false, options: { 'format': 'text' })
       @quiet = quiet
+      @format = options[:format]
       unless File.file?(file) || file.nil?
         raise 'Gemfile.lock not found, check --file path'
       end
@@ -24,9 +25,7 @@ module Chelsea
       _silence_stderr if @quiet
 
       @pastel = Pastel.new
-      @formatter = FormatterFactory.new.get_formatter(
-        format: options[:format],
-        quiet: @quiet)
+
       @client = Chelsea.client(options)
       @deps = Chelsea::Deps.new(path: Pathname.new(file))
       @spinner = Chelsea::Spinner.new
@@ -38,16 +37,21 @@ module Chelsea
     # on REST calls made by @deps.get_vulns
     def execute
       server_response = @client.get_vulns(@deps.coordinates)
-      if @deps.dependencies.nil?
-        _print_err 'No dependencies retrieved. Exiting.'
-        return
-      end
-      if server_response.nil?
-        _print_err 'No vulnerability data retrieved from server. Exiting.'
-        return
-      end
-      results = @formatter.get_results(server_response, @deps.reverse_dependencies)
-      @formatter.do_print(results)
+      # if @deps.dependencies.nil? # Should be exceptions
+      #   p _err 'No dependencies retrieved. Exiting.'
+      #   return
+      # end
+      # if server_response.nil? #Should be exception
+      #   p _err 'No vulnerability data retrieved from server. Exiting.'
+      #   return
+      # end
+      @formatter = FormatterFactory.new.get_formatter(
+        format: @format,
+        quiet: @quiet,
+        server_response: server_response,
+        reverse_dependencies: @deps.reverse_dependencies
+      )
+      @formatter.do_print
 
       server_response.map { |r| r['vulnerabilities'].length.positive? }.any?
     end
@@ -62,12 +66,12 @@ module Chelsea
       $stderr.reopen('/dev/null', 'w')
     end
 
-    def _print_err(s)
-      puts @pastel.red.bold(s)
+    def _err(msg)
+      @pastel.red.bold(msg)
     end
 
-    def _print_success(s)
-      puts @pastel.green.bold(s)
+    def _success(msg)
+      @pastel.green.bold(msg)
     end
   end
 end

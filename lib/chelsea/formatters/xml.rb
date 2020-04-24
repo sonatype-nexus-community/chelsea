@@ -2,11 +2,8 @@ require 'ox'
 require_relative 'formatter'
 module Chelsea
   class XMLFormatter < Formatter
-    def initialize(options)
-      @options = options
-    end
 
-    def get_results(server_response, reverse_deps)
+    def parse_results(server_response, reverse_deps)
       doc = Ox::Document.new
       instruct = Ox::Instruct.new(:xml)
       instruct[:version] = '1.0'
@@ -37,8 +34,8 @@ module Chelsea
       doc
     end
 
-    def do_print(results)
-      puts Ox.dump(results)
+    def do_print
+      puts Ox.dump(@results)
     end
 
     def get_vulnerability_block(vulnerabilities)
