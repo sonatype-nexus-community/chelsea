@@ -18,7 +18,7 @@ module Chelsea
 
       i = 0
       count = server_response.count()
-      server_response.sort! {|x| x['vulnerabilities'].count}
+      server_response.sort! { |x| x['vulnerabilities'].count }
 
       server_response.each do |r|
         i += 1
