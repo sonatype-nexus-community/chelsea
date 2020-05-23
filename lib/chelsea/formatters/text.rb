@@ -1,4 +1,5 @@
 require 'pastel'
+require 'tabulo'
 require_relative 'formatter'
 
 module Chelsea
@@ -42,6 +43,11 @@ module Chelsea
         end
       end
 
+      rows = [["Dependencies Audited", count],["Vulnerable Dependencies", 0]]
+
+      table = Tabulo::Table.new(rows, :itself).pack.to_s
+
+      response += table
       response
     end
 
