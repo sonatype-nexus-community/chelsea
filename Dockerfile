@@ -26,13 +26,7 @@ USER jenkins
 
 WORKDIR /home/jenkins
 
-COPY Gemfile .
-
-COPY chelsea.gemspec .
-
-COPY Gemfile.lock .
-
-COPY lib/chelsea/version.rb .
+COPY . .
 
 RUN gem install bundler
 
