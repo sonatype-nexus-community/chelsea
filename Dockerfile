@@ -28,7 +28,7 @@ COPY . .
 
 RUN useradd -r -u 1002 -g 100 -d /home/jenkins jenkins
 
-RUN chown jenkins:100 /home/jenkins
+RUN chown -R jenkins:100 /home/jenkins
 
 USER jenkins
 
