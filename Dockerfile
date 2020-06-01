@@ -32,7 +32,7 @@ COPY chelsea.gemspec .
 
 COPY Gemfile.lock .
 
-COPY chelsea/version .
+COPY chelsea/version.rb .
 
 RUN gem install bundler
 
