@@ -22,6 +22,8 @@ RUN apt-get update && \
 
 RUN mkdir /home/jenkins
 
+COPY . .
+
 RUN useradd -r -u 1002 -g 100 -d /home/jenkins jenkins
 
 RUN chown jenkins:100 /home/jenkins
@@ -29,8 +31,6 @@ RUN chown jenkins:100 /home/jenkins
 USER jenkins
 
 WORKDIR /home/jenkins
-
-COPY . .
 
 RUN gem install bundler
 
