@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-FROM docker-all.repo.sonatype.com/ruby:2.6-slim
+FROM docker-all.repo.sonatype.com/ruby:2.6
 
 RUN apt-get update && \	
     apt-get install -y --no-install-recommends git && \
