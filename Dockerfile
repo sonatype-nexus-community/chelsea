@@ -14,21 +14,26 @@
 # limitations under the License.
 #
 
-require 'json'
-require_relative 'formatter'
+FROM docker-all.repo.sonatype.com/ruby:2.6
 
-module Chelsea
-  class JsonFormatter < Formatter
-    def initialize(options)
-      @options = options
-    end
+RUN apt-get update && \	
+    apt-get install -y --no-install-recommends git && \
+    rm -rf /var/lib/apt/lists/*
 
-    def get_results(server_response, reverse_deps)
-      server_response.to_json
-    end
+RUN mkdir /home/jenkins
 
-    def do_print(result)
-      puts result
-    end
-  end
-end
+WORKDIR /home/jenkins
+
+COPY . .
+
+RUN useradd -r -u 1002 -g 100 -d /home/jenkins jenkins
+
+RUN chown -R jenkins:100 /home/jenkins
+
+USER jenkins
+
+RUN gem install bundler
+
+RUN bundle install
+
+CMD ["/bin.bash"]
