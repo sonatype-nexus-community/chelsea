@@ -32,7 +32,7 @@ dockerizedBuildPipeline(
         sh '''
         gem build chelsea.gemspec
         gem install ./chelsea-*.gem
-        chelsea --file Gemfile.lock -a chelsea -iu $IQ_USERNAME -it $IQ_PASSWORD -i https://policy.ci.sonatype.dev
+        chelsea --file Gemfile.lock -b -a chelsea -iu $IQ_USERNAME -it $IQ_PASSWORD -i https://policy.ci.sonatype.dev
         '''
       }
     })
