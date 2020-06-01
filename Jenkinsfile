@@ -23,15 +23,17 @@ dockerizedBuildPipeline(
   buildAndTest: {
     sh '''
     bundle exec rspec --format progress --format RspecJunitFormatter --out test_results/rspec.xml
-    gem build chelsea.gemspec
-    gem install ./chelsea-*.gem
     '''
   },
   vulnerabilityScan: {
     withDockerImage(env.DOCKER_IMAGE_ID, {
       withCredentials([usernamePassword(credentialsId: 'policy.s integration account',
         usernameVariable: 'IQ_USERNAME', passwordVariable: 'IQ_PASSWORD')]) {
-        sh 'chelsea --file Gemfile.lock iq -a chelsea -iu $IQ_USERNAME -it $IQ_PASSWORD -i https://policy.ci.sonatype.dev'
+        sh '''
+        gem build chelsea.gemspec
+        gem install ./chelsea-*.gem
+        chelsea --file Gemfile.lock iq -a chelsea -iu $IQ_USERNAME -it $IQ_PASSWORD -i https://policy.ci.sonatype.dev
+        '''
       }
     })
   },
