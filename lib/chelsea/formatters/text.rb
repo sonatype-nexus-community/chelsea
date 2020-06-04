@@ -1,5 +1,5 @@
 require 'pastel'
-require 'tabulo'
+require 'tty-table'
 require_relative 'formatter'
 
 module Chelsea
@@ -18,6 +18,7 @@ module Chelsea
       end
 
       i = 0
+      vuln_count = 0
       count = server_response.count()
       server_response.sort! {|x| x['vulnerabilities'].count}
 
@@ -30,6 +31,7 @@ module Chelsea
         version = coord.split('@')[1]
         reverse_deps = reverse_dependencies["#{name}-#{version}"]
         if vulnerable
+          vuln_count += 1
           response += @pastel.red("[#{i}/#{count}] - #{package} ") + @pastel.red.bold("Vulnerable.\n")
           response += _get_reverse_deps(reverse_deps, name) if reverse_deps
           r['vulnerabilities'].each do |k, _|
@@ -43,11 +45,8 @@ module Chelsea
         end
       end
 
-      rows = [["Dependencies Audited", count],["Vulnerable Dependencies", 0]]
-
-      table = Tabulo::Table.new(rows, :itself).pack.to_s
-
-      response += table
+      table = TTY::Table.new ['Dependencies Audited', 'Vulnerable Dependencies'], [[count,vuln_count]]
+      response += table.render(:unicode)
       response
     end
 
