@@ -1,0 +1,12 @@
+<excludes>
+  <exclude>src/.circleci/circleci-readme.md</exclude>
+  <exclude>src/.github/**</exclude>
+  <exclude>src/.vscode/**</exclude>
+  <exclude>src/Gemfile</exclude>
+  <exclude>src/Gemfile.lock</exclude>
+  <exclude>src/.rspec</exclude>
+  <exclude>src/spec/testdata/**</exclude>
+  <exclude>src/chelsea.gemspec</exclude>
+  <exclude>src/CODE_OF_CONDUCT.md</exclude>
+  <exclude>src/CONTRIBUTORS.md</exclude>
+</excludes>
