@@ -31,6 +31,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "rest-client", "~> 2.0.2"
   spec.add_dependency "bundler", ">= 1.2.0", "< 3"
   spec.add_dependency "ox", "~> 2.13.2"
+  spec.add_dependency "tty-table", "~> 0.11.0"
 
   spec.add_development_dependency "rake", "~> 12.3"
   spec.add_development_dependency "rspec", "~> 3.0"
