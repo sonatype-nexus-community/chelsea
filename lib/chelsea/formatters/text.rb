@@ -20,14 +20,14 @@ require_relative 'formatter'
 
 module Chelsea
   class TextFormatter < Formatter
-    def initialize(verbose: false)
-      @verbose = verbose
+    def initialize(options)
+      @options = options
       @pastel = Pastel.new
     end
 
     def get_results(server_response, reverse_dependencies)
       response = ''
-      if @verbose
+      if @options[:verbose]
         response += "\n"\
         "Audit Results\n"\
         "=============\n"
@@ -49,7 +49,7 @@ module Chelsea
           r['vulnerabilities'].each do |k, _|
             response += _format_vuln(k)
           end
-        elsif @verbose
+        elsif @options[:verbose]
           response += @pastel.white(
             "[#{idx}/#{server_response.count}] - #{r['coordinates']} "
           )
