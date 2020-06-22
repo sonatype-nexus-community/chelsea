@@ -31,18 +31,19 @@ module Chelsea
   # Class to collect and audit packages from a Gemfile.lock
   class Gems
     attr_accessor :deps
-    def initialize(file:, quiet: false, options: { 'format': 'text' })
-      @quiet = quiet
+    def initialize(file:, verbose:, options: { 'format': 'text' })
+      @verbose = verbose
       unless File.file?(file) || file.nil?
         raise 'Gemfile.lock not found, check --file path'
       end
 
-      _silence_stderr if @quiet
+      _silence_stderr unless @verbose
 
       @pastel = Pastel.new
       @formatter = FormatterFactory.new.get_formatter(
         format: options[:format],
-        quiet: @quiet)
+        verbose: verbose
+      )
       @client = Chelsea.client(options)
       @deps = Chelsea::Deps.new(path: Pathname.new(file))
       @spinner = Chelsea::Spinner.new
@@ -58,7 +59,7 @@ module Chelsea
         return
       end
       if server_response.nil?
-        _print_err 'No vulnerability data retrieved from server. Exiting.'
+        _print_success 'No vulnerability data retrieved from server. Exiting.'
         return
       end
       results = @formatter.get_results(server_response, reverse_dependencies)
@@ -94,6 +95,7 @@ module Chelsea
       coordinates = @deps.coordinates
       spin.success('...done.')
       spin = @spinner.spin_msg 'Making request to OSS Index server'
+      spin.stop
 
       begin
         server_response = @client.get_vulns(coordinates)
@@ -110,9 +112,6 @@ module Chelsea
       rescue Errno::ECONNREFUSED => e
         spin.stop('...request failed.')
         _print_err 'Error getting data from OSS Index server. Connection refused.'
-      rescue StandardError => e
-        spin.stop('...request failed.')
-        _print_err 'UNKNOWN Error getting data from OSS Index server.'
       end
       [server_response, dependencies, reverse_dependencies]
     end

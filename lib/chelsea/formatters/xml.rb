@@ -31,8 +31,8 @@ module Chelsea
       doc << instruct
 
       testsuite = Ox::Element.new('testsuite')
-      testsuite[:name] = "purl"
-      testsuite[:tests] = server_response.count()
+      testsuite[:name] = 'purl'
+      testsuite[:tests] = server_response.count
       doc << testsuite
 
       server_response.each do |coord|
@@ -40,14 +40,15 @@ module Chelsea
         testcase[:classname] = coord["coordinates"]
         testcase[:name] = coord["coordinates"]
 
-        if coord["vulnerabilities"].length() > 0
+        if coord['vulnerabilities'].length.positive?
           failure = Ox::Element.new('failure')
           failure[:type] = "Vulnerable Dependency"
           failure << get_vulnerability_block(coord["vulnerabilities"])
           testcase << failure
+          testsuite << testcase
+        elsif @options[:verbose]
+          testsuite << testcase
         end
-
-        testsuite << testcase
       end
 
       doc

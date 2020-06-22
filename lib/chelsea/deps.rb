@@ -23,8 +23,8 @@ require 'rest-client'
 
 module Chelsea
   class Deps
-    def initialize(path:, quiet: false)
-      @quiet = quiet
+    def initialize(path:, verbose: false)
+      @verbose = verbose
       ENV['BUNDLE_GEMFILE'] = File.expand_path(path).chomp('.lock')
       @lockfile = Bundler::LockfileParser.new(File.read(path))
     end
@@ -57,7 +57,7 @@ module Chelsea
       reverse
         .reverse_dependencies(@lockfile.specs)
         .to_h
-        .transform_values do |reverse_dep|
+        .transform_values! do |reverse_dep|
           reverse_dep.select do |name, _dep, _req, _|
             spec_names.include?(name.split('-')[0])
           end

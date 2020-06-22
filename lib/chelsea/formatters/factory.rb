@@ -20,16 +20,16 @@ require_relative 'text'
 
 # Factory for formatting dependencies
 class FormatterFactory
-  def get_formatter(format: 'text', quiet: false)
+  def get_formatter(format: 'text', verbose:)
     case format
     when 'text'
-      Chelsea::TextFormatter.new quiet: quiet
+      Chelsea::TextFormatter.new verbose: verbose
     when 'json'
-      Chelsea::JsonFormatter.new quiet: quiet
+      Chelsea::JsonFormatter.new verbose: verbose
     when 'xml'
-      Chelsea::XMLFormatter.new quiet: quiet
+      Chelsea::XMLFormatter.new verbose: verbose
     else
-      Chelsea::TextFormatter.new quiet: quiet
+      Chelsea::TextFormatter.new verbose: verbose
     end
   end
 end

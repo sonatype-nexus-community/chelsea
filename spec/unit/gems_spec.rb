@@ -18,27 +18,27 @@ require 'chelsea/gems'
 require 'spec_helper'
 
 RSpec.describe Chelsea::Gems do
-  before(:all) {
+  before(:all) do
     stub_oss_response
-  }
+  end
 
   describe 'when talking to OSS Index' do
     context 'given a valid Gemfile.lock' do
       file = 'spec/testdata/Gemfile.lock'
       it 'can collect dependencies, query, and print results' do
-        command = Chelsea::Gems.new(file: file)
+        command = Chelsea::Gems.new(file: file, verbose: true)
         expect { command.execute }.to_not raise_error
       end
     end
-  end
     context 'given an invalid Gemfile.lock' do
       file = 'spec/Gemfile.lock'
       it 'will exit with a RuntimeError' do
-        expect{ Chelsea::Gems.new(file: file) }
+        expect{ Chelsea::Gems.new(file: file, verbose: true) }
           .to raise_error(
             RuntimeError,
             'Gemfile.lock not found, check --file path'
           )
       end
     end
+  end
 end
