@@ -19,11 +19,11 @@ require 'spec_helper'
 
 RSpec.describe Chelsea::Deps do
   context 'given a valid Gemfile.lock' do
-    before(:all) {
+    before(:all) do
       stub_oss_response
       file = 'spec/testdata/Gemfile.lock'
       @dependencies, @reverse_dependencies, @coordinates = process_deps_from_gemfile(file)
-    }
+    end
     it 'can collect dependencies' do
       expect(@dependencies.class).to eq(Hash)
       expect(@dependencies.empty?).to eq(false)

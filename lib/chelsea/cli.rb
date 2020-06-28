@@ -78,7 +78,7 @@ module Chelsea
     def _process_file
       gems = Chelsea::Gems.new(
         file: @opts[:file],
-        quiet: @opts[:quiet],
+        verbose: @opts[:verbose],
         options: @opts
       )
       gems.execute ? (exit 1) : (exit 0)
@@ -87,7 +87,7 @@ module Chelsea
     def _process_file_iq
       gems = Chelsea::Gems.new(
         file: @opts[:file],
-        quiet: @opts[:quiet],
+        verbose: @opts[:verbose],
         options: @opts
       )
       gems.collect_iq
