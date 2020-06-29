@@ -56,23 +56,21 @@ module Chelsea
     # Audits depenencies using lockfile library and prints results
     # using formatter library
 
-    def execute
+    def generate
       dependencies = _parse_dependencies
-      server_response = _get_vulns
+      oi_response = _get_vulns
       if dependencies.nil?
         _print_err 'No dependencies read. Exiting.'
         return
       end
-      if server_response.nil?
+      if oi_response.json.nil?
         _print_success 'No vulnerability data retrieved from server. Exiting.'
         return
       end
-      @formatter.get_results(
-        server_response: server_response,
-        reverse_dependencies: reverse_dependencies
-      )
+      @formatter.oi_response = oi_response
+      @formatter.reverse_dependencies = reverse_dependencies
       @formatter.do_print
-      server_response.map { |r| r['vulnerabilities'].length.positive? }.any?
+      oi_response.vuln_count.positive?
     end
 
     protected

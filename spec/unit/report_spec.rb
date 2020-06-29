@@ -26,8 +26,8 @@ RSpec.describe Chelsea::Report do
     context 'given a valid Gemfile.lock' do
       file = 'spec/testdata/Gemfile.lock'
       it 'can collect dependencies, query, and print results' do
-        command = Chelsea::Report.new(file: file)
-        expect { command.execute }.to_not raise_error
+        report = Chelsea::Report.new(file: file)
+        expect { report.generate }.to_not raise_error
       end
     end
     context 'given an invalid Gemfile.lock' do

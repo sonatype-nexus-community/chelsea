@@ -21,32 +21,39 @@ require_relative 'formatter'
 module Chelsea
   # Formats Server response and reverse dependencies to JSON
   class TextFormatter < Formatter
+    attr_accessor :oi_response, :reverse_dependencies
     def initialize(options)
       @options = options
       @pastel = Pastel.new
       @output = ''
-      @vuln_count = 0
     end
 
-    def get_results(server_response:, reverse_dependencies:)
-      _write_header if @options[:verbose]
-      _count_vulns(server_response)
-      server_response.sort! { |x| x['vulnerabilities'].count }
-      server_response.each.with_index do |r, idx|
-        name, version = r['coordinates'].sub('pkg:gem/', '').split('@')
-        reverse_deps = reverse_dependencies["#{name}-#{version}"]
-        header = "[#{idx}/#{server_response.count}] - #{r['coordinates']} "
-        _parse_response(r, reverse_deps, header)
+    def format_response
+      @oi_response.json.map.with_index do |dep, idx|
+        reverse_deps = @reverse_dependencies["#{dep[:name]}-#{dep[:version]}"]
+        header = "[#{idx}/#{oi_response.dep_count}] - #{dep[:coordinates]} "
+        if dep[:vulnerable]
+          @output += @pastel.red(header)
+          @output += @pastel.red.bold("Vulnerable.\n")
+          @output += _parse_reverse_deps(reverse_deps, dep[:name]) if reverse_deps
+          _write_vulnerable_coordinates
+        elsif @options[:verbose]
+          @output += @pastel.red(header)
+          @output += @pastel.green.bold("No vulnerabilities found!\n")
+          @output += _parse_reverse_deps(reverse_deps, dep[:name]) if reverse_deps
+        end
       end
 
       table = TTY::Table.new(
         ['Dependencies Audited', 'Vulnerable Dependencies'],
-        [[server_response.count, @vuln_count]]
+        [[oi_response.dep_count, oi_response.vuln_count]]
       )
       @output += table.render(:unicode)
     end
 
     def do_print
+      _write_header if @options[:verbose]
+      format_response
       puts @output
     end
 
@@ -58,29 +65,9 @@ module Chelsea
         "=============\n"
     end
 
-    def _parse_response(r, reverse_deps, header)
-      name, _version = r['coordinates'].sub('pkg:gem/', '').split('@')
-      if r['vulnerabilities'].length.positive?
-        @output += @pastel.red(header)
-        @output += @pastel.red.bold("Vulnerable.\n")
-        @output += _get_reverse_deps(reverse_deps, name) if reverse_deps
-        _write_vulnerable_coordinates
-      elsif @options[:verbose]
-        @output += @pastel.red(header)
-        @output += @pastel.green.bold("No vulnerabilities found!\n")
-        @output += _get_reverse_deps(reverse_deps, name) if reverse_deps
-      end
-    end
-
     def _write_vulnerable_coordinates(res)
       res['vulnerabilities'].each do |k, _|
         @output += _format_vuln(k)
-      end
-    end
-
-    def _count_vulns(server_response)
-      @vuln_count = server_response.count do |vuln|
-        vuln['vulnerabilities'].length.positive?
       end
     end
 
@@ -118,7 +105,7 @@ module Chelsea
       end
     end
 
-    def _get_reverse_deps(coords, name)
+    def _parse_reverse_deps(coords, name)
       coords.each_with_object('') do |dep, s|
         dep.each do |gran|
           if gran.class == String && !gran.include?(name)

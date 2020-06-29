@@ -27,7 +27,7 @@ module Chelsea
     # Should this just be called lockfile?
     attr_reader :file
     def initialize(**options)
-      @verbose = options[:verbose]
+      @verbose = options[:verbose] || false
       # maybe unnecesary
       ENV['BUNDLE_GEMFILE'] = File.expand_path(options[:path]).chomp('.lock')
       @file = Bundler::LockfileParser.new(File.read(options[:path]))

@@ -81,7 +81,7 @@ module Chelsea
         verbose: @opts[:verbose],
         options: @opts
       )
-      report.execute ? (exit 1) : (exit 0)
+      report.generate ? (exit 1) : (exit 0)
     end
 
     def _process_file_iq

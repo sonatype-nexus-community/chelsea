@@ -19,6 +19,7 @@
 require_relative 'config'
 require 'rest-client'
 require_relative 'db'
+require_relative 'oi_response'
 
 module Chelsea
   # Class for making requests to OSS Index
@@ -39,7 +40,7 @@ module Chelsea
     def get_vulns(coordinates)
       remaining_coordinates, cached_server_response = _cache(coordinates)
       unless remaining_coordinates['coordinates'].count.positive?
-        return cached_server_response
+        return OIResponse.new(cached_server_response)
       end
 
       remaining_coordinates['coordinates'].each_slice(128).to_a.each do |coords|
@@ -48,7 +49,7 @@ module Chelsea
         @db.save_values_to_db(server_response)
       end
 
-      cached_server_response
+      OIResponse.new(cached_server_response)
     end
 
     def call_oss_index(coords)

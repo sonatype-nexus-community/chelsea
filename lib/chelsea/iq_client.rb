@@ -125,6 +125,9 @@ module Chelsea
     end
 
     def _poll_status
+      # Pretty horiffic polling. Let's do a backoff algo
+      # why is this a thing?
+
       return unless @status_url
 
       loop do
