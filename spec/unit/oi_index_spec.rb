@@ -14,16 +14,16 @@
 # limitations under the License.
 #
 
-require 'chelsea/oss_index'
+require 'chelsea/oi_client'
 require 'spec_helper'
 
-RSpec.describe Chelsea::OSSIndex do
+RSpec.describe Chelsea::OIClient do
   context 'with defaults' do
-    before(:all) {
-      @oss = Chelsea::OSSIndex.new
-    }
+    before(:all) do
+      @oss = Chelsea::OIClient.new
+    end
     it 'should instantiate the OSS Index client' do
-      expect(@oss.class).to eq Chelsea::OSSIndex
+      expect(@oss.class).to eq Chelsea::OIClient
     end
     # Check that defaults get set
   end

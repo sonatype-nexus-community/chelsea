@@ -57,9 +57,10 @@ module Chelsea
     # using formatter library
 
     def execute
-      server_response, dependencies = audit
+      dependencies = _parse_dependencies
+      server_response = _get_vulns
       if dependencies.nil?
-        _print_err 'No dependencies retrieved. Exiting.'
+        _print_err 'No dependencies read. Exiting.'
         return
       end
       if server_response.nil?
@@ -74,57 +75,58 @@ module Chelsea
       server_response.map { |r| r['vulnerabilities'].length.positive? }.any?
     end
 
-    # Runs through auditing algorithm, raising exceptions
-    # on REST calls made by @lockfile.get_vulns
-    def audit
-      # This spinner management is out of control
-      # we should wrap a block with start and stop messages,
-      # or use a stack to ensure all spinners stop.
-      spin = @spinner.spin_msg 'Parsing dependencies'
+    protected
 
-      begin
-        # maybe don't init deps until here
-        dependencies = @lockfile.dependencies
-        spin.success('...done.')
-      rescue StandardError => _e
-        spin.stop
-        _print_err "Parsing dependency line #{gem} failed."
-      end
-
-      spin = @spinner.spin_msg 'Parsing Versions'
-      coordinates = @lockfile.coordinates
-      spin.success('...done.')
+    def _get_vulns
       spin = @spinner.spin_msg 'Making request to OSS Index server'
-      spin.stop
-
       begin
-        server_response = @client.get_vulns(coordinates)
+        server_response = @client.get_vulns(_parse_versions)
         spin.success('...done.')
-      rescue SocketError => e
+      rescue SocketError => _e
         spin.stop('...request failed.')
         _print_err 'Socket error getting data from OSS Index server.'
       rescue RestClient::RequestFailed => e
         spin.stop('...request failed.')
         _print_err "Error getting data from OSS Index server:#{e.response}."
-      rescue RestClient::ResourceNotFound => e
+      rescue RestClient::ResourceNotFound => _e
         spin.stop('...request failed.')
         _print_err 'Error getting data from OSS Index server. Resource not found.'
-      rescue Errno::ECONNREFUSED => e
+      rescue Errno::ECONNREFUSED => _e
         spin.stop('...request failed.')
         _print_err 'Error getting data from OSS Index server. Connection refused.'
       end
-      puts( reverse_dependencies )
-      [server_response, dependencies, reverse_dependencies]
+      server_response
     end
 
-    protected
+    def _parse_versions
+      spin = @spinner.spin_msg 'Parsing Versions'
+      coordinates = @lockfile.coordinates
+      spin.success('...done.')
+      coordinates
+    end
+
+    def _parse_dependencies
+      spin = @spinner.spin_msg 'Parsing dependencies'
+      begin
+        # maybe don't init deps until here
+        # A lot of this design was with the intention of minimizing this access.
+        # Avoiding I/O, in this case, the reading of a file.
+        dependencies = @lockfile.dependencies
+        spin.success('...done.')
+      rescue StandardError => _e
+        # Test throwing this exceptions
+        spin.stop
+        _print_err "Parsing dependency line #{gem} failed."
+      end
+      dependencies
+    end
 
     # Collects all reverse dependencies from dependencies lockfile
     def reverse_dependencies
-      reverse = Gem::Commands::DependencyCommand.new
-      reverse.options[:reverse_dependencies] = true
+      reverse_command = Gem::Commands::DependencyCommand.new
+      reverse_command.options[:reverse_dependencies] = true
       # We want to filter the reverses dependencies by specs in lockfile
-      reverse
+      reverse_command
         .reverse_dependencies(@lockfile.file.specs)
         .to_h
         .transform_values! do |reverse_dep|
@@ -138,12 +140,12 @@ module Chelsea
       $stderr.reopen('/dev/null', 'w')
     end
 
-    def _print_err(s)
-      puts @pastel.red.bold(s)
+    def _print_err(msg)
+      puts @pastel.red.bold(msg)
     end
 
-    def _print_success(s)
-      puts @pastel.green.bold(s)
+    def _print_success(msg)
+      puts @pastel.green.bold(msg)
     end
   end
 end

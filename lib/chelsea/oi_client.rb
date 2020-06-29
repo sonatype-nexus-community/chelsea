@@ -21,7 +21,8 @@ require 'rest-client'
 require_relative 'db'
 
 module Chelsea
-  class OSSIndex
+  # Class for making requests to OSS Index
+  class OIClient
     DEFAULT_OPTIONS = {
       oss_index_username: '',
       oss_index_user_token: ''
@@ -42,9 +43,9 @@ module Chelsea
       end
 
       remaining_coordinates['coordinates'].each_slice(128).to_a.each do |coords|
-        res_json = JSON.parse(call_oss_index({ 'coordinates' => coords }))
-        cached_server_response = cached_server_response.concat(res_json)
-        @db.save_values_to_db(res_json)
+        server_response = call_oss_index({ 'coordinates' => coords })
+        cached_server_response = cached_server_response.concat(server_response)
+        @db.save_values_to_db(server_response)
       end
 
       cached_server_response
@@ -52,7 +53,7 @@ module Chelsea
 
     def call_oss_index(coords)
       r = _resource.post coords.to_json, _headers
-      r.code == 200 ? r.body : {}
+      r.code == 200 ? JSON.parse(r.body) : {}
     end
 
     private
@@ -76,15 +77,16 @@ module Chelsea
     end
 
     def _resource
-      if !@oss_index_user_name.empty? && !@oss_index_user_token.empty?
-        RestClient::Resource.new(
-          _api_url,
-          user: @oss_index_user_name,
-          password: @oss_index_user_token
-        )
-      else
-        RestClient::Resource.new(_api_url)
-      end
+      @resource ||= \
+        if !@oss_index_user_name.empty? && !@oss_index_user_token.empty?
+          RestClient::Resource.new(
+            _api_url,
+            user: @oss_index_user_name,
+            password: @oss_index_user_token
+          )
+        else
+          RestClient::Resource.new _api_url
+        end
     end
 
     def _api_url
