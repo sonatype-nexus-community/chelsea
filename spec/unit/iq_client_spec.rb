@@ -29,8 +29,7 @@ RSpec.describe Chelsea::IQClient do
     end
     context 'with an generated dependencies sbom' do
       it 'should be able to submit an sbom' do
-        deps = get_test_dependencies
-        bom = Chelsea::Bom.new(deps)
+        bom = Chelsea::Bom.new(get_test_dependencies)
         stub_iq_response
         stub_sbom
         expect(@client.post_sbom(bom)).to eq "api/v2/scan/applications/4537e6fe68c24dd5ac83efd97d4fc2f4/status/9cee2b6366fc4d328edc318eae46b2cb"
@@ -49,8 +48,7 @@ RSpec.describe Chelsea::IQClient do
       @client = Chelsea::IQClient.new(options: @opts)
     }
     it 'should be able to submit an sbom' do
-      deps = get_test_dependencies
-      bom = Chelsea::Bom.new(deps)
+      bom = Chelsea::Bom.new(get_test_dependencies)
       stub_iq_response(**@opts)
       stub_sbom(**@opts)
       expect(@client.post_sbom(bom)).to eq "api/v2/scan/applications/4537e6fe68c24dd5ac83efd97d4fc2f4/status/9cee2b6366fc4d328edc318eae46b2cb"

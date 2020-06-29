@@ -32,7 +32,10 @@ RSpec.describe Chelsea::XMLFormatter do
     server_response.push(populate_server_response_vulnerability(populate_server_response("pkg:npm/js-yaml@1.0.0", "YAML 1.2 parser and serializer", "https://ossindex.sonatype.org/component/pkg:npm/js-yaml@1.0.0")))
     command = Chelsea::XMLFormatter.new({verbose: true})
 
-    xml = command.get_results(server_response, {})
+    xml = command.get_results(
+      server_response: server_response,
+      reverse_dependencies: {}
+    )
 
     expect(xml.class).to eq(Ox::Document)
 

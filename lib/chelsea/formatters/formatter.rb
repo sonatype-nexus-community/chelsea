@@ -21,7 +21,7 @@ module Chelsea
       @pastel = Pastel.new
     end
 
-    def get_results
+    def get_results(*)
       raise 'must implement get_results method in subclass'
     end
 

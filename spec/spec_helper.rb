@@ -19,12 +19,9 @@ require 'webmock/rspec'
 
 WebMock.disable_net_connect!(allow_localhost: true)
 
-def process_deps_from_gemfile(file)
-  deps = Chelsea::Deps.new({ path: Pathname.new(file) })
-  dependencies = deps.dependencies
-  reverse_dependencies = deps.reverse_dependencies
-  coordinates = deps.coordinates
-  [dependencies, reverse_dependencies, coordinates]
+def process_lockfile(file)
+  lockfile = Chelsea::Lockfile.new({ path: Pathname.new(file) })
+  [lockfile.dependencies, lockfile.coordinates]
 end
 
 def _json_headers
@@ -106,8 +103,8 @@ def get_test_dependencies
       }
     ).to_return(status: 200, body: OSS_INDEX_RESPONSE, headers: {})
   file = 'spec/testdata/Gemfile.lock'
-  deps = Chelsea::Deps.new({ path: Pathname.new(file) })
-  deps.dependencies
+  lockfile = Chelsea::Lockfile.new({ path: Pathname.new(file) })
+  lockfile.dependencies
 end
 
 def get_coordinates

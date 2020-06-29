@@ -28,7 +28,7 @@ module Chelsea
       @vuln_count = 0
     end
 
-    def get_results(server_response, reverse_dependencies)
+    def get_results(server_response:, reverse_dependencies:)
       _write_header if @options[:verbose]
       _count_vulns(server_response)
       server_response.sort! { |x| x['vulnerabilities'].count }

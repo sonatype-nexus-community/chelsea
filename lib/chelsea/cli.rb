@@ -25,7 +25,7 @@ require_relative 'config'
 
 module Chelsea
   ##
-  # This class provides an interface to the oss index, gems and deps
+  # This class provides an interface to the oss index, gems and lockfile
   class CLI
     def initialize(opts)
       @opts = opts
@@ -39,11 +39,12 @@ module Chelsea
         _set_config # move to init
       elsif @opts.clear?
         require_relative 'db'
+        # Class Method?
         Chelsea::DB.new().clear_cache
-        puts "OSS Index cache cleared"
+        puts 'OSS Index cache cleared'
       elsif @opts.file? && @opts.iq?
-        dependencies = _process_file_iq
-        _submit_sbom(dependencies)
+        report = _process_file
+        _submit_sbom(report.dependencies)
       elsif @opts.file?
         _process_file
       elsif @opts.help? # quit on opts.help earlier
@@ -66,10 +67,9 @@ module Chelsea
           auth_token: @opts[:iqpass]
         }
       )
-      bom = Chelsea::Bom.new(report.deps.dependencies).collect
+      bom = Chelsea::Bom.new(report.lockfile.dependencies).collect
 
       status_url = iq.post_sbom(bom)
-      
       return unless status_url
 
       iq.poll_status(status_url)
@@ -85,13 +85,11 @@ module Chelsea
     end
 
     def _process_file_iq
-      report = Chelsea::Report.new(
+      Chelsea::Report.new(
         file: @opts[:file],
         verbose: @opts[:verbose],
         options: @opts
       )
-      report.collect_iq
-      report
     end
 
     def _flags_error

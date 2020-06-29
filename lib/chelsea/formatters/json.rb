@@ -25,11 +25,11 @@ module Chelsea
     end
 
     def get_results(server_response, **_opts)
-      server_response.to_json
+      @output = server_response.to_json
     end
 
-    def do_print(result)
-      puts result
+    def do_print
+      puts @output
     end
   end
 end

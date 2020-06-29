@@ -22,7 +22,7 @@ module Chelsea
       @options = options
     end
 
-    def get_results(server_response, reverse_deps)
+    def get_results(server_response:, reverse_dependencies:)
       doc = Ox::Document.new
       instruct = Ox::Instruct.new(:xml)
       instruct[:version] = '1.0'
@@ -51,11 +51,11 @@ module Chelsea
         end
       end
 
-      doc
+      @output = doc
     end
 
-    def do_print(results)
-      puts Ox.dump(results)
+    def do_print
+      Ox.dump(@output)
     end
 
     def get_vulnerability_block(vulnerabilities)

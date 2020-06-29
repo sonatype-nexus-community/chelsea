@@ -23,15 +23,19 @@ require 'rubygems/commands/dependency_command'
 
 require_relative 'version'
 require_relative 'formatters/factory'
-require_relative 'deps'
+require_relative 'lockfile'
 require_relative 'bom'
 require_relative 'spinner'
 
 module Chelsea
   # Class to collect and audit packages from a Gemfile.lock
+  # Pastel / Spinner which has some sketchy use.
+  # Client for calling OSSIndex
+  # Lockfile parses lockfile, provides access to dependencies
+  # Response for collecting response from OSS
   class Report
-    attr_accessor :deps
-    def initialize(file:, verbose:, options: { 'format': 'text' })
+    attr_accessor :lockfile
+    def initialize(file:, verbose: false, options: { 'format': 'text' })
       @verbose = verbose
       unless File.file?(file) || file.nil?
         raise 'Gemfile.lock not found, check --file path'
@@ -45,15 +49,15 @@ module Chelsea
         verbose: verbose
       )
       @client = Chelsea.client(options)
-      @deps = Chelsea::Deps.new(path: Pathname.new(file))
+      @lockfile = Chelsea::Lockfile.new(path: Pathname.new(file))
       @spinner = Chelsea::Spinner.new
     end
 
-    # Audits depenencies using deps library and prints results
+    # Audits depenencies using lockfile library and prints results
     # using formatter library
 
     def execute
-      server_response, dependencies, reverse_dependencies = audit
+      server_response, dependencies = audit
       if dependencies.nil?
         _print_err 'No dependencies retrieved. Exiting.'
         return
@@ -62,18 +66,16 @@ module Chelsea
         _print_success 'No vulnerability data retrieved from server. Exiting.'
         return
       end
-      @formatter.get_results(server_response, reverse_dependencies)
+      @formatter.get_results(
+        server_response: server_response,
+        reverse_dependencies: reverse_dependencies
+      )
       @formatter.do_print
       server_response.map { |r| r['vulnerabilities'].length.positive? }.any?
     end
 
-    def collect_iq
-      dependencies = @deps.dependencies
-      dependencies
-    end
-
     # Runs through auditing algorithm, raising exceptions
-    # on REST calls made by @deps.get_vulns
+    # on REST calls made by @lockfile.get_vulns
     def audit
       # This spinner management is out of control
       # we should wrap a block with start and stop messages,
@@ -81,17 +83,16 @@ module Chelsea
       spin = @spinner.spin_msg 'Parsing dependencies'
 
       begin
-        dependencies = @deps.dependencies
+        # maybe don't init deps until here
+        dependencies = @lockfile.dependencies
         spin.success('...done.')
       rescue StandardError => _e
         spin.stop
         _print_err "Parsing dependency line #{gem} failed."
       end
 
-      reverse_dependencies = @deps.reverse_dependencies
-
       spin = @spinner.spin_msg 'Parsing Versions'
-      coordinates = @deps.coordinates
+      coordinates = @lockfile.coordinates
       spin.success('...done.')
       spin = @spinner.spin_msg 'Making request to OSS Index server'
       spin.stop
@@ -112,10 +113,26 @@ module Chelsea
         spin.stop('...request failed.')
         _print_err 'Error getting data from OSS Index server. Connection refused.'
       end
+      puts( reverse_dependencies )
       [server_response, dependencies, reverse_dependencies]
     end
 
     protected
+
+    # Collects all reverse dependencies from dependencies lockfile
+    def reverse_dependencies
+      reverse = Gem::Commands::DependencyCommand.new
+      reverse.options[:reverse_dependencies] = true
+      # We want to filter the reverses dependencies by specs in lockfile
+      reverse
+        .reverse_dependencies(@lockfile.file.specs)
+        .to_h
+        .transform_values! do |reverse_dep|
+          reverse_dep.select do |name, _dep, _req, _|
+            @lockfile.spec_names.include?(name.split('-')[0])
+          end
+        end
+    end
 
     def _silence_stderr
       $stderr.reopen('/dev/null', 'w')
