@@ -14,15 +14,19 @@
 # limitations under the License.
 #
 
-class Formatter
+module Chelsea
+  # Abstract class to format server response at runtime
+  class Formatter
     def initialize
-        @pastel = Pastel.new
+      @pastel = Pastel.new
     end
+
     def get_results
-        raise 'must implement get_results method in subclass'
+      raise 'must implement get_results method in subclass'
     end
-    
+
     def do_print
-        raise 'must implement do_print method in subclass'
+      raise 'must implement do_print method in subclass'
     end
+  end
 end

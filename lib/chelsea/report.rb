@@ -29,7 +29,7 @@ require_relative 'spinner'
 
 module Chelsea
   # Class to collect and audit packages from a Gemfile.lock
-  class Gems
+  class Report
     attr_accessor :deps
     def initialize(file:, verbose:, options: { 'format': 'text' })
       @verbose = verbose
@@ -62,9 +62,8 @@ module Chelsea
         _print_success 'No vulnerability data retrieved from server. Exiting.'
         return
       end
-      results = @formatter.get_results(server_response, reverse_dependencies)
-      @formatter.do_print(results)
-
+      @formatter.get_results(server_response, reverse_dependencies)
+      @formatter.do_print
       server_response.map { |r| r['vulnerabilities'].length.positive? }.any?
     end
 
@@ -84,7 +83,7 @@ module Chelsea
       begin
         dependencies = @deps.dependencies
         spin.success('...done.')
-      rescue StandardError => e
+      rescue StandardError => _e
         spin.stop
         _print_err "Parsing dependency line #{gem} failed."
       end

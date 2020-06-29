@@ -19,7 +19,7 @@ require 'pastel'
 require 'tty-font'
 
 require_relative 'version'
-require_relative 'gems'
+require_relative 'report'
 require_relative 'iq_client'
 require_relative 'config'
 
@@ -57,7 +57,7 @@ module Chelsea
 
     private
 
-    def _submit_sbom(gems)
+    def _submit_sbom(report)
       iq = Chelsea::IQClient.new(
         options: {
           public_application_id: @opts[:application],
@@ -66,7 +66,7 @@ module Chelsea
           auth_token: @opts[:iqpass]
         }
       )
-      bom = Chelsea::Bom.new(gems.deps.dependencies).collect
+      bom = Chelsea::Bom.new(report.deps.dependencies).collect
 
       status_url = iq.post_sbom(bom)
       
@@ -76,22 +76,22 @@ module Chelsea
     end
 
     def _process_file
-      gems = Chelsea::Gems.new(
+      report = Chelsea::Report.new(
         file: @opts[:file],
         verbose: @opts[:verbose],
         options: @opts
       )
-      gems.execute ? (exit 1) : (exit 0)
+      report.execute ? (exit 1) : (exit 0)
     end
 
     def _process_file_iq
-      gems = Chelsea::Gems.new(
+      report = Chelsea::Report.new(
         file: @opts[:file],
         verbose: @opts[:verbose],
         options: @opts
       )
-      gems.collect_iq
-      gems
+      report.collect_iq
+      report
     end
 
     def _flags_error

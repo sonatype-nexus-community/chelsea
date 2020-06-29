@@ -14,10 +14,10 @@
 # limitations under the License.
 #
 
-require 'chelsea/gems'
+require 'chelsea/report'
 require 'spec_helper'
 
-RSpec.describe Chelsea::Gems do
+RSpec.describe Chelsea::Report do
   before(:all) do
     stub_oss_response
   end
@@ -26,14 +26,14 @@ RSpec.describe Chelsea::Gems do
     context 'given a valid Gemfile.lock' do
       file = 'spec/testdata/Gemfile.lock'
       it 'can collect dependencies, query, and print results' do
-        command = Chelsea::Gems.new(file: file, verbose: true)
+        command = Chelsea::Report.new(file: file, verbose: true)
         expect { command.execute }.to_not raise_error
       end
     end
     context 'given an invalid Gemfile.lock' do
       file = 'spec/Gemfile.lock'
       it 'will exit with a RuntimeError' do
-        expect{ Chelsea::Gems.new(file: file, verbose: true) }
+        expect{ Chelsea::Report.new(file: file, verbose: true) }
           .to raise_error(
             RuntimeError,
             'Gemfile.lock not found, check --file path'

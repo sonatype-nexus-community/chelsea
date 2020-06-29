@@ -22,11 +22,17 @@ require 'json'
 require 'rest-client'
 
 module Chelsea
+  # Reads a lockfile for dependencies
   class Deps
+    attr_reader :dependencies
     def initialize(path:, verbose: false)
       @verbose = verbose
       ENV['BUNDLE_GEMFILE'] = File.expand_path(path).chomp('.lock')
       @lockfile = Bundler::LockfileParser.new(File.read(path))
+      # Generates hash from lockfile specs
+      @dependencies = @lockfile.specs.each_with_object({}) do |gem, h|
+        h[gem.name] = [gem.name, gem.version]
+      end
     end
 
     def nil?
@@ -35,14 +41,6 @@ module Chelsea
 
     def self.to_purl(name, version)
       "pkg:gem/#{name}@#{version}"
-    end
-
-    # Parses specs from lockfile instanct var and
-    # inserts into dependenices instance var
-    def dependencies
-      @lockfile.specs.each_with_object({}) do |gem, h|
-        h[gem.name] = [gem.name, gem.version]
-      end
     end
 
     # Collects all reverse dependencies in reverse_dependencies instance var
