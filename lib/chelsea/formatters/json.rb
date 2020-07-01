@@ -29,11 +29,12 @@ module Chelsea
     end
 
     def format_response
-      @output = @oi_response.json
+      @output = @oi_response.coords.map(&:to_h)
     end
 
     def do_print
-      puts @output
+      format_response
+      puts JSON.dump(@output)
     end
   end
 end

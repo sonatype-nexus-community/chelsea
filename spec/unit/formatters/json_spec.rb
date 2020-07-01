@@ -21,10 +21,18 @@ require_relative '../test_helper'
 
 RSpec.describe Chelsea::JsonFormatter do
   it 'print_results brings back a valid json object' do
-    server_response = Array.new
-    server_response.push(populate_server_response('test', 'test', 'test'))
-    server_response.push(populate_server_response('test2', 'test2', 'test2'))
-    server_response.push(populate_server_response_vulnerability(populate_server_response('pkg:npm/js-yaml@1.0.0', 'YAML 1.2 parser and serializer', 'https://ossindex.sonatype.org/component/pkg:npm/js-yaml@1.0.0')))
+    server_response = []
+    server_response.push(populate_server_response('test@1.0', 'test', 'test'))
+    server_response.push(populate_server_response('test@2.0', 'test2', 'test2'))
+    server_response
+      .push(
+        populate_server_response_vulnerability(
+          populate_server_response(
+            'pkg:npm/js-yaml@1.0.0', 'YAML 1.2 parser and serializer',
+            'https://ossindex.sonatype.org/component/pkg:npm/js-yaml@1.0.0'
+          )
+        )
+      )
     oi_response = Chelsea::OIResponse.new(server_response)
     formatter = Chelsea::JsonFormatter.new
     formatter.oi_response = oi_response
@@ -37,14 +45,14 @@ RSpec.describe Chelsea::JsonFormatter do
     expect(result.count).to eq(3)
 
     # First test object, not vulnerable
-    expect(result[0][:coordinates]).to eq('test')
+    expect(result[0][:coordinates]).to eq('test@1.0')
     expect(result[0][:description]).to eq('test')
     expect(result[0][:reference]).to eq('test')
     expect(result[0][:vulnerabilities].class).to eq(Array)
     expect(result[0][:vulnerabilities].count).to eq(0)
 
     # Second test object, not vulnerable
-    expect(result[1][:coordinates]).to eq('test2')
+    expect(result[1][:coordinates]).to eq('test@2.0')
     expect(result[1][:description]).to eq('test2')
     expect(result[1][:reference]).to eq('test2')
     expect(result[1][:vulnerabilities].class).to eq(Array)

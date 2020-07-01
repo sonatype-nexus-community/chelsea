@@ -63,7 +63,7 @@ module Chelsea
         _print_err 'No dependencies read. Exiting.'
         return
       end
-      if oi_response.json.nil?
+      if oi_response.coords.empty?
         _print_success 'No vulnerability data retrieved from server. Exiting.'
         return
       end

@@ -13,39 +13,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
+require 'json'
+require_relative 'oi_coord'
 module Chelsea
   # Class for parsing OSS response and giving some methods
   class OIResponse
-    def initialize(json)
-      @json = json
-      @json.sort! { |x| x['vulnerabilities'].count }
-    end
+    attr_reader :coords
 
-    def json
-      @json.each_with_object([]) do |dep, arr|
-        name, version = dep['coordinates'].sub('pkg:gem/', '').split('@')
-        vulnerable = dep['vulnerabilities'].length.positive?
-        coordinates = dep['coordinates']
-        arr.append(
-          {
-            name: name, version: version,
-            vulnerable: vulnerable, coordinates: coordinates,
-            description: dep['description'], reference: dep['reference'],
-            vulnerabilities: dep['vulnerabilities']
-          }
-        )
-      end
+    def initialize(response)
+      @coords = \
+        response.sort! { |x| x['vulnerabilities'].count }
+                .each_with_object([]) do |coord, arr|
+          arr.append(OICoord.new(coord))
+        end
     end
 
     def dep_count
-      @json.count
+      @coords.count
     end
 
     def vuln_count
-      @vuln_count ||= @json.count do |vuln|
-        vuln['vulnerabilities'].length.positive?
-      end
+      @vuln_count ||= @coords.count(&:vulnerable)
     end
   end
 end

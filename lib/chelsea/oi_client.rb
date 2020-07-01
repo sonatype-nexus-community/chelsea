@@ -38,18 +38,18 @@ module Chelsea
     # Checks cache and stores results in cache
 
     def get_vulns(coordinates)
-      remaining_coordinates, cached_server_response = _cache(coordinates)
+      remaining_coordinates, cached_coords_json = _cache(coordinates)
       unless remaining_coordinates['coordinates'].count.positive?
-        return OIResponse.new(cached_server_response)
+        return OIResponse.new(cached_coords_json)
       end
 
       remaining_coordinates['coordinates'].each_slice(128).to_a.each do |coords|
-        server_response = call_oss_index({ 'coordinates' => coords })
-        cached_server_response = cached_server_response.concat(server_response)
-        @db.save_values_to_db(server_response)
+        coords_json = call_oss_index({ 'coordinates' => coords })
+        cached_coords_json = cached_coords_json.concat(coords_json)
+        @db.save_values_to_db(coords_json)
       end
 
-      OIResponse.new(cached_server_response)
+      OIResponse.new(cached_coords_json)
     end
 
     def call_oss_index(coords)

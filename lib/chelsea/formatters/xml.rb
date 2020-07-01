@@ -18,6 +18,7 @@ require 'ox'
 require_relative 'formatter'
 module Chelsea
   # class to format OIResponse and Reverse Deps as an XML Document
+  # where are we sourcing XML spec?
   class XMLFormatter < Formatter
     attr_accessor :oi_response, :reverse_dependencies
     attr_reader :output
@@ -38,7 +39,7 @@ module Chelsea
       testsuite[:name] = 'purl'
       testsuite[:tests] = @oi_response.dep_count
 
-      @oi_response.json.each do |coord|
+      @oi_response.coords.map(&:to_h).each do |coord|
         testcase = Ox::Element.new('testcase')
         testcase[:classname] = coord[:coordinates]
         testcase[:name] = coord[:coordinates]
@@ -65,13 +66,13 @@ module Chelsea
       vulnerabilities.each do |vuln|
         vuln_block += \
           "Vulnerability Title: #{vuln['title']}\n"\
-        "ID: #{vuln['id']}\n"\
-        "Description: #{vuln['description']}\n"\
-        "CVSS Score: #{vuln['cvssScore']}\n"\
-        "CVSS Vector: #{vuln['cvssVector']}\n"\
-        "CVE: #{vuln['cve']}\n"\
-        "Reference: #{vuln['reference']}"\
-        "\n"
+          "ID: #{vuln['id']}\n"\
+          "Description: #{vuln['description']}\n"\
+          "CVSS Score: #{vuln['cvssScore']}\n"\
+          "CVSS Vector: #{vuln['cvssVector']}\n"\
+          "CVE: #{vuln['cve']}\n"\
+          "Reference: #{vuln['reference']}"\
+          "\n"
       end
       vuln_block
     end

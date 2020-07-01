@@ -29,7 +29,7 @@ module Chelsea
     end
 
     def format_response
-      @oi_response.json.map.with_index do |dep, idx|
+      @oi_response.coords.map(&:to_h).each.with_index do |dep, idx|
         reverse_deps = @reverse_dependencies["#{dep[:name]}-#{dep[:version]}"]
         header = "[#{idx}/#{oi_response.dep_count}] - #{dep[:coordinates]} "
         if dep[:vulnerable]
