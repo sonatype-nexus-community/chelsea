@@ -29,7 +29,7 @@ module Chelsea
     end
 
     def format_response
-      @output = @oi_response.coords.map(&:to_h)
+      @output = @oi_response.coords
     end
 
     def do_print

@@ -39,7 +39,7 @@ module Chelsea
       testsuite[:name] = 'purl'
       testsuite[:tests] = @oi_response.dep_count
 
-      @oi_response.coords.map(&:to_h).each do |coord|
+      @oi_response.coords.each do |coord|
         testcase = Ox::Element.new('testcase')
         testcase[:classname] = coord[:coordinates]
         testcase[:name] = coord[:coordinates]

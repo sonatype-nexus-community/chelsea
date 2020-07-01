@@ -1,4 +1,4 @@
-#
+# frozen_string_literal: true
 # Copyright 2019-Present Sonatype Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,7 +14,6 @@
 # limitations under the License.
 #
 
-# frozen_string_literal: true
 require 'pastel'
 require 'bundler'
 require 'bundler/lockfile_parser'
@@ -88,10 +87,12 @@ module Chelsea
         _print_err "Error getting data from OSS Index server:#{e.response}."
       rescue RestClient::ResourceNotFound => _e
         spin.stop('...request failed.')
-        _print_err 'Error getting data from OSS Index server. Resource not found.'
+        _print_err \
+          'Error getting data from OSS Index server. Resource not found.'
       rescue Errno::ECONNREFUSED => _e
         spin.stop('...request failed.')
-        _print_err 'Error getting data from OSS Index server. Connection refused.'
+        _print_err \
+          'Error getting data from OSS Index server. Connection refused.'
       end
       server_response
     end

@@ -32,7 +32,7 @@ module Chelsea
     end
 
     def xml
-      @xml ||= _get_xml
+      @xml ||= _xml
     end
 
     def to_s
@@ -45,7 +45,7 @@ module Chelsea
 
     private
 
-    def _get_xml
+    def _xml
       doc = Ox::Document.new
       doc << _root_xml
       bom = _bom_xml

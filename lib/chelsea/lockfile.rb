@@ -24,15 +24,12 @@ require 'rest-client'
 module Chelsea
   # Reads a lockfile for dependencies
   class Lockfile
-    # Should this just be called lockfile?
     attr_reader :file
     def initialize(**options)
       @verbose = options[:verbose] || false
       # maybe unnecesary
       ENV['BUNDLE_GEMFILE'] = File.expand_path(options[:path]).chomp('.lock')
       @file = Bundler::LockfileParser.new(File.read(options[:path]))
-      # Generates hash from lockfile specs
-      # should raise here _print_err "Parsing dependency line #{gem} failed."
     end
 
     def spec_names
@@ -42,7 +39,6 @@ module Chelsea
     end
 
     def dependencies
-      # Let's parse once, shall we?
       @dependencies ||= @file.specs.each_with_object({}) do |gem, h|
         h[gem.name] = [gem.name, gem.version]
       end

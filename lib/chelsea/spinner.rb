@@ -18,6 +18,7 @@ require 'tty-spinner'
 require 'pastel'
 
 module Chelsea
+  # Class to manage paste spinner
   class Spinner
     def initialize()
       @pastel = Pastel.new

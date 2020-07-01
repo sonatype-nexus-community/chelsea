@@ -79,25 +79,6 @@ module Chelsea
       end
     end
 
-    private
-
-    def _handle_response(res)
-      res = JSON.parse(res.body)
-      if res['policyAction'] == 'Failure'
-        puts @pastel.red.bold(
-          'Hi! Chelsea here, you have some policy violations to clean up!'
-        )
-        puts @pastel.red.bold("Report URL: #{res['reportHtmlUrl']}")
-        exit 1
-      else
-        puts @pastel.white.bold(
-          'Hi! Chelsea here, no policy violations for this audit!'
-        )
-        puts @pastel.white.bold("Report URL: #{res['reportHtmlUrl']}")
-        exit 0
-      end
-    end
-
     def status(status_url)
       resource = RestClient::Resource.new(
         "#{@options[:server_url]}/#{status_url}",
@@ -107,7 +88,32 @@ module Chelsea
       resource.get _headers
     end
 
-    protected
+    private
+
+    def _handle_response(res)
+      res = JSON.parse(res.body)
+      if res['policyAction'] == 'Failure'
+        _failure_response
+      else
+        _success_response
+      end
+    end
+
+    def _success_response
+      puts @pastel.white.bold(
+        'Hi! Chelsea here, no policy violations for this audit!'
+      )
+      puts @pastel.white.bold("Report URL: #{res['reportHtmlUrl']}")
+      exit 0
+    end
+
+    def _failure_response
+      puts @pastel.red.bold(
+        'Hi! Chelsea here, you have some policy violations to clean up!'
+      )
+      puts @pastel.red.bold("Report URL: #{res['reportHtmlUrl']}")
+      exit 1
+    end
 
     def _poll_iq_server(status_url)
       resource = RestClient::Resource.new(
@@ -119,15 +125,9 @@ module Chelsea
       resource.get _headers
     end
 
-    def _status_url(res)
-      res = JSON.parse(res.body)
-      res['statusUrl']
-    end
-
     def _poll_status
       # Pretty horiffic polling. Let's do a backoff algo
-      # why is this a thing?
-
+      # we have two poll status methods. Consolidate
       return unless @status_url
 
       loop do
@@ -159,6 +159,10 @@ module Chelsea
       { 'User-Agent' => _user_agent }
     end
 
+    def _user_agent
+      "chelsea/#{Chelsea::VERSION}"
+    end
+
     def _api_url
       "#{@options[:server_url]}"\
       '/api/v2/scan/applications/'\
@@ -169,10 +173,6 @@ module Chelsea
       "#{@options[:server_url]}"\
       '/api/v2/applications'\
       "?publicId=#{@options[:public_application_id]}"
-    end
-
-    def _user_agent
-      "chelsea/#{Chelsea::VERSION}"
     end
   end
 end

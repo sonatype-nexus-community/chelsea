@@ -18,8 +18,6 @@ require_relative 'oi_coord'
 module Chelsea
   # Class for parsing OSS response and giving some methods
   class OIResponse
-    attr_reader :coords
-
     def initialize(response)
       @coords = \
         response.sort! { |x| x['vulnerabilities'].count }
@@ -32,26 +30,12 @@ module Chelsea
       @coords.count
     end
 
+    def coords
+      @coords.map(&:to_h)
+    end
+
     def vuln_count
       @vuln_count ||= @coords.count(&:vulnerable)
     end
   end
 end
-  #  def self.parse_response(r)
-  #    response = ''
-  #    name, version = r['coordinates'].sub('pkg:gem/', '').split('@')
-  #    if r['vulnerabilities'].length.positive?
-  #      response += @pastel.red(
-  #        "[#{idx}/#{server_response.count}] - #{r['coordinates']} "
-  #      )
-  #      response += @pastel.red.bold("Vulnerable.\n")
-  #      r['vulnerabilities'].each do |k, _|
-  #        response += _format_vuln(k)
-  #      end
-  #    elsif
-  #      response += @pastel.white(
-  #        "[#{idx}/#{server_response.count}] - #{r['coordinates']} "
-  #      )
-  #      response += @pastel.green.bold("No vulnerabilities found!\n")
-  #    end
-  #  end
