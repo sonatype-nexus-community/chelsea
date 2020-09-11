@@ -37,7 +37,7 @@ dockerizedBuildPipeline(
       }
     })
   },
-  testResults: [ 'test-results/rspec.xml' ],
+  testResults: [ 'test_results/rspec.xml' ],
   onSuccess: {
     githubStatusUpdate('success')
   },
