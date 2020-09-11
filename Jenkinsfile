@@ -37,11 +37,13 @@ dockerizedBuildPipeline(
       }
     })
   },
-  testResults: [ 'test-results/rspec.xml' ],
+  testResults: [ 'test_results/rspec.xml' ],
   onSuccess: {
     githubStatusUpdate('success')
   },
   onFailure: {
     githubStatusUpdate('failure')
+    notifyChat(currentBuild: currentBuild, env: env, room: 'community-oss-fun')
+    sendEmailNotification(currentBuild, env, [], 'community-group@sonatype.com')
   }
 )
