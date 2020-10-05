@@ -38,10 +38,10 @@ def _json_headers
   }
 end
 
-def stub_sbom(server_url: 'localhost:8070', **opts)
+def stub_sbom(server_url: 'localhost:8070', stage: 'iqstage' **opts)
   stub_request(
     :post,
-    "http://#{server_url}/api/v2/scan/applications/4537e6fe68c24dd5ac83efd97d4fc2f4/sources/chelsea"
+    "http://#{server_url}/api/v2/scan/applications/4537e6fe68c24dd5ac83efd97d4fc2f4/sources/chelsea?stageId=#{iqstage}"
   )
     .to_return(
       body: JSON.unparse({"statusUrl": "api/v2/scan/applications/4537e6fe68c24dd5ac83efd97d4fc2f4/status/9cee2b6366fc4d328edc318eae46b2cb"}),

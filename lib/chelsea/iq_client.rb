@@ -28,7 +28,8 @@ module Chelsea
       server_url: 'http://localhost:8070',
       username: 'admin',
       auth_token: 'admin123',
-      internal_application_id: ''
+      internal_application_id: '',
+      stage: 'build'
     }
     def initialize(options: DEFAULT_OPTIONS)
       @options = options
@@ -149,7 +150,7 @@ module Chelsea
     end
 
     def _api_url
-      "#{@options[:server_url]}/api/v2/scan/applications/#{@internal_application_id}/sources/chelsea"
+      "#{@options[:server_url]}/api/v2/scan/applications/#{@internal_application_id}/sources/chelsea?stageId=#{@options[:stage]}"
     end
 
     def _internal_application_id_api_url
