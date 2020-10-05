@@ -191,6 +191,21 @@ We are using ruby version 2.6.6, but newer versions should also work.
 rbenv install 2.6.6
 ``` 
 
+Install `bundler`:
+```
+gem install bundler
+```
+
+Install dependencies:
+```
+bundle install
+```
+
+Run tests:
+```
+bundle exec rspec
+```
+
 ~~Old Setup Steps~~
 ~~After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.~~
 
