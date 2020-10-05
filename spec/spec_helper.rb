@@ -38,7 +38,7 @@ def _json_headers
   }
 end
 
-def stub_sbom(server_url: 'localhost:8070', stage: 'iqstage' **opts)
+def stub_sbom(server_url: 'localhost:8070', stage: 'iqstage', **opts)
   stub_request(
     :post,
     "http://#{server_url}/api/v2/scan/applications/4537e6fe68c24dd5ac83efd97d4fc2f4/sources/chelsea?stageId=#{iqstage}"
