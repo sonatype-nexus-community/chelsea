@@ -174,7 +174,25 @@ Report URL: http://localhost:8070/ui/links/application/testapp/report/0e0f469269
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+We suggest using [rbenv](https://github.com/rbenv/rbenv) to setup a reliable ruby development environment.
+
+Follow the [installation steps](https://github.com/rbenv/rbenv#installation). 
+For macos (10.15.7), there was a problem with step 2, with: `$ rbenv init`. The command 
+printed suggested editing `~/.bashrc`; however, this did not work in our case (even after an OS reboot),
+and we had to instead edit `~/bash_profile`. To sanity check your installation, you should see the 
+`.rbenv` directory early in your PATH, e.g.:
+```
+$ echo $PATH
+/Users/<username>/.rbenv/shims:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/TeX/texbin:/usr/local/go/bin:/opt/X11/bin:/Applications/Wireshark.app/Contents/MacOS:/usr/local/git/bin
+``` 
+ 
+We are using ruby version 2.6.6, but newer versions should also work.
+```
+rbenv install 2.6.6
+``` 
+
+~~Old Setup Steps~~
+~~After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.~~
 
 To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
 
