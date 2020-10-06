@@ -38,21 +38,10 @@ $ gem install chelsea
 ```
 
 ```
-$ chelsea 
- _____  _            _                   
-/  __ \| |          | |                  
-| /  \/| |__    ___ | | ___   ___   __ _ 
-| |    | '_ \  / _ \| |/ __| / _ \ / _` |
-| \__/\| | | ||  __/| |\__ \|  __/| (_| |
- \____/|_| |_| \___||_||___/ \___| \__,_|
-                                         
-                                         
-Version: 0.0.11
-
-usage: chelsea [options] ...
-
-Options:
+$ chelsea --help
+usage: /usr/local/bin/chelsea [options]
     -f, --file         Path to your Gemfile.lock
+    -x, --clear        Clear OSS Index cache
     -c, --config       Set persistent config for OSS Index
     -u, --user         Specify OSS Index Username
     -p, --token        Specify OSS Index API Token
@@ -61,9 +50,10 @@ Options:
     -iu, --iquser      Specify the IQ username
     -it, --iqpass      Specify the IQ auth token
     -w, --whitelist    Set path to vulnerability whitelist file
-    -q, --quiet        Make chelsea only output vulnerable third party dependencies for text output (default: false)
+    -v, --verbose      Make chelsea only output vulnerable third party dependencies for text output (default: true)
     -t, --format       Choose what type of format you want your report in (default: text) (options: text, json, xml)
     -b, --iq           Use Nexus IQ Server to audit your project
+    -s, --stage        Specify Nexus IQ Stage (default: build) (options: develop, build, stage-release, release, operate)
     --version          Print the version
     -h, --help         Show usage
 ```
