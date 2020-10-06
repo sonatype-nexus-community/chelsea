@@ -15,17 +15,17 @@
 #
 
 require 'chelsea/bom'
-require 'chelsea/deps'
+require 'chelsea/lockfile'
 require 'ox'
 require 'spec_helper'
 
 RSpec.describe Chelsea::Bom do
   before do
-     @deps = get_test_dependencies
+    @dependencies = get_test_dependencies
   end
 
-  it "can render dependencies as xml" do
-    bom = Chelsea::Bom.new(@deps)
+  it 'can render dependencies as xml' do
+    bom = Chelsea::Bom.new(@dependencies)
     expect(bom.xml.class).to eq(Ox::Document)
     expect(bom.to_s.class).to eq(String)
   end

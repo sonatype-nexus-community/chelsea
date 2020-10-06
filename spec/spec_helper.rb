@@ -19,12 +19,9 @@ require 'webmock/rspec'
 
 WebMock.disable_net_connect!(allow_localhost: true)
 
-def process_deps_from_gemfile(file)
-  deps = Chelsea::Deps.new({ path: Pathname.new(file) })
-  dependencies = deps.dependencies
-  reverse_dependencies = deps.reverse_dependencies
-  coordinates = deps.coordinates
-  [dependencies, reverse_dependencies, coordinates]
+def process_lockfile(file)
+  lockfile = Chelsea::Lockfile.new(path: Pathname.new(file))
+  [lockfile.dependencies, lockfile.coordinates]
 end
 
 def _json_headers
@@ -38,14 +35,19 @@ def _json_headers
   }
 end
 
-def stub_sbom(server_url: 'localhost:8070', **opts)
+def stub_sbom(server_url: 'localhost:8070', **_opts)
+  api_url = 'api/v2/scan/applications/4537e6fe68c24dd5ac83efd97d4fc2f4'
   stub_request(
     :post,
-    "http://#{server_url}/api/v2/scan/applications/4537e6fe68c24dd5ac83efd97d4fc2f4/sources/chelsea"
+    "http://#{server_url}/#{api_url}/sources/chelsea"
   )
     .to_return(
-      body: JSON.unparse({"statusUrl": "api/v2/scan/applications/4537e6fe68c24dd5ac83efd97d4fc2f4/status/9cee2b6366fc4d328edc318eae46b2cb"}),
-      status: 202,
+      body: JSON.unparse(
+        {
+          'statusUrl': "#{api_url}/status/9cee2b6366fc4d328edc318eae46b2cb"
+        }
+      ),
+      status: 200,
       headers: _json_headers
     )
 end
@@ -93,65 +95,70 @@ def stub_oss_response
 end
 
 def get_test_dependencies
-  stub_request(:post, "https://ossindex.sonatype.org/api/v3/component-report")
+  stub_request(:post, 'https://ossindex.sonatype.org/api/v3/component-report')
     .with(
-      body: "{\"coordinates\":[\"pkg:gem/addressable@2.7.0\",\"pkg:gem/crack@0.4.3\",\"pkg:gem/hashdiff@1.0.1\",\"pkg:gem/public_suffix@4.0.3\",\"pkg:gem/safe_yaml@1.0.5\",\"pkg:gem/webmock@3.8.3\"]}",
-      headers: {
-      'Accept'=>'application/json',
-      'Accept-Encoding'=>'gzip, deflate',
-      'Content-Length'=>'172',
-      'Content-Type'=>'application/json',
-      'Host'=>'ossindex.sonatype.org',
-      'User-Agent'=>'chelsea/0.0.3'
+      body: \
+      '{"coordinates":' \
+        '["pkg:gem/addressable@2.7.0","pkg:gem/crack@0.4.3",' \
+        '"pkg:gem/hashdiff@1.0.1","pkg:gem/public_suffix@4.0.3",' \
+        '"pkg:gem/safe_yaml@1.0.5","pkg:gem/webmock@3.8.3"]' \
+      '}',
+      headers: \
+      {
+        'Accept' => 'application/json',
+        'Accept-Encoding' => 'gzip, deflate',
+        'Content-Length' => '172',
+        'Content-Type' => 'application/json',
+        'Host' => 'ossindex.sonatype.org',
+        'User-Agent' => 'chelsea/0.0.3'
       }
     ).to_return(status: 200, body: OSS_INDEX_RESPONSE, headers: {})
   file = 'spec/testdata/Gemfile.lock'
-  deps = Chelsea::Deps.new({ path: Pathname.new(file) })
-  deps.dependencies
+  lockfile = Chelsea::Lockfile.new(path: Pathname.new(file))
+  lockfile.dependencies
 end
 
 def get_coordinates
-  coordinates = Hash.new
-  coordinates["coordinates"] = Array.new
-  coordinates["coordinates"] << "pkg:gem/chelsea@0.0.3"
-  coordinates["coordinates"] << "pkg:gem/diff-lcs@1.3.0"
-  coordinates["coordinates"] << "pkg:gem/domain_name@0.5.20190701"
-  coordinates["coordinates"] << "pkg:gem/equatable@0.6.1"
-  return coordinates
+  coordinates = { 'coordinates': [] }
+  coordinates['coordinates'] << 'pkg:gem/chelsea@0.0.3'
+  coordinates['coordinates'] << 'pkg:gem/diff-lcs@1.3.0'
+  coordinates['coordinates'] << 'pkg:gem/domain_name@0.5.20190701'
+  coordinates['coordinates'] << 'pkg:gem/equatable@0.6.1'
+  coordinates
 end
 
-def get_dependency_hash()
-  dependency_hash = Hash.new
-  dependency_hash["addressable"] = ["addressable", "2.7.0"] 
-  dependency_hash["chelsea"] = ["chelsea", "0.0.3"]
-  dependency_hash["crack"] = ["crack", "0.4.3"]
-  dependency_hash["diff-lcs"] = ["diff-lcs", "1.3.0"]
-  dependency_hash["domain_name"] = ["domain_name", "0.5.20190701"]
-  dependency_hash["equatable"] = ["equatable", "0.6.1"]
-  dependency_hash["hashdiff"] = ["hashdiff", "1.0.1"]
-  dependency_hash["http-cookie"] = ["http-cookie", "1.0.3"] 
-  dependency_hash["mime-types"] = ["mime-types", "3.3.1"] 
-  dependency_hash["mime-types-data"] = ["mime-types-data", "3.2019.1009"]
-  dependency_hash["netrc"] = ["netrc", "0.11.0"] 
-  dependency_hash["pastel"] = ["pastel", "0.7.3"]
-  dependency_hash["public_suffix"] = ["public_suffix", "4.0.3"]
-  dependency_hash["rake"] = ["rake", "10.5.0"] 
-  dependency_hash["rest-client"] = ["rest-client", "2.0.2"]
-  dependency_hash["rspec"] = ["rspec", "3.9.0"]
-  dependency_hash["rspec-core"] = ["rspec-core", "3.9.1"]
-  dependency_hash["rspec-expectations"] = ["rspec-expectations", "3.9.1"]
-  dependency_hash["rspec-mocks"] = ["rspec-mocks", "3.9.1"]
-  dependency_hash["rspec-support"] = ["rspec-support", "3.9.2"]
-  dependency_hash["rspec_junit_formatter"] = ["rspec_junit_formatter", "0.4.1"]
-  dependency_hash["safe_yaml"] = ["safe_yaml", "1.0.5"]
-  dependency_hash["slop"] = ["slop", "4.8.0"]
-  dependency_hash["tty-color"] = ["tty-color", "0.5.1"]
-  dependency_hash["tty-cursor"] = ["tty-cursor", "0.7.1"]
-  dependency_hash["tty-font"] = ["tty-font", "0.5.0"]
-  dependency_hash["tty-spinner"] = ["tty-spinner", "0.9.3"]
-  dependency_hash["unf"] = ["unf", "0.1.4"]
-  dependency_hash["unf_ext"] = ["unf_ext","0.0.7.6"]
-  dependency_hash["webmock"] = ["webmock", "3.8.3"]
+def get_dependency_hash
+  dependency_hash = {}
+  dependency_hash['addressable'] = ['addressable', '2.7.0']
+  dependency_hash['chelsea'] = ['chelsea', '0.0.3']
+  dependency_hash['crack'] = ['crack', '0.4.3']
+  dependency_hash['diff-lcs'] = ['diff-lcs', '1.3.0']
+  dependency_hash['domain_name'] = ['domain_name', '0.5.20190701']
+  dependency_hash['equatable'] = ['equatable', '0.6.1']
+  dependency_hash['hashdiff'] = ['hashdiff', '1.0.1']
+  dependency_hash['http-cookie'] = ['http-cookie', '1.0.3']
+  dependency_hash['mime-types'] = ['mime-types', '3.3.1']
+  dependency_hash['mime-types-data'] = ['mime-types-data', '3.2019.1009']
+  dependency_hash['netrc'] = ['netrc', '0.11.0']
+  dependency_hash['pastel'] = ['pastel', '0.7.3']
+  dependency_hash['public_suffix'] = ['public_suffix', '4.0.3']
+  dependency_hash['rake'] = ['rake', '10.5.0']
+  dependency_hash['rest-client'] = ['rest-client', '2.0.2']
+  dependency_hash['rspec'] = ['rspec', '3.9.0']
+  dependency_hash['rspec-core'] = ['rspec-core', '3.9.1']
+  dependency_hash['rspec-expectations'] = ['rspec-expectations', '3.9.1']
+  dependency_hash['rspec-mocks'] = ['rspec-mocks', '3.9.1']
+  dependency_hash['rspec-support'] = ['rspec-support', '3.9.2']
+  dependency_hash['rspec_junit_formatter'] = ['rspec_junit_formatter', '0.4.1']
+  dependency_hash['safe_yaml'] = ['safe_yaml', '1.0.5']
+  dependency_hash['slop'] = ['slop', '4.8.0']
+  dependency_hash['tty-color'] = ['tty-color', '0.5.1']
+  dependency_hash['tty-cursor'] = ['tty-cursor', '0.7.1']
+  dependency_hash['tty-font'] = ['tty-font', '0.5.0']
+  dependency_hash['tty-spinner'] = ['tty-spinner', '0.9.3']
+  dependency_hash['unf'] = ['unf', '0.1.4']
+  dependency_hash['unf_ext'] = ['unf_ext', '0.0.7.6']
+  dependency_hash['webmock'] = ['webmock', '3.8.3']
 
   return dependency_hash
 end

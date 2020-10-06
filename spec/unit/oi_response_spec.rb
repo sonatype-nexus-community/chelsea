@@ -1,3 +1,4 @@
+
 #
 # Copyright 2019-Present Sonatype Inc.
 #
@@ -14,19 +15,25 @@
 # limitations under the License.
 #
 
-module Chelsea
-  # Abstract class to format server response at runtime
-  class Formatter
-    def initialize
-      @pastel = Pastel.new
+require 'chelsea/oi_response'
+require 'spec_helper'
+
+RSpec.describe Chelsea::OIResponse do
+  context 'with defaults' do
+    before(:all) do
+      @oss_response = Chelsea::OIResponse.new(JSON.parse(oss_index_response))
     end
 
-    def format_response(*)
-      raise 'must implement format_response method in subclass'
+    it 'should instantiate the OSS Index response' do
+      expect(@oss_response.class).to eq Chelsea::OIResponse
     end
 
-    def do_print
-      raise 'must implement do_print method in subclass'
+    it 'should be able to count the number of dependencies' do
+      expect(@oss_response.dep_count.class).to eq Integer
+    end
+
+    it 'should be able to count the number of vulnerabilities' do
+      expect(@oss_response.vuln_count.class).to eq Integer
     end
   end
 end

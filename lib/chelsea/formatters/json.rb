@@ -18,17 +18,23 @@ require 'json'
 require_relative 'formatter'
 
 module Chelsea
+  # Formats Server response to JSON
   class JsonFormatter < Formatter
-    def initialize(options)
+    attr_accessor :oi_response, :reverse_dependencies
+    attr_reader :output
+
+    def initialize(**options)
       @options = options
+      @output = JSON.dump([])
     end
 
-    def get_results(server_response, reverse_deps)
-      server_response.to_json
+    def format_response
+      @output = @oi_response.coords
     end
 
-    def do_print(result)
-      puts result
+    def do_print
+      format_response
+      puts JSON.dump(@output)
     end
   end
 end

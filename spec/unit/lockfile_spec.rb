@@ -14,15 +14,15 @@
 # limitations under the License.
 #
 
-require 'chelsea/deps'
+require 'chelsea/lockfile'
 require 'spec_helper'
 
-RSpec.describe Chelsea::Deps do
+RSpec.describe Chelsea::Lockfile do
   context 'given a valid Gemfile.lock' do
     before(:all) do
       stub_oss_response
       file = 'spec/testdata/Gemfile.lock'
-      @dependencies, @reverse_dependencies, @coordinates = process_deps_from_gemfile(file)
+      @dependencies, @coordinates = process_lockfile(file)
     end
     it 'can collect dependencies' do
       expect(@dependencies.class).to eq(Hash)
@@ -41,7 +41,7 @@ RSpec.describe Chelsea::Deps do
   context 'given an invalid path' do
     file = 'invalid/path'
     it 'raises a RuntimeError with a message indicating invalid file path' do
-      expect{ process_deps_from_gemfile(file) }
+      expect{ process_lockfile(file) }
         .to raise_error(
           Errno::ENOENT,
           'No such file or directory @ rb_sysopen - invalid/path'
@@ -50,7 +50,7 @@ RSpec.describe Chelsea::Deps do
   end
 
   it 'can turn a name and version into a valid purl' do
-    expect(Chelsea::Deps.to_purl('name-thing', '1.0.0'))
+    expect(Chelsea::Lockfile.to_purl('name-thing', '1.0.0'))
       .to eq('pkg:gem/name-thing@1.0.0')
   end
 end

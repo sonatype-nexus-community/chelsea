@@ -13,20 +13,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
+require 'json'
+require_relative 'oi_coord'
 module Chelsea
-  # Abstract class to format server response at runtime
-  class Formatter
-    def initialize
-      @pastel = Pastel.new
+  # Class for parsing OSS response and giving some methods
+  class OIResponse
+    def initialize(response)
+      @coords = \
+        response.sort! { |x| x['vulnerabilities'].count }
+                .each_with_object([]) do |coord, arr|
+          arr.append(OICoord.new(coord))
+        end
     end
 
-    def format_response(*)
-      raise 'must implement format_response method in subclass'
+    def dep_count
+      @coords.count
     end
 
-    def do_print
-      raise 'must implement do_print method in subclass'
+    def coords
+      @coords.map(&:to_h)
+    end
+
+    def vuln_count
+      @vuln_count ||= @coords.count(&:vulnerable)
     end
   end
 end

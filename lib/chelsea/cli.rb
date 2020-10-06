@@ -19,13 +19,13 @@ require 'pastel'
 require 'tty-font'
 
 require_relative 'version'
-require_relative 'gems'
+require_relative 'report'
 require_relative 'iq_client'
 require_relative 'config'
 
 module Chelsea
   ##
-  # This class provides an interface to the oss index, gems and deps
+  # This class provides an interface to the oss index, gems and lockfile
   class CLI
     def initialize(opts)
       @opts = opts
@@ -39,11 +39,12 @@ module Chelsea
         _set_config # move to init
       elsif @opts.clear?
         require_relative 'db'
+        # Class Method?
         Chelsea::DB.new().clear_cache
-        puts "OSS Index cache cleared"
+        puts 'OSS Index cache cleared'
       elsif @opts.file? && @opts.iq?
-        dependencies = _process_file_iq
-        _submit_sbom(dependencies)
+        report = _process_file
+        _submit_sbom(report.dependencies)
       elsif @opts.file?
         _process_file
       elsif @opts.help? # quit on opts.help earlier
@@ -57,7 +58,7 @@ module Chelsea
 
     private
 
-    def _submit_sbom(gems)
+    def _submit_sbom(report)
       iq = Chelsea::IQClient.new(
         options: {
           public_application_id: @opts[:application],
@@ -66,32 +67,29 @@ module Chelsea
           auth_token: @opts[:iqpass]
         }
       )
-      bom = Chelsea::Bom.new(gems.deps.dependencies).collect
+      bom = Chelsea::Bom.new(report.lockfile.dependencies).collect
 
       status_url = iq.post_sbom(bom)
-      
       return unless status_url
 
       iq.poll_status(status_url)
     end
 
     def _process_file
-      gems = Chelsea::Gems.new(
+      report = Chelsea::Report.new(
         file: @opts[:file],
         verbose: @opts[:verbose],
         options: @opts
       )
-      gems.execute ? (exit 1) : (exit 0)
+      report.generate ? (exit 1) : (exit 0)
     end
 
     def _process_file_iq
-      gems = Chelsea::Gems.new(
+      Chelsea::Report.new(
         file: @opts[:file],
         verbose: @opts[:verbose],
         options: @opts
       )
-      gems.collect_iq
-      gems
     end
 
     def _flags_error

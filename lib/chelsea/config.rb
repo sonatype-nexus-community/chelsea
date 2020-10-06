@@ -15,7 +15,7 @@
 #
 
 require 'yaml'
-require_relative 'oss_index'
+require_relative 'oi_client'
 
 module Chelsea
   @oss_index_config_location = File.join(Dir.home.to_s, '.ossindex')
@@ -27,14 +27,14 @@ module Chelsea
 
   def self.config(options = {})
     if !options[:user].nil? && !options[:token].nil?
-      Chelsea::OSSIndex.new(
+      Chelsea::OIClient.new(
         options: {
           oss_index_user_name: options[:user],
           oss_index_user_token: options[:token]
         }
       )
     else
-      Chelsea::OSSIndex.new(options: oss_index_config)
+      Chelsea::OIClient.new(options: oss_index_config)
     end
   end
 
