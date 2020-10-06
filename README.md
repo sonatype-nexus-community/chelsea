@@ -86,35 +86,6 @@ Audit Results
 
 Audit Results will show a list of your third party dependencies, their reverse dependencies (so what brought them in to your project), and if they are vulnerable or not.
 
-### Quiet usage
-
-Running with `--quiet` will only output any vulnerable dependencies found, similar to:
-
-```
- _____  _            _                   
-/  __ \| |          | |                  
-| /  \/| |__    ___ | | ___   ___   __ _ 
-| |    | '_ \  / _ \| |/ __| / _ \ / _` |
-| \__/\| | | ||  __/| |\__ \|  __/| (_| |
- \____/|_| |_| \___||_||___/ \___| \__,_|
-                                         
-                                         
-Version: 0.0.11
-[15/31] - pkg:gem/rake@10.5.0 Vulnerable.
-        Required by: domain_name-0.5.20190701
-        Required by: equatable-0.6.1
-        Required by: pastel-0.7.3
-        Required by: public_suffix-4.0.3
-        Required by: rspec_junit_formatter-0.4.1
-        Required by: slop-4.8.1
-        Required by: slop-4.8.0
-        Required by: unf-0.1.4
-        Required by: unf_ext-0.0.7.7
-        Required by: unf_ext-0.0.7.6
-```
-
-This can be useful if you are only interested in seeing your vulnerable dependencies, and not the whole list.
-
 ### Usage with Formatters
 
 Chelsea can be run with a number of different formatters:
