@@ -144,7 +144,7 @@ and we had to instead edit `~/bash_profile`. To sanity check your installation, 
 `.rbenv` directory early in your PATH, e.g.:
 ```
 $ echo $PATH
-/Users/<username>/.rbenv/shims:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/TeX/texbin:/usr/local/go/bin:/opt/X11/bin:/Applications/Wireshark.app/Contents/MacOS:/usr/local/git/bin
+/Users/<username>/.rbenv/shims:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:...
 ``` 
  
 We are using ruby version 2.6.6, but newer versions should also work.
