@@ -38,21 +38,10 @@ $ gem install chelsea
 ```
 
 ```
-$ chelsea 
- _____  _            _                   
-/  __ \| |          | |                  
-| /  \/| |__    ___ | | ___   ___   __ _ 
-| |    | '_ \  / _ \| |/ __| / _ \ / _` |
-| \__/\| | | ||  __/| |\__ \|  __/| (_| |
- \____/|_| |_| \___||_||___/ \___| \__,_|
-                                         
-                                         
-Version: 0.0.11
-
-usage: chelsea [options] ...
-
-Options:
+$ chelsea --help
+usage: /usr/local/bin/chelsea [options]
     -f, --file         Path to your Gemfile.lock
+    -x, --clear        Clear OSS Index cache
     -c, --config       Set persistent config for OSS Index
     -u, --user         Specify OSS Index Username
     -p, --token        Specify OSS Index API Token
@@ -61,9 +50,10 @@ Options:
     -iu, --iquser      Specify the IQ username
     -it, --iqpass      Specify the IQ auth token
     -w, --whitelist    Set path to vulnerability whitelist file
-    -q, --quiet        Make chelsea only output vulnerable third party dependencies for text output (default: false)
+    -v, --verbose      For text format, list dependencies, their reverse dependencies (what brought them in to your project), and if they are vulnerable. (default: false)
     -t, --format       Choose what type of format you want your report in (default: text) (options: text, json, xml)
     -b, --iq           Use Nexus IQ Server to audit your project
+    -s, --stage        Specify Nexus IQ Stage (default: build) (options: develop, build, stage-release, release, operate)
     --version          Print the version
     -h, --help         Show usage
 ```
@@ -95,35 +85,6 @@ Audit Results
 ```
 
 Audit Results will show a list of your third party dependencies, their reverse dependencies (so what brought them in to your project), and if they are vulnerable or not.
-
-### Quiet usage
-
-Running with `--quiet` will only output any vulnerable dependencies found, similar to:
-
-```
- _____  _            _                   
-/  __ \| |          | |                  
-| /  \/| |__    ___ | | ___   ___   __ _ 
-| |    | '_ \  / _ \| |/ __| / _ \ / _` |
-| \__/\| | | ||  __/| |\__ \|  __/| (_| |
- \____/|_| |_| \___||_||___/ \___| \__,_|
-                                         
-                                         
-Version: 0.0.11
-[15/31] - pkg:gem/rake@10.5.0 Vulnerable.
-        Required by: domain_name-0.5.20190701
-        Required by: equatable-0.6.1
-        Required by: pastel-0.7.3
-        Required by: public_suffix-4.0.3
-        Required by: rspec_junit_formatter-0.4.1
-        Required by: slop-4.8.1
-        Required by: slop-4.8.0
-        Required by: unf-0.1.4
-        Required by: unf_ext-0.0.7.7
-        Required by: unf_ext-0.0.7.6
-```
-
-This can be useful if you are only interested in seeing your vulnerable dependencies, and not the whole list.
 
 ### Usage with Formatters
 

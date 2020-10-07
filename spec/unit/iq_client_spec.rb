@@ -44,7 +44,8 @@ RSpec.describe Chelsea::IQClient do
         public_application_id: 'appid',
         server_url: 'server_url',
         username: 'iquser',
-        auth_token: 'iqpass'
+        auth_token: 'iqpass',
+        stage: 'iqstage'
       }
       @client = Chelsea::IQClient.new(options: @opts)
     }

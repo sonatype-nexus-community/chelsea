@@ -63,7 +63,8 @@ module Chelsea
           public_application_id: @opts[:application],
           server_url: @opts[:server],
           username: @opts[:iquser],
-          auth_token: @opts[:iqpass]
+          auth_token: @opts[:iqpass],
+          stage: @opts[:stage]
         }
       )
       bom = Chelsea::Bom.new(gems.deps.dependencies).collect
