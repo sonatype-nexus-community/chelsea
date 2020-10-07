@@ -50,7 +50,7 @@ usage: /usr/local/bin/chelsea [options]
     -iu, --iquser      Specify the IQ username
     -it, --iqpass      Specify the IQ auth token
     -w, --whitelist    Set path to vulnerability whitelist file
-    -v, --verbose      Make chelsea only output vulnerable third party dependencies for text output (default: true)
+    -v, --verbose      For text format, list dependencies, their reverse dependencies (what brought them in to your project), and if they are vulnerable. (default: false)
     -t, --format       Choose what type of format you want your report in (default: text) (options: text, json, xml)
     -b, --iq           Use Nexus IQ Server to audit your project
     -s, --stage        Specify Nexus IQ Stage (default: build) (options: develop, build, stage-release, release, operate)

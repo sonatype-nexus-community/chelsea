@@ -31,7 +31,7 @@ opts =
       o.string '-iu', '--iquser', 'Specify the IQ username', default: 'admin'
       o.string '-it', '--iqpass', 'Specify the IQ auth token', default: 'admin123'
       o.string '-w', '--whitelist', 'Set path to vulnerability whitelist file'
-      o.bool '-v', '--verbose', 'Make chelsea only output vulnerable third party dependencies for text output (default: true)', default: false 
+      o.bool '-v', '--verbose', 'For text format, list dependencies, their reverse dependencies (what brought them in to your project), and if they are vulnerable. (default: false)', default: false
       o.string '-t', '--format', 'Choose what type of format you want your report in (default: text) (options: text, json, xml)', default: 'text'
       o.bool '-b', '--iq', 'Use Nexus IQ Server to audit your project'
       o.string '-s', '--stage', 'Specify Nexus IQ Stage (default: build) (options: develop, build, stage-release, release, operate)', default: 'build'
