@@ -9,4 +9,5 @@
   <exclude>src/chelsea.gemspec</exclude>
   <exclude>src/CODE_OF_CONDUCT.md</exclude>
   <exclude>src/CONTRIBUTORS.md</exclude>
+  <exclude>src/SECURITY.md</exclude>
 </excludes>
