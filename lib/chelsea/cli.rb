@@ -73,7 +73,7 @@ module Chelsea
       
       return unless status_url
 
-      iq.poll_status(status_url)
+      exit iq.poll_status(status_url)
     end
 
     def _process_file

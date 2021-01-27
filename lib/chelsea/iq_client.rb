@@ -67,8 +67,7 @@ module Chelsea
           res = _poll_iq_server(url)
           if res.code == 200
             spin.success("...done.")
-            _handle_response(res)
-            break
+            return _handle_response(res)
           end
         rescue
           sleep(1)
@@ -80,14 +79,19 @@ module Chelsea
 
     def _handle_response(res)
       res = JSON.parse(res.body)
-      unless res['policyAction'] == 'Failure'
-        puts @pastel.white.bold("Hi! Chelsea here, no policy violations for this audit!")
-        puts @pastel.white.bold("Report URL: #{res['reportHtmlUrl']}")
-        exit 0
-      else
+      if res['policyAction'] == 'Failure'
         puts @pastel.red.bold("Hi! Chelsea here, you have some policy violations to clean up!")
         puts @pastel.red.bold("Report URL: #{res['reportHtmlUrl']}")
-        exit 1
+        return 1
+      else
+        if res['policyAction'] == 'Warning'
+          puts @pastel.white.bold("Hi! Chelsea here, you have some policy warnings to peck at!")
+          puts @pastel.white.bold("Report URL: #{res['reportHtmlUrl']}")
+        else
+          puts @pastel.white.bold("Hi! Chelsea here, no policy violations for this audit!")
+          puts @pastel.white.bold("Report URL: #{res['reportHtmlUrl']}")
+        end
+        return 0
       end
     end
 

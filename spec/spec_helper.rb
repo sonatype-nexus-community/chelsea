@@ -83,6 +83,26 @@ def stub_iq_response(server_url: 'localhost:8070', public_application_id: 'testa
     )
 end
 
+def stub_iq_poll_response(server_url: 'localhost:8070', policyAction: "None", reportHtmlUrl: 'ui/links/application/test-app/report/95c4c14e', **opts)
+  stub_request(
+    :get,
+    "http://#{server_url}/api/v2/scan/applications/4537e6fe68c24dd5ac83efd97d4fc2f4/status/9cee2b6366fc4d328edc318eae46b2cb"
+  )
+    .to_return(
+      body:
+        JSON.unparse({
+                       "policyAction": "#{policyAction}",
+                       "reportHtmlUrl": "#{reportHtmlUrl}",
+                       "reportPdfUrl": "ui/links/application/test-app/report/95c4c14e/pdf",
+                       "reportDataUrl": "api/v2/applications/test-app/reports/95c4c14e/raw",
+                       "embeddableReportHtmlUrl": "ui/links/application/test-app/report/95c4c14e/embeddable",
+                       "isError": false
+                     }),
+      status: 200,
+      headers: _json_headers
+    )
+end
+
 def oss_index_response
   File.open(File.dirname(__FILE__) + '/testdata/oss_response.json', 'rb').read
 end

@@ -57,4 +57,34 @@ RSpec.describe Chelsea::IQClient do
       expect(@client.post_sbom(bom)).to eq "api/v2/scan/applications/4537e6fe68c24dd5ac83efd97d4fc2f4/status/9cee2b6366fc4d328edc318eae46b2cb"
     end
   end
+  context 'with report response' do
+    status_url = "api/v2/scan/applications/4537e6fe68c24dd5ac83efd97d4fc2f4/status/9cee2b6366fc4d328edc318eae46b2cb"
+    before(:all) {
+      @client = Chelsea::IQClient.new
+    }
+    it 'should handle policyAction:None with relative report url' do
+      stub_iq_poll_response
+      expect(@client.poll_status(status_url)).to eq 0
+    end
+    it 'should handle policyAction:Warning with relative report url' do
+      stub_iq_poll_response(policyAction: "Warning")
+      expect(@client.poll_status(status_url)).to eq 0
+    end
+    it 'should handle policyAction:Failure with relative report url' do
+      stub_iq_poll_response(policyAction: "Failure")
+      expect(@client.poll_status(status_url)).to eq 1
+    end
+    it 'should handle policyAction:None with absolute report url' do
+      stub_iq_poll_response(reportHtmlUrl: "http://myAbsoluteReportURL")
+      expect(@client.poll_status(status_url)).to eq 0
+    end
+    it 'should handle policyAction:Warning with absolute report url' do
+      stub_iq_poll_response(policyAction: "Warning", reportHtmlUrl: "http://myAbsoluteReportURL")
+      expect(@client.poll_status(status_url)).to eq 0
+    end
+    it 'should handle policyAction:Failure with absolute report url' do
+      stub_iq_poll_response(policyAction: "Failure", reportHtmlUrl: "http://myAbsoluteReportURL")
+      expect(@client.poll_status(status_url)).to eq 1
+    end
+  end
 end
