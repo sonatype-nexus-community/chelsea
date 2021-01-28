@@ -35,7 +35,9 @@ jobs:
             - chelsea-bundle-v2-
       - run:
           name: Bundle Install
-          command: bundle check --path vendor/bundle || bundle install
+          command: |
+            bundle config set --local path 'vendor/bundle'
+            bundle check || bundle install
       - save_cache:
           key: chelsea-bundle-v2-{{ checksum "Gemfile.lock" }}
           paths:
