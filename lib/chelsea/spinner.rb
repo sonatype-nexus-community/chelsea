@@ -19,12 +19,12 @@ require 'pastel'
 
 module Chelsea
   class Spinner
-    def initialize()
+    def initialize
       @pastel = Pastel.new
     end
 
     def spin_msg(msg)
-      format = "[#{@pastel.green(':spinner')}] " + @pastel.white(msg)
+      format = "[#{@pastel.green(':spinner')}] " + @pastel.normal(msg)
       spinner = TTY::Spinner.new(
         format,
         success_mark: @pastel.green('+'),
