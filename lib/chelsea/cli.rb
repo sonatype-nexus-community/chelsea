@@ -39,7 +39,7 @@ module Chelsea
         _set_config # move to init
       elsif @opts.clear?
         require_relative 'db'
-        Chelsea::DB.new().clear_cache
+        Chelsea::DB.new.clear_cache
         puts "OSS Index cache cleared"
       elsif @opts.file? && @opts.iq?
         dependencies = _process_file_iq
@@ -73,7 +73,25 @@ module Chelsea
       
       return unless status_url
 
-      exit iq.poll_status(status_url)
+      msg, color, exit_code = iq.poll_status(status_url)
+      show_status(msg, color)
+      exit exit_code
+    end
+
+    def show_status(msg, color)
+      case color
+      when Chelsea::IQClient::COLOR_FAILURE
+        puts @pastel.red.bold(msg)
+      when Chelsea::IQClient::COLOR_WARNING
+        # want yellow, but that doesn't print
+        # puts @pastel.color.bold(msg, color)
+        puts @pastel.blue.blue(msg)
+      when Chelsea::IQClient::COLOR_NONE
+        # want yellow, but that doesn't print
+        puts @pastel.green.bold(msg)
+      else
+        puts @pastel.bold(msg)
+      end
     end
 
     def _process_file
