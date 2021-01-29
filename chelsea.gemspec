@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.version       = Chelsea::VERSION
   spec.authors       = ['Allister Beharry']
   spec.email         = ['allister.beharry@gmail.com']
-  spec.required_ruby_version = '>= 2.6.5'
+  spec.required_ruby_version = '>= 2.6.6'
 
   spec.summary       = 'Audit Ruby package dependencies for security vulnerabilities.'
   spec.homepage      = 'https://github.com/sonatype-nexus-community/chelsea'

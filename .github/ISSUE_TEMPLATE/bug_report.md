@@ -23,7 +23,7 @@ If applicable, add screenshots to help explain your problem.
 
 **Desktop (please complete the following information):**
  - OS: [e.g. OS X 1.13.6]
- - Ruby Version: [e.g. 2.6.5]
+ - Ruby Version: [e.g. 2.6.6]
  - Bundler Version: [e.g. 2.1.4]
  - chelsea Version [e.g. 0.0.11]
 

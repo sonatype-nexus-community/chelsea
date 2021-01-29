@@ -153,7 +153,7 @@ def coordinates
   coordinates
 end
 
-def dependency_hash # rubocop:disable Layout/MethodLength, Metrics/AbcSize
+def dependency_hash # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
   dependency_hash = {}
   dependency_hash['addressable'] = ['addressable', '2.7.0']
   dependency_hash['chelsea'] = ['chelsea', '0.0.3']
