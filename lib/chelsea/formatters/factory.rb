@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # Copyright 2019-Present Sonatype Inc.
 #
@@ -20,7 +22,7 @@ require_relative 'text'
 
 # Factory for formatting dependencies
 class FormatterFactory
-  def get_formatter(format: 'text', verbose:)
+  def get_formatter(verbose:, format: 'text')
     case format
     when 'text'
       Chelsea::TextFormatter.new verbose: verbose
@@ -28,7 +30,7 @@ class FormatterFactory
       Chelsea::JsonFormatter.new verbose: verbose
     when 'xml'
       Chelsea::XMLFormatter.new verbose: verbose
-    else
+    else # rubocop:disable Lint/DuplicateBranch
       Chelsea::TextFormatter.new verbose: verbose
     end
   end

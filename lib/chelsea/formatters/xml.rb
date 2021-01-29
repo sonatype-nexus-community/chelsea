@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # Copyright 2019-Present Sonatype Inc.
 #
@@ -17,12 +19,14 @@
 require 'ox'
 require_relative 'formatter'
 module Chelsea
+  # Produce output in xml format
   class XMLFormatter < Formatter
     def initialize(options)
+      super()
       @options = options
     end
 
-    def get_results(server_response, reverse_deps)
+    def fetch_results(server_response, _reverse_deps) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
       doc = Ox::Document.new
       instruct = Ox::Instruct.new(:xml)
       instruct[:version] = '1.0'
@@ -37,13 +41,13 @@ module Chelsea
 
       server_response.each do |coord|
         testcase = Ox::Element.new('testcase')
-        testcase[:classname] = coord["coordinates"]
-        testcase[:name] = coord["coordinates"]
+        testcase[:classname] = coord['coordinates']
+        testcase[:name] = coord['coordinates']
 
         if coord['vulnerabilities'].length.positive?
           failure = Ox::Element.new('failure')
-          failure[:type] = "Vulnerable Dependency"
-          failure << get_vulnerability_block(coord["vulnerabilities"])
+          failure[:type] = 'Vulnerable Dependency'
+          failure << get_vulnerability_block(coord['vulnerabilities'])
           testcase << failure
           testsuite << testcase
         elsif @options[:verbose]
@@ -58,20 +62,20 @@ module Chelsea
       puts Ox.dump(results)
     end
 
-    def get_vulnerability_block(vulnerabilities)
-      vulnBlock = String.new
+    def get_vulnerability_block(vulnerabilities) # rubocop:disable Metrics/MethodLength
+      vuln_block = ''
       vulnerabilities.each do |vuln|
-        vulnBlock += "Vulnerability Title: #{vuln["title"]}\n"\
-                    "ID: #{vuln["id"]}\n"\
-                    "Description: #{vuln["description"]}\n"\
-                    "CVSS Score: #{vuln["cvssScore"]}\n"\
-                    "CVSS Vector: #{vuln["cvssVector"]}\n"\
-                    "CVE: #{vuln["cve"]}\n"\
-                    "Reference: #{vuln["reference"]}"\
+        vuln_block += "Vulnerability Title: #{vuln['title']}\n"\
+                    "ID: #{vuln['id']}\n"\
+                    "Description: #{vuln['description']}\n"\
+                    "CVSS Score: #{vuln['cvssScore']}\n"\
+                    "CVSS Vector: #{vuln['cvssVector']}\n"\
+                    "CVE: #{vuln['cve']}\n"\
+                    "Reference: #{vuln['reference']}"\
                     "\n"
       end
-      
-      vulnBlock
+
+      vuln_block
     end
   end
 end

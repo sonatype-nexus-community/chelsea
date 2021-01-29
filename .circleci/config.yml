@@ -18,7 +18,7 @@ version: 2.1
 jobs: 
   build: 
     docker: 
-      - image: circleci/ruby:2.6.5-stretch
+      - image: circleci/ruby:2.6.6-stretch
         environment: 
           BUNDLE_PATH: vendor/bundle
     steps:
@@ -49,6 +49,9 @@ jobs:
                             --format RspecJunitFormatter \
                             --out test_results/rspec.xml
       - run:
+          name: Run linter
+          command: bundle exec rubocop
+      - run:
           name: Build gem
           command: gem build chelsea.gemspec
       - run:
@@ -64,7 +67,7 @@ jobs:
           path: test_results
   release:
     docker:
-      - image: circleci/ruby:2.6.5-stretch
+      - image: circleci/ruby:2.6.6-stretch
     steps:
       - add_ssh_keys:
           fingerprints:

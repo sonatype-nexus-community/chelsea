@@ -15,6 +15,7 @@
 #
 
 # frozen_string_literal: true
+
 require 'pastel'
 require 'bundler'
 require 'bundler/lockfile_parser'
@@ -31,11 +32,10 @@ module Chelsea
   # Class to collect and audit packages from a Gemfile.lock
   class Gems
     attr_accessor :deps
-    def initialize(file:, verbose:, options: { 'format': 'text' })
+
+    def initialize(file:, verbose:, options: { format: 'text' }) # rubocop:disable Metrics/MethodLength
       @verbose = verbose
-      unless File.file?(file) || file.nil?
-        raise 'Gemfile.lock not found, check --file path'
-      end
+      raise 'Gemfile.lock not found, check --file path' unless File.file?(file) || file.nil?
 
       _silence_stderr unless @verbose
 
@@ -52,7 +52,7 @@ module Chelsea
     # Audits depenencies using deps library and prints results
     # using formatter library
 
-    def execute
+    def execute # rubocop:disable Metrics/MethodLength
       server_response, dependencies, reverse_dependencies = audit
       if dependencies.nil?
         _print_err 'No dependencies retrieved. Exiting.'
@@ -62,20 +62,19 @@ module Chelsea
         _print_success 'No vulnerability data retrieved from server. Exiting.'
         return
       end
-      results = @formatter.get_results(server_response, reverse_dependencies)
+      results = @formatter.fetch_results(server_response, reverse_dependencies)
       @formatter.do_print(results)
 
       server_response.map { |r| r['vulnerabilities'].length.positive? }.any?
     end
 
     def collect_iq
-      dependencies = @deps.dependencies
-      dependencies
+      @deps.dependencies
     end
 
     # Runs through auditing algorithm, raising exceptions
     # on REST calls made by @deps.get_vulns
-    def audit
+    def audit # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
       # This spinner management is out of control
       # we should wrap a block with start and stop messages,
       # or use a stack to ensure all spinners stop.
@@ -84,7 +83,7 @@ module Chelsea
       begin
         dependencies = @deps.dependencies
         spin.success('...done.')
-      rescue StandardError => e
+      rescue StandardError
         spin.stop
         _print_err "Parsing dependency line #{gem} failed."
       end
@@ -100,16 +99,16 @@ module Chelsea
       begin
         server_response = @client.get_vulns(coordinates)
         spin.success('...done.')
-      rescue SocketError => e
+      rescue SocketError
         spin.stop('...request failed.')
         _print_err 'Socket error getting data from OSS Index server.'
       rescue RestClient::RequestFailed => e
         spin.stop('...request failed.')
         _print_err "Error getting data from OSS Index server:#{e.response}."
-      rescue RestClient::ResourceNotFound => e
+      rescue RestClient::ResourceNotFound
         spin.stop('...request failed.')
         _print_err 'Error getting data from OSS Index server. Resource not found.'
-      rescue Errno::ECONNREFUSED => e
+      rescue Errno::ECONNREFUSED
         spin.stop('...request failed.')
         _print_err 'Error getting data from OSS Index server. Connection refused.'
       end
@@ -122,12 +121,12 @@ module Chelsea
       $stderr.reopen('/dev/null', 'w')
     end
 
-    def _print_err(s)
-      puts @pastel.red.bold(s)
+    def _print_err(msg)
+      puts @pastel.red.bold(msg)
     end
 
-    def _print_success(s)
-      puts @pastel.green.bold(s)
+    def _print_success(msg)
+      puts @pastel.green.bold(msg)
     end
   end
 end

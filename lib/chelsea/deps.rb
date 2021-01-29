@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # Copyright 2019-Present Sonatype Inc.
 #
@@ -22,6 +24,7 @@ require 'json'
 require 'rest-client'
 
 module Chelsea
+  # Project dependencies
   class Deps
     def initialize(path:, verbose: false)
       @verbose = verbose
@@ -47,7 +50,7 @@ module Chelsea
 
     # Collects all reverse dependencies in reverse_dependencies instance var
     # this rescue block honks
-    def reverse_dependencies
+    def reverse_dependencies # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
       reverse = Gem::Commands::DependencyCommand.new
       reverse.options[:reverse_dependencies] = true
       # We want to filter the reverses dependencies by specs in lockfile
@@ -68,7 +71,7 @@ module Chelsea
     # in dependencies_versions and coordinates instance vars
     def coordinates
       dependencies.each_with_object({ 'coordinates' => [] }) do |(name, v), coords|
-        coords['coordinates'] << self.class.to_purl(name, v[1]);
+        coords['coordinates'] << self.class.to_purl(name, v[1])
       end
     end
   end

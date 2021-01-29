@@ -16,7 +16,8 @@
 #
 
 # frozen_string_literal: true
-require_relative "../lib/chelsea"
+
+require_relative '../lib/chelsea'
 require 'slop'
 opts =
   begin
@@ -31,13 +32,19 @@ opts =
       o.string '-iu', '--iquser', 'Specify the IQ username', default: 'admin'
       o.string '-it', '--iqpass', 'Specify the IQ auth token', default: 'admin123'
       o.string '-w', '--whitelist', 'Set path to vulnerability whitelist file'
-      o.bool '-v', '--verbose', 'For text format, list dependencies, their reverse dependencies (what brought them in to your project), and if they are vulnerable. (default: false)', default: false
-      o.string '-t', '--format', 'Choose what type of format you want your report in (default: text) (options: text, json, xml)', default: 'text'
+      o.bool '-v', '--verbose',
+             'For text format, list dependencies, their reverse dependencies (what brought them in to your project), and
+ if they are vulnerable. (default: false)', default: false
+      o.string '-t', '--format',
+               'Choose what type of format you want your report in (default: text) (options: text, json, xml)',
+               default: 'text'
       o.bool '-b', '--iq', 'Use Nexus IQ Server to audit your project'
-      o.string '-s', '--stage', 'Specify Nexus IQ Stage (default: build) (options: develop, build, stage-release, release, operate)', default: 'build'
+      o.string '-s', '--stage',
+               'Specify Nexus IQ Stage (default: build) (options: develop, build, stage-release, release, operate)',
+               default: 'build'
       o.on '--version', 'Print the version' do
-          puts Chelsea::VERSION
-          exit
+        puts Chelsea::VERSION
+        exit
       end
       o.on '-h', '--help', 'Show usage' do
         puts(o)
@@ -45,7 +52,7 @@ opts =
       end
     end
   rescue Slop::Error => e
-    puts(e.message + ' (try --help)')
+    puts("#{e.message} (try --help)")
     exit 1
   end
 if opts.arguments.count.positive?

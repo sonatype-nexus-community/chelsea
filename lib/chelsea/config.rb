@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # Copyright 2019-Present Sonatype Inc.
 #
@@ -17,6 +19,7 @@
 require 'yaml'
 require_relative 'oss_index'
 
+# Saved credentials
 module Chelsea
   @oss_index_config_location = File.join(Dir.home.to_s, '.ossindex')
   @oss_index_config_filename = '.oss-index-config'
@@ -43,10 +46,8 @@ module Chelsea
     @client
   end
 
-  def self.oss_index_config
-    if !File.exist? File.join(@oss_index_config_location, @oss_index_config_filename)
-      { oss_index_user_name: '', oss_index_user_token: '' }
-    else
+  def self.oss_index_config # rubocop:disable Metrics/MethodLength
+    if File.exist? File.join(@oss_index_config_location, @oss_index_config_filename)
       conf_hash = YAML.safe_load(
         File.read(
           File.join(@oss_index_config_location, @oss_index_config_filename)
@@ -56,6 +57,8 @@ module Chelsea
         oss_index_user_name: conf_hash['Username'],
         oss_index_user_token: conf_hash['Token']
       }
+    else
+      { oss_index_user_name: '', oss_index_user_token: '' }
     end
   end
 
@@ -71,19 +74,17 @@ module Chelsea
     config = {}
 
     puts 'What username do you want to authenticate as (ex: your email address)? '
-    config['Username'] = STDIN.gets.chomp
+    config['Username'] = $stdin.gets.chomp
 
     puts 'What token do you want to use? '
-    config['Token'] = STDIN.gets.chomp
+    config['Token'] = $stdin.gets.chomp
 
     _write_oss_index_config_file(config)
   end
 
   def self._write_oss_index_config_file(config)
-    unless File.exist? @oss_index_config_location
-      Dir.mkdir(@oss_index_config_location)
-    end
-    File.open(File.join(@oss_index_config_location, @oss_index_config_filename), "w") do |file|
+    Dir.mkdir(@oss_index_config_location) unless File.exist? @oss_index_config_location
+    File.open(File.join(@oss_index_config_location, @oss_index_config_filename), 'w') do |file|
       file.write config.to_yaml
     end
   end

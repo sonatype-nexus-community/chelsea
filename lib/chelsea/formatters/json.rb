@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # Copyright 2019-Present Sonatype Inc.
 #
@@ -18,12 +20,14 @@ require 'json'
 require_relative 'formatter'
 
 module Chelsea
+  # Produce output in json format
   class JsonFormatter < Formatter
     def initialize(options)
+      super()
       @options = options
     end
 
-    def get_results(server_response, reverse_deps)
+    def fetch_results(server_response, _reverse_deps)
       server_response.to_json
     end
 

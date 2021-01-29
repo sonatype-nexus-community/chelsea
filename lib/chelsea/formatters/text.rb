@@ -1,3 +1,6 @@
+# rubocop:disable Style/FrozenStringLiteralComment
+# rubocop:enable Style/FrozenStringLiteralComment
+
 #
 # Copyright 2019-Present Sonatype Inc.
 #
@@ -19,13 +22,16 @@ require 'tty-table'
 require_relative 'formatter'
 
 module Chelsea
+  # Produce output in text format
   class TextFormatter < Formatter
     def initialize(options)
+      super()
       @options = options
       @pastel = Pastel.new
     end
 
-    def get_results(server_response, reverse_dependencies)
+    # rubocop:disable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/AbcSize
+    def fetch_results(server_response, reverse_dependencies) # rubocop:disable Metrics/MethodLength
       response = ''
       if @options[:verbose]
         response += "\n"\
@@ -65,6 +71,7 @@ module Chelsea
       response += table.render(:unicode)
       response
     end
+    # rubocop:enable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/AbcSize
 
     def do_print(results)
       puts results
@@ -109,9 +116,7 @@ module Chelsea
     def _get_reverse_deps(coords, name)
       coords.each_with_object('') do |dep, s|
         dep.each do |gran|
-          if gran.class == String && !gran.include?(name)
-            s << "\tRequired by: #{gran}\n"
-          end
+          s << "\tRequired by: #{gran}\n" if gran.instance_of?(String) && !gran.include?(name)
         end
       end
     end
