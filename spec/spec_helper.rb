@@ -126,7 +126,9 @@ end
 def test_dependencies # rubocop:disable Metrics/MethodLength
   stub_request(:post, 'https://ossindex.sonatype.org/api/v3/component-report')
     .with(
+      # rubocop:disable Layout/LineLength
       body: '{"coordinates":["pkg:gem/addressable@2.7.0","pkg:gem/crack@0.4.3","pkg:gem/hashdiff@1.0.1","pkg:gem/public_suffix@4.0.3","pkg:gem/safe_yaml@1.0.5","pkg:gem/webmock@3.8.3"]}',
+      # rubocop:enable Layout/LineLength
       headers: {
         'Accept' => 'application/json',
         'Accept-Encoding' => 'gzip, deflate',
@@ -187,6 +189,7 @@ def dependency_hash # rubocop:disable Layout/MethodLength, Metrics/AbcSize
   dependency_hash
 end
 
+# rubocop:disable Layout/LineLength
 OSS_INDEX_RESPONSE = %q(
   [
     {"coordinates":"pkg:gem/chelsea@0.0.3","reference":"https://ossindex.sonatype.org/component/pkg:gem/chelsea@0.0.3","vulnerabilities":[]},
@@ -214,3 +217,4 @@ OSS_INDEX_RESPONSE = %q(
     {"coordinates":"pkg:gem/unf_ext@0.0.7.6","description":"Unicode Normalization Form support library for CRuby","reference":"https://ossindex.sonatype.org/component/pkg:gem/unf_ext@0.0.7.6","vulnerabilities":[]}
   ]
 )
+# rubocop:enable Layout/LineLength

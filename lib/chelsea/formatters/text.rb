@@ -1,3 +1,6 @@
+# rubocop:disable Style/FrozenStringLiteralComment
+# rubocop:enable Style/FrozenStringLiteralComment
+
 #
 # Copyright 2019-Present Sonatype Inc.
 #
