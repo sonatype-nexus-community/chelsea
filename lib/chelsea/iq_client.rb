@@ -79,7 +79,7 @@ module Chelsea
 
     # colors to use when printing message
     COLOR_FAILURE = 31
-    COLOR_WARNING = 30 # want yellow, but doesn't appear to print
+    COLOR_WARNING = 33 # want yellow, but doesn't appear to print
     COLOR_NONE = 32
     # Known policy actions
     POLICY_ACTION_FAILURE = 'Failure'
