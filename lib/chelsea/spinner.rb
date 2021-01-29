@@ -19,7 +19,7 @@ require 'pastel'
 
 module Chelsea
   class Spinner
-    def initialize()
+    def initialize
       @pastel = Pastel.new
     end
 

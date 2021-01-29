@@ -17,6 +17,7 @@
 require 'rest-client'
 require 'json'
 require 'pastel'
+require 'uri'
 
 require_relative 'spinner'
 
@@ -31,6 +32,7 @@ module Chelsea
       internal_application_id: '',
       stage: 'build'
     }
+
     def initialize(options: DEFAULT_OPTIONS)
       @options = options
       @pastel = Pastel.new
@@ -46,12 +48,12 @@ module Chelsea
         password: @options[:auth_token]
       )
       res = resource.post sbom.to_s, _headers.merge(content_type: 'application/xml')
-      unless res.code != 202
-        spin.success("...done.")
-        status_url(res)
-      else
+      if res.code != 202
         spin.stop('...request failed.')
         nil
+      else
+        spin.success("...done.")
+        status_url(res)
       end
     end
 
@@ -67,8 +69,7 @@ module Chelsea
           res = _poll_iq_server(url)
           if res.code == 200
             spin.success("...done.")
-            _handle_response(res)
-            break
+            return _handle_response(res)
           end
         rescue
           sleep(1)
@@ -76,18 +77,39 @@ module Chelsea
       end
     end
 
+    # colors to use when printing message
+    COLOR_FAILURE = 31
+    COLOR_WARNING = 33 # want yellow, but doesn't appear to print
+    COLOR_NONE = 32
+    # Known policy actions
+    POLICY_ACTION_FAILURE = 'Failure'
+    POLICY_ACTION_WARNING = 'Warning'
+    POLICY_ACTION_NONE = 'None'
+
     private
 
     def _handle_response(res)
       res = JSON.parse(res.body)
-      unless res['policyAction'] == 'Failure'
-        puts @pastel.white.bold("Hi! Chelsea here, no policy violations for this audit!")
-        puts @pastel.white.bold("Report URL: #{res['reportHtmlUrl']}")
-        exit 0
+      # get absolute report url
+      absolute_report_html_url = URI.join(@options[:server_url], res['reportHtmlUrl'])
+
+      case res['policyAction']
+      when POLICY_ACTION_FAILURE
+        return "Hi! Chelsea here, you have some policy violations to clean up!"\
+          "\nReport URL: #{absolute_report_html_url}",
+          COLOR_FAILURE, 1
+      when POLICY_ACTION_WARNING
+        return "Hi! Chelsea here, you have some policy warnings to peck at!"\
+        "\nReport URL: #{absolute_report_html_url}",
+          COLOR_WARNING, 0
+      when POLICY_ACTION_NONE
+        return "Hi! Chelsea here, no policy violations for this audit!"\
+        "\nReport URL: #{absolute_report_html_url}",
+          COLOR_NONE, 0
       else
-        puts @pastel.red.bold("Hi! Chelsea here, you have some policy violations to clean up!")
-        puts @pastel.red.bold("Report URL: #{res['reportHtmlUrl']}")
-        exit 1
+        return "Hi! Chelsea here, no policy violations for this audit, but unknown policy action!"\
+        "\nReport URL: #{absolute_report_html_url}",
+          COLOR_FAILURE, 1
       end
     end
 
@@ -141,7 +163,15 @@ module Chelsea
         password: @options[:auth_token]
       )
       res = resource.get _headers
+      if res.code != 200
+        puts "failed to get internal application id for IQ application id: #{@options[:public_application_id]}. response status: #{res.code}"
+        return
+      end
       body = JSON.parse(res)
+      if body['applications'].empty?
+        puts "failed to get internal application id for IQ application id: #{@options[:public_application_id]}"
+        return
+      end
       body['applications'][0]['id']
     end
 
