@@ -163,6 +163,10 @@ module Chelsea
         password: @options[:auth_token]
       )
       res = resource.get _headers
+      if res.code != 202
+        puts "failed to get internal application id for public id: #{@options[:public_application_id]}. response status: #{res.code}"
+        return
+      end
       body = JSON.parse(res)
       body['applications'][0]['id']
     end
