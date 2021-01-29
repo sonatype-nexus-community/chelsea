@@ -42,6 +42,10 @@ module Chelsea
     def post_sbom(sbom)
       spin = @spinner.spin_msg "Submitting sbom to Nexus IQ Server"
       @internal_application_id = _get_internal_application_id
+      if @internal_application_id.empty
+        puts "empty internal application id: #{@internal_application_id} for IQ application id: #{@options[:public_application_id]}."
+        return nil
+      end
       resource = RestClient::Resource.new(
         _api_url,
         user: @options[:username],
@@ -163,11 +167,15 @@ module Chelsea
         password: @options[:auth_token]
       )
       res = resource.get _headers
-      if res.code != 202
+      if res.code != 200
         puts "failed to get internal application id for IQ application id: #{@options[:public_application_id]}. response status: #{res.code}"
         return
       end
       body = JSON.parse(res)
+      if body['applications'].empty?
+        puts "failed to get internal application id for IQ application id: #{@options[:public_application_id]}"
+        return
+      end
       body['applications'][0]['id']
     end
 
