@@ -44,10 +44,16 @@ module Chelsea
       elsif @opts.file? && @opts.iq?
         dependencies = _process_file_iq
         _submit_sbom(dependencies)
+      elsif !@opts.file? && @opts.iq?
+        puts "Missing the --file argument. It is required with the --iq argument."
+        exit 1
       elsif @opts.file?
         _process_file
       elsif @opts.help? # quit on opts.help earlier
         puts _cli_flags # this doesn't exist
+      else
+        puts "Missing arguments! Chelsea did nothing. Try providing the --file <Gemfile.lock> argument."
+        exit 1
       end
     end
 
@@ -68,6 +74,7 @@ module Chelsea
         }
       )
       bom = Chelsea::Bom.new(gems.deps.dependencies).collect
+      puts "Hello there 1..................."
 
       status_url = iq.post_sbom(bom)
       
@@ -76,6 +83,8 @@ module Chelsea
       msg, color, exit_code = iq.poll_status(status_url)
       show_status(msg, color)
       # this may not be very ruby-esque, but `return exit_code` and `exit_code` didn't result in the desired exit status
+      puts "Hello there ..................."
+      # p exit_code
       exit exit_code
     end
 
