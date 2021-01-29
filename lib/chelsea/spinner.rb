@@ -24,7 +24,7 @@ module Chelsea
     end
 
     def spin_msg(msg)
-      format = "[#{@pastel.green(':spinner')}] " + @pastel.normal(msg)
+      format = "[#{@pastel.green(':spinner')}] " + @pastel.white(msg)
       spinner = TTY::Spinner.new(
         format,
         success_mark: @pastel.green('+'),
