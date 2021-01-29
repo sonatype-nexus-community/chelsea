@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # Copyright 2019-Present Sonatype Inc.
 #
@@ -44,12 +46,15 @@ def stub_sbom(server_url: 'localhost:8070', stage: 'build', **_opts)
     "http://#{server_url}/api/v2/scan/applications/4537e6fe68c24dd5ac83efd97d4fc2f4/sources/chelsea?stageId=#{stage}"
   )
     .to_return(
-      body: JSON.unparse({ "statusUrl": 'api/v2/scan/applications/4537e6fe68c24dd5ac83efd97d4fc2f4/status/9cee2b6366fc4d328edc318eae46b2cb' }),
+      # rubocop:disable Layout/LineLength
+      body: JSON.unparse({ statusUrl: 'api/v2/scan/applications/4537e6fe68c24dd5ac83efd97d4fc2f4/status/9cee2b6366fc4d328edc318eae46b2cb' }),
+      # rubocop:enable Layout/LineLength
       status: 202,
       headers: _json_headers
     )
 end
 
+# rubocop:disable Metrics/MethodLength
 def stub_iq_response(server_url: 'localhost:8070', public_application_id: 'testapp', **_opts)
   stub_request(
     :get,
@@ -82,29 +87,35 @@ def stub_iq_response(server_url: 'localhost:8070', public_application_id: 'testa
       headers: _json_headers
     )
 end
+# rubocop:enable Metrics/MethodLength
 
-def stub_iq_poll_response(server_url: 'localhost:8070', policyAction: 'None', reportHtmlUrl: 'ui/links/application/test-app/report/95c4c14e', **_opts)
+# rubocop:disable Metrics/MethodLength
+def stub_iq_poll_response(server_url: 'localhost:8070', policy_action: 'None',
+                          report_html_url: 'ui/links/application/test-app/report/95c4c14e', **_opts)
   stub_request(
     :get,
+    # rubocop:disable Layout/LineLength
     "http://#{server_url}/api/v2/scan/applications/4537e6fe68c24dd5ac83efd97d4fc2f4/status/9cee2b6366fc4d328edc318eae46b2cb"
+    # rubocop:enable Layout/LineLength
   )
     .to_return(
       body:
         JSON.unparse({
-                       "policyAction": policyAction.to_s,
-                       "reportHtmlUrl": reportHtmlUrl.to_s,
-                       "reportPdfUrl": 'ui/links/application/test-app/report/95c4c14e/pdf',
-                       "reportDataUrl": 'api/v2/applications/test-app/reports/95c4c14e/raw',
-                       "embeddableReportHtmlUrl": 'ui/links/application/test-app/report/95c4c14e/embeddable',
-                       "isError": false
+                       policyAction: policy_action.to_s,
+                       reportHtmlUrl: report_html_url.to_s,
+                       reportPdfUrl: 'ui/links/application/test-app/report/95c4c14e/pdf',
+                       reportDataUrl: 'api/v2/applications/test-app/reports/95c4c14e/raw',
+                       embeddableReportHtmlUrl: 'ui/links/application/test-app/report/95c4c14e/embeddable',
+                       isError: false
                      }),
       status: 200,
       headers: _json_headers
     )
 end
+# rubocop:enable Metrics/MethodLength
 
 def oss_index_response
-  File.open(File.dirname(__FILE__) + '/testdata/oss_response.json', 'rb').read
+  File.open("#{File.dirname(__FILE__)}/testdata/oss_response.json", 'rb').read
 end
 
 def stub_oss_response
@@ -112,7 +123,7 @@ def stub_oss_response
     .to_return(status: 200, body: OSS_INDEX_RESPONSE, headers: { 'Content-Type' => 'application/json' })
 end
 
-def get_test_dependencies
+def test_dependencies # rubocop:disable Metrics/MethodLength
   stub_request(:post, 'https://ossindex.sonatype.org/api/v3/component-report')
     .with(
       body: '{"coordinates":["pkg:gem/addressable@2.7.0","pkg:gem/crack@0.4.3","pkg:gem/hashdiff@1.0.1","pkg:gem/public_suffix@4.0.3","pkg:gem/safe_yaml@1.0.5","pkg:gem/webmock@3.8.3"]}',
@@ -130,7 +141,7 @@ def get_test_dependencies
   deps.dependencies
 end
 
-def get_coordinates
+def coordinates
   coordinates = {}
   coordinates['coordinates'] = []
   coordinates['coordinates'] << 'pkg:gem/chelsea@0.0.3'
@@ -140,7 +151,7 @@ def get_coordinates
   coordinates
 end
 
-def get_dependency_hash
+def dependency_hash # rubocop:disable Layout/MethodLength, Metrics/AbcSize
   dependency_hash = {}
   dependency_hash['addressable'] = ['addressable', '2.7.0']
   dependency_hash['chelsea'] = ['chelsea', '0.0.3']

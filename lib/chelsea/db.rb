@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # Copyright 2019-Present Sonatype Inc.
 #
@@ -17,6 +19,7 @@
 require 'pstore'
 
 module Chelsea
+  # OSS Index data cache
   class DB
     def initialize
       @store = PStore.new(_get_db_store_location)

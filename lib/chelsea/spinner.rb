@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # Copyright 2019-Present Sonatype Inc.
 #
@@ -18,6 +20,7 @@ require 'tty-spinner'
 require 'pastel'
 
 module Chelsea
+  # the spinner we use in Chelsea, needs work
   class Spinner
     def initialize
       @pastel = Pastel.new

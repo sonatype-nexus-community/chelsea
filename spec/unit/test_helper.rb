@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # Copyright 2019-Present Sonatype Inc.
 #
@@ -24,12 +26,14 @@ def populate_server_response(coordinate, desc, reference)
   response
 end
 
-def populate_server_response_vulnerability(server_response)
+def populate_server_response_vulnerability(server_response) # rubocop:disable Metrics/MethodLength
   vulnerability = {}
   vulnerability['id'] = '913ec790-8fc6-49fc-b424-170c1b60c97c'
   vulnerability['title'] = '[CVE-2013-4660]  Improper Input Validation'
+  # rubocop:disable Layout/LineLength
   vulnerability['description'] =
     'The JS-YAML module before 2.0.5 for Node.js parses input without properly considering the unsafe !!js/function tag, which allows remote attackers to execute arbitrary code via a crafted string that triggers an eval operation.'
+  # rubocop:enable Layout/LineLength
   vulnerability['cvssScore'] = 6.8
   vulnerability['cvssVector'] = 'AV:N/AC:M/Au:N/C:P/I:P/A:P'
   vulnerability['cve'] = 'CVE-2013-4660'

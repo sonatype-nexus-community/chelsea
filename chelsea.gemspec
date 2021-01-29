@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 lib = File.expand_path('lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'chelsea/version'
@@ -8,6 +10,7 @@ Gem::Specification.new do |spec|
   spec.version       = Chelsea::VERSION
   spec.authors       = ['Allister Beharry']
   spec.email         = ['allister.beharry@gmail.com']
+  spec.required_ruby_version = '>= 2.6.5'
 
   spec.summary       = 'Audit Ruby package dependencies for security vulnerabilities.'
   spec.homepage      = 'https://github.com/sonatype-nexus-community/chelsea'

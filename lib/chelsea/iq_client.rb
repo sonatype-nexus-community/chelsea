@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # Copyright 2019-Present Sonatype Inc.
 #
@@ -22,7 +24,8 @@ require 'uri'
 require_relative 'spinner'
 
 module Chelsea
-  class IQClient
+  # IQ audit operations
+  class IQClient # rubocop:disable Metrics/ClassLength
     DEFAULT_OPTIONS = {
       public_application_id: 'testapp',
       server_url: 'http://localhost:8070',
@@ -30,7 +33,7 @@ module Chelsea
       auth_token: 'admin123',
       internal_application_id: '',
       stage: 'build'
-    }
+    }.freeze
 
     def initialize(options: DEFAULT_OPTIONS)
       @options = options
@@ -38,7 +41,7 @@ module Chelsea
       @spinner = Chelsea::Spinner.new
     end
 
-    def post_sbom(sbom)
+    def post_sbom(sbom) # rubocop:disable Metrics/MethodLength
       spin = @spinner.spin_msg 'Submitting sbom to Nexus IQ Server'
       @internal_application_id = _get_internal_application_id
       resource = RestClient::Resource.new(
@@ -47,12 +50,12 @@ module Chelsea
         password: @options[:auth_token]
       )
       res = resource.post sbom.to_s, _headers.merge(content_type: 'application/xml')
-      if res.code != 202
-        spin.stop('...request failed.')
-        nil
-      else
+      if res.code == 202
         spin.success('...done.')
         status_url(res)
+      else
+        spin.stop('...request failed.')
+        nil
       end
     end
 
@@ -64,15 +67,13 @@ module Chelsea
     def poll_status(url)
       spin = @spinner.spin_msg 'Polling Nexus IQ Server for results'
       loop do
-        begin
-          res = _poll_iq_server(url)
-          if res.code == 200
-            spin.success('...done.')
-            return _handle_response(res)
-          end
-        rescue StandardError
-          sleep(1)
+        res = _poll_iq_server(url)
+        if res.code == 200
+          spin.success('...done.')
+          return _handle_response(res)
         end
+      rescue StandardError
+        sleep(1)
       end
     end
 
@@ -87,7 +88,7 @@ module Chelsea
 
     private
 
-    def _handle_response(res)
+    def _handle_response(res) # rubocop:disable Metrics/MethodLength
       res = JSON.parse(res.body)
       # get absolute report url
       absolute_report_html_url = URI.join(@options[:server_url], res['reportHtmlUrl'])
@@ -136,24 +137,22 @@ module Chelsea
       res['statusUrl']
     end
 
-    def _poll_status
+    def _poll_status # rubocop:disable Metrics/MethodLength
       return unless @status_url
 
       loop do
-        begin
-          res = check_status(@status_url)
-          if res.code == 200
-            puts JSON.parse(res.body)
-            break
-          end
-        rescue RestClient::ResourceNotFound => _e
-          print '.'
-          sleep(1)
+        res = check_status(@status_url)
+        if res.code == 200
+          puts JSON.parse(res.body)
+          break
         end
+      rescue RestClient::ResourceNotFound => _e
+        print '.'
+        sleep(1)
       end
     end
 
-    def _get_internal_application_id
+    def _get_internal_application_id # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
       resource = RestClient::Resource.new(
         _internal_application_id_api_url,
         user: @options[:username],
@@ -161,7 +160,7 @@ module Chelsea
       )
       res = resource.get _headers
       if res.code != 200
-        puts "failed to get internal application id for IQ application id: #{@options[:public_application_id]}. response status: #{res.code}"
+        puts "failure reading application id: #{@options[:public_application_id]}. response status: #{res.code}"
         return
       end
       body = JSON.parse(res)
@@ -177,7 +176,9 @@ module Chelsea
     end
 
     def _api_url
+      # rubocop:disable Layout/LineLength
       "#{@options[:server_url]}/api/v2/scan/applications/#{@internal_application_id}/sources/chelsea?stageId=#{@options[:stage]}"
+      # rubocop:enable Layout/LineLength
     end
 
     def _internal_application_id_api_url

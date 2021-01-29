@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # Copyright 2019-Present Sonatype Inc.
 #
@@ -16,8 +18,9 @@
 
 require 'chelsea/formatters/xml'
 
-RSpec.describe Chelsea::XMLFormatter do
-  it 'print_results brings back a Ox xml style object' do
+RSpec.describe Chelsea::XMLFormatter do # rubocop:disable Metrics/BlockLength
+  it 'print_results brings back a Ox xml style object' do # rubocop:disable Metrics/BlockLength
+    # rubocop:disable Layout/LineLength
     expected_vuln_block = "Vulnerability Title: [CVE-2013-4660]  Improper Input Validation\n"\
     "ID: 913ec790-8fc6-49fc-b424-170c1b60c97c\n"\
     "Description: The JS-YAML module before 2.0.5 for Node.js parses input without properly considering the unsafe !!js/function tag, which allows remote attackers to execute arbitrary code via a crafted string that triggers an eval operation.\n"\
@@ -25,15 +28,21 @@ RSpec.describe Chelsea::XMLFormatter do
     "CVSS Vector: AV:N/AC:M/Au:N/C:P/I:P/A:P\n"\
     "CVE: CVE-2013-4660\n"\
     "Reference: https://ossindex.sonatype.org/vuln/913ec790-8fc6-49fc-b424-170c1b60c97c\n"
+    # rubocop:enable Layout/LineLength
 
     server_response = []
     server_response.push(populate_server_response('test', 'test', 'test'))
     server_response.push(populate_server_response('test2', 'test2', 'test2'))
-    server_response.push(populate_server_response_vulnerability(populate_server_response('pkg:npm/js-yaml@1.0.0',
-                                                                                         'YAML 1.2 parser and serializer', 'https://ossindex.sonatype.org/component/pkg:npm/js-yaml@1.0.0')))
+    server_response.push(
+      populate_server_response_vulnerability(
+        populate_server_response('pkg:npm/js-yaml@1.0.0',
+                                 'YAML 1.2 parser and serializer',
+                                 'https://ossindex.sonatype.org/component/pkg:npm/js-yaml@1.0.0')
+      )
+    )
     command = Chelsea::XMLFormatter.new({ verbose: true })
 
-    xml = command.get_results(server_response, {})
+    xml = command.fetch_results(server_response, {})
 
     expect(xml.class).to eq(Ox::Document)
 

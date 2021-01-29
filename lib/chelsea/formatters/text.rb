@@ -19,13 +19,16 @@ require 'tty-table'
 require_relative 'formatter'
 
 module Chelsea
+  # Produce output in text format
   class TextFormatter < Formatter
     def initialize(options)
+      super()
       @options = options
       @pastel = Pastel.new
     end
 
-    def get_results(server_response, reverse_dependencies)
+    # rubocop:disable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/AbcSize
+    def fetch_results(server_response, reverse_dependencies) # rubocop:disable Metrics/MethodLength
       response = ''
       if @options[:verbose]
         response += "\n"\
@@ -65,6 +68,7 @@ module Chelsea
       response += table.render(:unicode)
       response
     end
+    # rubocop:enable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/AbcSize
 
     def do_print(results)
       puts results

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # Copyright 2019-Present Sonatype Inc.
 #
@@ -18,16 +20,20 @@ require 'chelsea/formatters/json'
 require 'json'
 require_relative '../test_helper'
 
-RSpec.describe Chelsea::JsonFormatter do
-  it 'print_results brings back a valid json object' do
+RSpec.describe Chelsea::JsonFormatter do # rubocop:disable Metrics/BlockLength
+  it 'print_results brings back a valid json object' do # rubocop:disable Metrics/BlockLength
     server_response = []
     server_response.push(populate_server_response('test', 'test', 'test'))
     server_response.push(populate_server_response('test2', 'test2', 'test2'))
-    server_response.push(populate_server_response_vulnerability(populate_server_response('pkg:npm/js-yaml@1.0.0',
-                                                                                         'YAML 1.2 parser and serializer', 'https://ossindex.sonatype.org/component/pkg:npm/js-yaml@1.0.0')))
+    server_response.push(
+      populate_server_response_vulnerability(
+        populate_server_response('pkg:npm/js-yaml@1.0.0', 'YAML 1.2 parser and serializer',
+                                 'https://ossindex.sonatype.org/component/pkg:npm/js-yaml@1.0.0')
+      )
+    )
     command = Chelsea::JsonFormatter.new({})
 
-    json = command.get_results(server_response, {})
+    json = command.fetch_results(server_response, {})
 
     expect(json.class).to eq(String)
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # Copyright 2019-Present Sonatype Inc.
 #
@@ -17,7 +19,7 @@
 require 'chelsea/deps'
 require 'spec_helper'
 
-RSpec.describe Chelsea::Deps do
+RSpec.describe Chelsea::Deps do # rubocop:disable Metrics/BlockLength
   context 'given a valid Gemfile.lock' do
     before(:all) do
       stub_oss_response

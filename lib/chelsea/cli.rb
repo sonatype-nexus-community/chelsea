@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # Copyright 2019-Present Sonatype Inc.
 #
@@ -26,7 +28,7 @@ require_relative 'config'
 module Chelsea
   ##
   # This class provides an interface to the oss index, gems and deps
-  class CLI
+  class CLI # rubocop:disable Metrics/ClassLength
     def initialize(opts)
       @opts = opts
       @pastel = Pastel.new
@@ -34,7 +36,8 @@ module Chelsea
       _show_logo # Move to formatter
     end
 
-    def process!
+    # rubocop:disable Metrics/CyclomaticComplexity
+    def process! # rubocop:disable Metrics/AbcSize, Metrics/MethodLength,  Metrics/PerceivedComplexity
       if @opts.config?
         _set_config # move to init
       elsif @opts.clear?
@@ -54,6 +57,7 @@ module Chelsea
         abort 'Missing arguments! Chelsea did nothing. Try providing the --file <Gemfile.lock> argument.'
       end
     end
+    # rubocop:enable Metrics/CyclomaticComplexity
 
     def self.version
       Chelsea::VERSION
@@ -61,7 +65,7 @@ module Chelsea
 
     private
 
-    def _submit_sbom(gems)
+    def _submit_sbom(gems) # rubocop:disable Metrics/MethodLength
       iq = Chelsea::IQClient.new(
         options: {
           public_application_id: @opts[:application],
@@ -143,7 +147,7 @@ module Chelsea
     def _show_logo
       font = TTY::Font.new(:doom)
       puts @pastel.green(font.write('Chelsea'))
-      puts @pastel.green('Version: ' + CLI.version)
+      puts @pastel.green("Version: #{CLI.version}")
     end
 
     def _load_config

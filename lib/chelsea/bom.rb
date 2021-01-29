@@ -40,7 +40,7 @@ module Chelsea
     end
 
     def random_urn_uuid
-      'urn:uuid:' + SecureRandom.uuid
+      "urn:uuid:#{SecureRandom.uuid}"
     end
 
     private
@@ -87,7 +87,7 @@ module Chelsea
       component
     end
 
-    def _show_logo
+    def _show_logo # rubocop:disable Metrics/MethodLength
       logo = %(
                           -o/
                       -+hNmNN-

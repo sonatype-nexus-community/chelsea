@@ -21,11 +21,12 @@ require 'rest-client'
 require_relative 'db'
 
 module Chelsea
+  # OSS Index audit operations
   class OSSIndex
     DEFAULT_OPTIONS = {
       oss_index_username: '',
       oss_index_user_token: ''
-    }
+    }.freeze
     def initialize(options: DEFAULT_OPTIONS)
       @oss_index_user_name = options[:oss_index_user_name]
       @oss_index_user_token = options[:oss_index_user_token]
@@ -41,7 +42,7 @@ module Chelsea
 
       remaining_coordinates['coordinates'].each_slice(128).to_a.each do |coords|
         res_json = JSON.parse(call_oss_index({ 'coordinates' => coords }))
-        cached_server_response = cached_server_response.concat(res_json)
+        cached_server_response.concat(res_json)
         @db.save_values_to_db(res_json)
       end
 
@@ -55,15 +56,15 @@ module Chelsea
 
     private
 
-    def _cache(coordinates)
+    def _cache(coordinates) # rubocop:disable Metrics/MethodLength
       new_coords = { 'coordinates' => [] }
       cached_server_response = []
       coordinates['coordinates'].each do |coord|
         record = @db.get_cached_value_from_db(coord)
-        if !record.nil?
-          cached_server_response << record
-        else
+        if record.nil?
           new_coords['coordinates'].push(coord)
+        else
+          cached_server_response << record
         end
       end
       [new_coords, cached_server_response]

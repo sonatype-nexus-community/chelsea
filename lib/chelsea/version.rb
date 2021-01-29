@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # Copyright 2019-Present Sonatype Inc.
 #
@@ -15,5 +17,5 @@
 #
 
 module Chelsea
-  VERSION = '0.0.27'.freeze
+  VERSION = '0.0.27'
 end

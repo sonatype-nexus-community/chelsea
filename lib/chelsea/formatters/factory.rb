@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # Copyright 2019-Present Sonatype Inc.
 #
@@ -28,7 +30,7 @@ class FormatterFactory
       Chelsea::JsonFormatter.new verbose: verbose
     when 'xml'
       Chelsea::XMLFormatter.new verbose: verbose
-    else
+    else # rubocop:disable Lint/DuplicateBranch
       Chelsea::TextFormatter.new verbose: verbose
     end
   end

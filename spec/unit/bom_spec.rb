@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # Copyright 2019-Present Sonatype Inc.
 #
@@ -21,7 +23,7 @@ require 'spec_helper'
 
 RSpec.describe Chelsea::Bom do
   before do
-    @deps = get_test_dependencies
+    @deps = test_dependencies
   end
 
   it 'can render dependencies as xml' do

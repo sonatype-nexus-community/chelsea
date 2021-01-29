@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # Copyright 2019-Present Sonatype Inc.
 #
@@ -14,12 +16,13 @@
 # limitations under the License.
 #
 
+# Base formatter class
 class Formatter
   def initialize
     @pastel = Pastel.new
   end
 
-  def get_results
+  def fetch_results
     raise 'must implement get_results method in subclass'
   end
 
