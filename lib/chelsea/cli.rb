@@ -74,7 +74,6 @@ module Chelsea
         }
       )
       bom = Chelsea::Bom.new(gems.deps.dependencies).collect
-      puts "Hello there 1..................."
 
       status_url = iq.post_sbom(bom)
       
@@ -83,7 +82,6 @@ module Chelsea
       msg, color, exit_code = iq.poll_status(status_url)
       show_status(msg, color)
       # this may not be very ruby-esque, but `return exit_code` and `exit_code` didn't result in the desired exit status
-      puts "Hello there ..................."
       # p exit_code
       exit exit_code
     end
