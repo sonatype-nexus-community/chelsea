@@ -45,15 +45,13 @@ module Chelsea
         dependencies = _process_file_iq
         _submit_sbom(dependencies)
       elsif !@opts.file? && @opts.iq?
-        puts "Missing the --file argument. It is required with the --iq argument."
-        exit 1
+        abort "Missing the --file argument. It is required with the --iq argument."
       elsif @opts.file?
         _process_file
       elsif @opts.help? # quit on opts.help earlier
         puts _cli_flags # this doesn't exist
       else
-        puts "Missing arguments! Chelsea did nothing. Try providing the --file <Gemfile.lock> argument."
-        exit 1
+        abort "Missing arguments! Chelsea did nothing. Try providing the --file <Gemfile.lock> argument."
       end
     end
 
