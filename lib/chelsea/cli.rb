@@ -40,18 +40,18 @@ module Chelsea
       elsif @opts.clear?
         require_relative 'db'
         Chelsea::DB.new.clear_cache
-        puts "OSS Index cache cleared"
+        puts 'OSS Index cache cleared'
       elsif @opts.file? && @opts.iq?
         dependencies = _process_file_iq
         _submit_sbom(dependencies)
       elsif !@opts.file? && @opts.iq?
-        abort "Missing the --file argument. It is required with the --iq argument."
+        abort 'Missing the --file argument. It is required with the --iq argument.'
       elsif @opts.file?
         _process_file
       elsif @opts.help? # quit on opts.help earlier
         puts _cli_flags # this doesn't exist
       else
-        abort "Missing arguments! Chelsea did nothing. Try providing the --file <Gemfile.lock> argument."
+        abort 'Missing arguments! Chelsea did nothing. Try providing the --file <Gemfile.lock> argument.'
       end
     end
 
@@ -74,7 +74,7 @@ module Chelsea
       bom = Chelsea::Bom.new(gems.deps.dependencies).collect
 
       status_url = iq.post_sbom(bom)
-      
+
       return unless status_url
 
       msg, color, exit_code = iq.poll_status(status_url)
@@ -131,7 +131,7 @@ module Chelsea
 
     def _flags_set?
       # I'm still unsure what this is trying to express
-      valid_flags = _flags.collect {|arg| @opts[arg] }.compact
+      valid_flags = _flags.collect { |arg| @opts[arg] }.compact
       valid_flags.count > 1
     end
 

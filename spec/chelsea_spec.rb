@@ -14,12 +14,12 @@
 # limitations under the License.
 #
 
-require "bundler/setup"
-require "chelsea"
+require 'bundler/setup'
+require 'chelsea'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
-  config.example_status_persistence_file_path = ".rspec_status"
+  config.example_status_persistence_file_path = '.rspec_status'
 
   # Disable RSpec exposing methods globally on `Module` and `main`
   config.disable_monkey_patching!
@@ -30,7 +30,7 @@ RSpec.configure do |config|
 end
 
 RSpec.describe Chelsea do
-  it "has a version number" do
+  it 'has a version number' do
     expect(Chelsea::CLI.version).not_to be nil
   end
 end

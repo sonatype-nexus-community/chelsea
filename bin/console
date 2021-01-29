@@ -15,9 +15,8 @@
 # limitations under the License.
 #
 
+require 'bundler/setup'
+require 'chelsea'
 
-require "bundler/setup"
-require "chelsea"
-
-require "irb"
+require 'irb'
 IRB.start(__FILE__)

@@ -109,9 +109,7 @@ module Chelsea
     def _get_reverse_deps(coords, name)
       coords.each_with_object('') do |dep, s|
         dep.each do |gran|
-          if gran.class == String && !gran.include?(name)
-            s << "\tRequired by: #{gran}\n"
-          end
+          s << "\tRequired by: #{gran}\n" if gran.instance_of?(String) && !gran.include?(name)
         end
       end
     end

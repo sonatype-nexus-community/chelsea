@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    chelsea (0.0.26)
+    chelsea (0.0.27)
       bundler (>= 1.2.0, < 3)
       ox (~> 2.13.2)
       pastel (~> 0.7.2)
@@ -16,6 +16,7 @@ GEM
   specs:
     addressable (2.7.0)
       public_suffix (>= 2.0.2, < 5.0)
+    ast (2.4.2)
     byebug (11.1.2)
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
@@ -32,15 +33,21 @@ GEM
     necromancer (0.6.0)
     netrc (0.11.0)
     ox (2.13.4)
+    parallel (1.20.1)
+    parser (3.0.0.0)
+      ast (~> 2.4.1)
     pastel (0.7.4)
       equatable (~> 0.6)
       tty-color (~> 0.5)
     public_suffix (4.0.3)
+    rainbow (3.0.0)
     rake (12.3.3)
+    regexp_parser (2.0.3)
     rest-client (2.0.2)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
+    rexml (3.2.4)
     rspec (3.9.0)
       rspec-core (~> 3.9.0)
       rspec-expectations (~> 3.9.0)
@@ -56,6 +63,18 @@ GEM
     rspec-support (3.9.2)
     rspec_junit_formatter (0.4.1)
       rspec-core (>= 2, < 4, != 2.12.0)
+    rubocop (1.9.0)
+      parallel (~> 1.10)
+      parser (>= 3.0.0.0)
+      rainbow (>= 2.2.2, < 4.0)
+      regexp_parser (>= 1.8, < 3.0)
+      rexml
+      rubocop-ast (>= 1.2.0, < 2.0)
+      ruby-progressbar (~> 1.7)
+      unicode-display_width (>= 1.4.0, < 3.0)
+    rubocop-ast (1.4.1)
+      parser (>= 2.7.1.5)
+    ruby-progressbar (1.11.0)
     safe_yaml (1.0.5)
     slop (4.8.2)
     strings (0.1.8)
@@ -94,6 +113,7 @@ DEPENDENCIES
   rake (~> 12.3)
   rspec (~> 3.0)
   rspec_junit_formatter (~> 0.4.1)
+  rubocop
   webmock (~> 3.8.3)
 
 BUNDLED WITH

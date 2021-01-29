@@ -80,10 +80,8 @@ module Chelsea
   end
 
   def self._write_oss_index_config_file(config)
-    unless File.exist? @oss_index_config_location
-      Dir.mkdir(@oss_index_config_location)
-    end
-    File.open(File.join(@oss_index_config_location, @oss_index_config_filename), "w") do |file|
+    Dir.mkdir(@oss_index_config_location) unless File.exist? @oss_index_config_location
+    File.open(File.join(@oss_index_config_location, @oss_index_config_filename), 'w') do |file|
       file.write config.to_yaml
     end
   end

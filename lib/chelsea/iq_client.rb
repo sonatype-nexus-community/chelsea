@@ -23,7 +23,6 @@ require_relative 'spinner'
 
 module Chelsea
   class IQClient
-
     DEFAULT_OPTIONS = {
       public_application_id: 'testapp',
       server_url: 'http://localhost:8070',
@@ -40,7 +39,7 @@ module Chelsea
     end
 
     def post_sbom(sbom)
-      spin = @spinner.spin_msg "Submitting sbom to Nexus IQ Server"
+      spin = @spinner.spin_msg 'Submitting sbom to Nexus IQ Server'
       @internal_application_id = _get_internal_application_id
       resource = RestClient::Resource.new(
         _api_url,
@@ -52,7 +51,7 @@ module Chelsea
         spin.stop('...request failed.')
         nil
       else
-        spin.success("...done.")
+        spin.success('...done.')
         status_url(res)
       end
     end
@@ -63,15 +62,15 @@ module Chelsea
     end
 
     def poll_status(url)
-      spin = @spinner.spin_msg "Polling Nexus IQ Server for results"
+      spin = @spinner.spin_msg 'Polling Nexus IQ Server for results'
       loop do
         begin
           res = _poll_iq_server(url)
           if res.code == 200
-            spin.success("...done.")
+            spin.success('...done.')
             return _handle_response(res)
           end
-        rescue
+        rescue StandardError
           sleep(1)
         end
       end
@@ -95,21 +94,21 @@ module Chelsea
 
       case res['policyAction']
       when POLICY_ACTION_FAILURE
-        return "Hi! Chelsea here, you have some policy violations to clean up!"\
+        ['Hi! Chelsea here, you have some policy violations to clean up!'\
           "\nReport URL: #{absolute_report_html_url}",
-          COLOR_FAILURE, 1
+         COLOR_FAILURE, 1]
       when POLICY_ACTION_WARNING
-        return "Hi! Chelsea here, you have some policy warnings to peck at!"\
+        ['Hi! Chelsea here, you have some policy warnings to peck at!'\
         "\nReport URL: #{absolute_report_html_url}",
-          COLOR_WARNING, 0
+         COLOR_WARNING, 0]
       when POLICY_ACTION_NONE
-        return "Hi! Chelsea here, no policy violations for this audit!"\
+        ['Hi! Chelsea here, no policy violations for this audit!'\
         "\nReport URL: #{absolute_report_html_url}",
-          COLOR_NONE, 0
+         COLOR_NONE, 0]
       else
-        return "Hi! Chelsea here, no policy violations for this audit, but unknown policy action!"\
+        ['Hi! Chelsea here, no policy violations for this audit, but unknown policy action!'\
         "\nReport URL: #{absolute_report_html_url}",
-          COLOR_FAILURE, 1
+         COLOR_FAILURE, 1]
       end
     end
 
@@ -136,8 +135,6 @@ module Chelsea
       res = JSON.parse(res.body)
       res['statusUrl']
     end
-
-    private
 
     def _poll_status
       return unless @status_url

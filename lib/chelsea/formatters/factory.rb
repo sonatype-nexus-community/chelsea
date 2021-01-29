@@ -20,7 +20,7 @@ require_relative 'text'
 
 # Factory for formatting dependencies
 class FormatterFactory
-  def get_formatter(format: 'text', verbose:)
+  def get_formatter(verbose:, format: 'text')
     case format
     when 'text'
       Chelsea::TextFormatter.new verbose: verbose

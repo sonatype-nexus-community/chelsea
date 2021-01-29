@@ -88,7 +88,7 @@ module Chelsea
     end
 
     def _show_logo
-      logo = %Q(
+      logo = %(
                           -o/
                       -+hNmNN-
     .:+osyhddddyso/-``ody+-  .NN.

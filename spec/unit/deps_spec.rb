@@ -41,7 +41,7 @@ RSpec.describe Chelsea::Deps do
   context 'given an invalid path' do
     file = 'invalid/path'
     it 'raises a RuntimeError with a message indicating invalid file path' do
-      expect{ process_deps_from_gemfile(file) }
+      expect { process_deps_from_gemfile(file) }
         .to raise_error(
           Errno::ENOENT,
           'No such file or directory @ rb_sysopen - invalid/path'

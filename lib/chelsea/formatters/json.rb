@@ -23,7 +23,7 @@ module Chelsea
       @options = options
     end
 
-    def get_results(server_response, reverse_deps)
+    def get_results(server_response, _reverse_deps)
       server_response.to_json
     end
 

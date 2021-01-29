@@ -45,7 +45,7 @@ module Chelsea
       end
     end
 
-    def _get_db_store_location()
+    def _get_db_store_location
       initial_path = File.join(Dir.home.to_s, '.ossindex')
       Dir.mkdir(initial_path) unless File.exist? initial_path
       File.join(initial_path, 'chelsea.pstore')

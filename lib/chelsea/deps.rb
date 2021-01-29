@@ -68,7 +68,7 @@ module Chelsea
     # in dependencies_versions and coordinates instance vars
     def coordinates
       dependencies.each_with_object({ 'coordinates' => [] }) do |(name, v), coords|
-        coords['coordinates'] << self.class.to_purl(name, v[1]);
+        coords['coordinates'] << self.class.to_purl(name, v[1])
       end
     end
   end

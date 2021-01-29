@@ -15,6 +15,7 @@
 #
 
 # frozen_string_literal: true
+
 require 'pastel'
 require 'bundler'
 require 'bundler/lockfile_parser'
@@ -31,11 +32,10 @@ module Chelsea
   # Class to collect and audit packages from a Gemfile.lock
   class Gems
     attr_accessor :deps
+
     def initialize(file:, verbose:, options: { 'format': 'text' })
       @verbose = verbose
-      unless File.file?(file) || file.nil?
-        raise 'Gemfile.lock not found, check --file path'
-      end
+      raise 'Gemfile.lock not found, check --file path' unless File.file?(file) || file.nil?
 
       _silence_stderr unless @verbose
 
@@ -69,8 +69,7 @@ module Chelsea
     end
 
     def collect_iq
-      dependencies = @deps.dependencies
-      dependencies
+      @deps.dependencies
     end
 
     # Runs through auditing algorithm, raising exceptions

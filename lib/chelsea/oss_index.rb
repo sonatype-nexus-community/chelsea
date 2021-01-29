@@ -37,9 +37,7 @@ module Chelsea
 
     def get_vulns(coordinates)
       remaining_coordinates, cached_server_response = _cache(coordinates)
-      unless remaining_coordinates['coordinates'].count.positive?
-        return cached_server_response
-      end
+      return cached_server_response unless remaining_coordinates['coordinates'].count.positive?
 
       remaining_coordinates['coordinates'].each_slice(128).to_a.each do |coords|
         res_json = JSON.parse(call_oss_index({ 'coordinates' => coords }))
