@@ -403,7 +403,7 @@ Finished in 0.12826 seconds (files took 0.5069 seconds to load)
 Full disclosure, it turns out that after upgrading `rubocop` (via: `bundle update rubocop`),
 a `# rubocop:disable Layout/LineLength` was no longer needed. 
 Happily, the CI test suite failed and pointed quickly to the fix (just needed to remove `# rubocop`
-disable/enable comments)
+disable/enable comments).
 
 Victory! Commit the changes, and we're done.
 
