@@ -327,7 +327,7 @@ Installing crack 0.4.3
 Fetching diff-lcs 1.3
 ```
 
-Yes another alternative approach is to upgrade the transitive dependency (`rexml` in our example). 
+Yet another alternative approach is to upgrade the transitive dependency (`rexml` in our example). 
 
 Use the command below to determine if there is a newer version of the vulnerable component.
 ```shell
