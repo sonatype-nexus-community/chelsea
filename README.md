@@ -221,7 +221,7 @@ introducing breaking changes. (You have unit tested everything right? ;) )
   <summary>Click to expand output of command:
 
 ```shell
-`$ bundle update` 
+$ bundle update 
 ```
   </summary>
 
