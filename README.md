@@ -432,7 +432,7 @@ a `# rubocop:disable Layout/LineLength` was no longer needed.
 Happily, the CI test suite failed and pointed quickly to the fix (just needed to remove `# rubocop`
 disable/enable comments).
 
-Victory! Commit the changes, and we're done.
+Victory! Commit the changes, and we're done. <!-- TODO: Add link here to the final commit that includes these changes - so meta.-->
 
 ## Contributing
 
