@@ -216,7 +216,7 @@ Finished in 0.1411 seconds (files took 0.67222 seconds to load)
 ```
 
 One approach is to upgrade everything to the latest version available. This solution might make people nervous about
-introducing breaking changes. (You have unit testing everything right? ;) )
+introducing breaking changes. (You have unit tested everything right? ;) )
 ```shell
   $ bundle update
 Fetching gem metadata from https://rubygems.org/.........
