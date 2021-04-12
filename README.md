@@ -217,6 +217,14 @@ Finished in 0.1411 seconds (files took 0.67222 seconds to load)
 
 One approach is to upgrade everything to the latest version available. This solution might make people nervous about
 introducing breaking changes. (You have unit tested everything right? ;) )
+<details>
+  <summary>Click to expand output of command:
+
+```shell
+`$ bundle update` 
+```
+  </summary>
+
 ```shell
   $ bundle update
 Fetching gem metadata from https://rubygems.org/.........
@@ -273,6 +281,7 @@ Using webmock 3.8.3
 Bundle updated!
 Gems in the group production were not updated.
 ```
+</details>
 
 Perhaps a more palatable approach would be to upgrade to a newer version of the "Used by" component, meaning you upgrade
 the direct dependency (`rubocop`) to a version that does not depend on a vulnerable version of the transitive dependency
@@ -284,6 +293,14 @@ In our example, there is a newer version of the direct dependency available:
   * rubocop (newest 1.12.1, installed 1.9.0) in group "default"
 ```
 Now we can update the `rubocop` component as follows:
+<details>
+  <summary>Click to expand output of command:
+
+```shell
+$ bundle update rubocop
+```
+  </summary>
+
 ```shell
 $ bundle update rubocop
 Fetching gem metadata from https://rubygems.org/.........
@@ -326,6 +343,7 @@ Fetching crack 0.4.3
 Installing crack 0.4.3
 Fetching diff-lcs 1.3
 ```
+</details>
 
 Yet another alternative approach is to upgrade the transitive dependency (`rexml` in our example). 
 
@@ -335,6 +353,14 @@ Use the command below to determine if there is a newer version of the vulnerable
   * rexml (newest 3.2.5, installed 3.2.4)
 ```
 Now we can update the `rexml` component as follows:
+<details>
+  <summary>Click to expand output of command:
+
+```shell
+$ bundle update rexml
+```
+  </summary>
+
 ```shell
 $ bundle update rexml
 Fetching gem metadata from https://rubygems.org/.........
@@ -392,6 +418,7 @@ Using webmock 3.8.3
 Bundle updated!
 Gems in the group production were not updated.
 ```
+</details>
 
 Regardless of which approach you choose, you should verify the tests pass after you upgrade dependencies.
 ```shell
