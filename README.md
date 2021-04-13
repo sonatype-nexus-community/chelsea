@@ -179,6 +179,261 @@ To avoid performing a release after a commit to the `master` branch, be sure you
 
 One of the awesome developers at Sonatype was thinking of names, and came upon the [Chelsea filter](https://en.wikipedia.org/wiki/Chelsea_filter). A Chelsea filter is used to separate gemstones, helping gemologists distinguish between real emeralds, and just regular green glass. We felt this tool helps you do something very similar, looking at your RubyGems, and seeing which are pristine, and which are less than ok at the moment.
 
+## How to Fix Vulnerabilities
+
+So you've found a vulnerability. Now what? The best case is to upgrade the vulnerable component to a newer/non-vulnerable
+version. However, it is likely the vulnerable component is not a direct dependency, but instead is a transitive dependency
+(a dependency of a dependency, of a dependency, wash-rinse-repeat). In such a case, the first step is to figure out which
+direct dependency (and sub-dependencies) depend on the vulnerable component. 
+
+The `gem dependency` command will show a dependency tree for all gems from the current Gemfile with their dependencies.
+The `bundle outdated` command will show a list of all gems which have newer versions. 
+
+As an example, suppose we've learned that component `rexml`, version 3.2.4 is vulnerable (CVE-2021-28965). 
+Use the following command to determine which components depend on `rexml`.
+```shell
+$ gem dependency -R rexml
+Gem rexml-3.1.9
+  bundler (>= 0, development)
+  rake (>= 0, development)
+  Used by
+    rubocop-1.9.0 (rexml (>= 0))
+
+Gem rexml-3.2.4
+  bundler (>= 0, development)
+  rake (>= 0, development)
+  Used by
+    rubocop-1.9.0 (rexml (>= 0))
+```
+
+There are a number of approaches to resolving the vulnerability, but no matter which approach you choose, you should 
+probably make sure all the tests are passing before making any dependency changes.
+```shell
+bundle exec rspec
+...
+Finished in 0.1411 seconds (files took 0.67222 seconds to load)
+22 examples, 0 failures
+```
+
+One approach is to upgrade everything to the latest version available. This solution might make people nervous about
+introducing breaking changes. (You have unit tested everything right? ;) )
+<details>
+  <summary>Click to expand output of command:
+
+```shell
+$ bundle update 
+```
+  </summary>
+
+```shell
+  $ bundle update
+Fetching gem metadata from https://rubygems.org/.........
+Fetching gem metadata from https://rubygems.org/.
+Resolving dependencies...
+Using rake 12.3.3
+Using public_suffix 4.0.6 (was 4.0.3)
+Using addressable 2.7.0
+Using ast 2.4.2
+Using bundler 2.1.4
+Using byebug 11.1.3 (was 11.1.2)
+Using ox 2.13.4
+Using equatable 0.7.0 (was 0.6.1)
+Using tty-color 0.6.0 (was 0.5.2)
+Using pastel 0.7.4
+Using unf_ext 0.0.7.7
+Using unf 0.1.4
+Using domain_name 0.5.20190701
+Using http-cookie 1.0.3
+Using mime-types-data 3.2021.0225 (was 3.2020.0512)
+Using mime-types 3.3.1
+Using netrc 0.11.0
+Using rest-client 2.0.2
+Using slop 4.8.2
+Using tty-font 0.5.0
+Using tty-cursor 0.7.1
+Using tty-spinner 0.9.3
+Using necromancer 0.7.0 (was 0.6.0)
+Using strings-ansi 0.2.0
+Using unicode-display_width 1.7.0
+Using unicode_utils 1.4.0
+Using strings 0.1.8
+Using tty-screen 0.8.1
+Using tty-table 0.11.0
+Using chelsea 0.0.28 (was 0.0.27) from source at `.`
+Using rexml 3.2.5 (was 3.2.4)
+Using crack 0.4.5 (was 0.4.3)
+Using diff-lcs 1.4.4 (was 1.3)
+Using hashdiff 1.0.1
+Using parallel 1.20.1
+Using parser 3.0.1.0 (was 3.0.0.0)
+Using rainbow 3.0.0
+Using regexp_parser 2.1.1 (was 2.0.3)
+Using rspec-support 3.10.2 (was 3.9.2)
+Using rspec-core 3.10.1 (was 3.9.1)
+Using rspec-expectations 3.10.1 (was 3.9.1)
+Using rspec-mocks 3.10.2 (was 3.9.1)
+Using rspec 3.10.0 (was 3.9.0)
+Using rspec_junit_formatter 0.4.1
+Using rubocop-ast 1.4.1
+Using ruby-progressbar 1.11.0
+Using rubocop 1.12.1 (was 1.9.0)
+Using webmock 3.8.3
+Bundle updated!
+Gems in the group production were not updated.
+```
+</details>
+
+Perhaps a more palatable approach would be to upgrade to a newer version of the "Used by" component, meaning you upgrade
+the direct dependency (`rubocop`) to a version that does not depend on a vulnerable version of the transitive dependency
+(`rexml`). This approach will make fewer changes overall.
+
+In our example, there is a newer version of the direct dependency available:
+```shell
+  $ bundle outdated | grep rubocop
+  * rubocop (newest 1.12.1, installed 1.9.0) in group "default"
+```
+Now we can update the `rubocop` component as follows:
+<details>
+  <summary>Click to expand output of command:
+
+```shell
+$ bundle update rubocop
+```
+  </summary>
+
+```shell
+$ bundle update rubocop
+Fetching gem metadata from https://rubygems.org/.........
+Fetching gem metadata from https://rubygems.org/.
+Resolving dependencies...
+Using rake 12.3.3
+Fetching public_suffix 4.0.3
+Installing public_suffix 4.0.3
+Using addressable 2.7.0
+Using ast 2.4.2
+Using bundler 2.1.4
+Fetching byebug 11.1.2
+Installing byebug 11.1.2 with native extensions
+Using ox 2.13.4
+Using equatable 0.6.1
+Using tty-color 0.5.2
+Using pastel 0.7.4
+Using unf_ext 0.0.7.7
+Using unf 0.1.4
+Using domain_name 0.5.20190701
+Using http-cookie 1.0.3
+Using mime-types-data 3.2020.0512
+Using mime-types 3.3.1
+Using netrc 0.11.0
+Using rest-client 2.0.2
+Using slop 4.8.2
+Using tty-font 0.5.0
+Using tty-cursor 0.7.1
+Using tty-spinner 0.9.3
+Using necromancer 0.6.0
+Using strings-ansi 0.2.0
+Using unicode-display_width 1.7.0
+Using unicode_utils 1.4.0
+Using strings 0.1.8
+Using tty-screen 0.8.1
+Using tty-table 0.11.0
+Using chelsea 0.0.28 from source at `.`
+Using safe_yaml 1.0.5
+Fetching crack 0.4.3
+Installing crack 0.4.3
+Fetching diff-lcs 1.3
+```
+</details>
+
+Yet another alternative approach is to upgrade the transitive dependency (`rexml` in our example). 
+
+Use the command below to determine if there is a newer version of the vulnerable component.
+```shell
+  $ bundle outdated | grep rexml
+  * rexml (newest 3.2.5, installed 3.2.4)
+```
+Now we can update the `rexml` component as follows:
+<details>
+  <summary>Click to expand output of command:
+
+```shell
+$ bundle update rexml
+```
+  </summary>
+
+```shell
+$ bundle update rexml
+Fetching gem metadata from https://rubygems.org/.........
+Fetching gem metadata from https://rubygems.org/.
+Resolving dependencies...
+Using rake 12.3.3
+Using public_suffix 4.0.3
+Using addressable 2.7.0
+Using ast 2.4.2
+Using bundler 2.1.4
+Using byebug 11.1.2
+Using ox 2.13.4
+Using equatable 0.7.0 (was 0.6.1)
+Using tty-color 0.6.0 (was 0.5.2)
+Using pastel 0.7.4
+Using unf_ext 0.0.7.7
+Using unf 0.1.4
+Using domain_name 0.5.20190701
+Using http-cookie 1.0.3
+Using mime-types-data 3.2021.0225 (was 3.2020.0512)
+Using mime-types 3.3.1
+Using netrc 0.11.0
+Using rest-client 2.0.2
+Using slop 4.8.2
+Using tty-font 0.5.0
+Using tty-cursor 0.7.1
+Using tty-spinner 0.9.3
+Using necromancer 0.7.0 (was 0.6.0)
+Using strings-ansi 0.2.0
+Using unicode-display_width 1.7.0
+Using unicode_utils 1.4.0
+Using strings 0.1.8
+Using tty-screen 0.8.1
+Using tty-table 0.11.0
+Using chelsea 0.0.28 (was 0.0.27) from source at `.`
+Using safe_yaml 1.0.5
+Using crack 0.4.3
+Using diff-lcs 1.3
+Using hashdiff 1.0.1
+Using parallel 1.20.1
+Using parser 3.0.0.0
+Using rainbow 3.0.0
+Using regexp_parser 2.0.3
+Using rexml 3.2.5 (was 3.2.4)
+Using rspec-support 3.9.2
+Using rspec-core 3.9.1
+Using rspec-expectations 3.9.1
+Using rspec-mocks 3.9.1
+Using rspec 3.9.0
+Using rspec_junit_formatter 0.4.1
+Using rubocop-ast 1.4.1
+Using ruby-progressbar 1.11.0
+Using rubocop 1.9.0
+Using webmock 3.8.3
+Bundle updated!
+Gems in the group production were not updated.
+```
+</details>
+
+Regardless of which approach you choose, you should verify the tests pass after you upgrade dependencies.
+```shell
+bundle exec rspec
+...
+Finished in 0.12826 seconds (files took 0.5069 seconds to load)
+22 examples, 0 failures
+```
+Full disclosure, it turns out that after upgrading `rubocop` (via: `bundle update rubocop`),
+a `# rubocop:disable Layout/LineLength` was no longer needed. 
+Happily, the CI test suite failed and pointed quickly to the fix (just needed to remove `# rubocop`
+disable/enable comments).
+
+Victory! Commit the changes, and we're done. (see [PR: #44](https://github.com/sonatype-nexus-community/chelsea/pull/44))
+
 ## Contributing
 
 We care a lot about making the world a safer place, and that's why we created `chelsea`. If you as well want to speed up the pace of software development by working on this project, jump on in! Before you start work, create a new issue, or comment on an existing issue, to let others know you are!

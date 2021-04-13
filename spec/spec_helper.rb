@@ -94,9 +94,7 @@ def stub_iq_poll_response(server_url: 'localhost:8070', policy_action: 'None',
                           report_html_url: 'ui/links/application/test-app/report/95c4c14e', **_opts)
   stub_request(
     :get,
-    # rubocop:disable Layout/LineLength
     "http://#{server_url}/api/v2/scan/applications/4537e6fe68c24dd5ac83efd97d4fc2f4/status/9cee2b6366fc4d328edc318eae46b2cb"
-    # rubocop:enable Layout/LineLength
   )
     .to_return(
       body:
