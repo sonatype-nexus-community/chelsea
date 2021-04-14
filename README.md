@@ -287,6 +287,12 @@ Perhaps a more palatable approach would be to upgrade to a newer version of the 
 the direct dependency (`rubocop`) to a version that does not depend on a vulnerable version of the transitive dependency
 (`rexml`). This approach will make fewer changes overall.
 
+In some cases, no such upgrade of the direct dependency exists that avoids a dependence on the vulnerable component. 
+In such a case, the next step is to file an issue with the direct dependency project for them to update the vulnerable
+sub-dependencies. Be sure to read and follow any vulnerability reporting instructions published by the project: Look for
+a `SECURITY.md` file, or other instructions on how to report vulnerabilities. Some projects may prefer you not report 
+the vulnerability publicly.
+
 In our example, there is a newer version of the direct dependency available:
 ```shell
   $ bundle outdated | grep rubocop
