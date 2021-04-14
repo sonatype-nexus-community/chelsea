@@ -17,7 +17,7 @@
 -->
 
 <p align="center">
-    <img src="https://github.com/sonatype-nexus-community/chelsea/blob/master/docs/images/chelsea.png" width="350"/>
+    <img src="https://github.com/sonatype-nexus-community/chelsea/blob/main/docs/images/chelsea.png" width="350"/>
 </p>
 <p align="center">
     <a href="https://rubygems.org/gems/chelsea"><img src="https://img.shields.io/gem/v/chelsea" /></a>
@@ -171,9 +171,9 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ### Release Process
 
-Chelsea is automatically released after a commit to the `master` branch.
+Chelsea is automatically released after a commit to the `main` branch.
 
-To avoid performing a release after a commit to the `master` branch, be sure your commit message includes `[skip ci] `.
+To avoid performing a release after a commit to the `main` branch, be sure your commit message includes `[skip ci] `.
 
 ## Why Chelsea?
 
@@ -448,7 +448,7 @@ This project is intended to be a safe, welcoming space for collaboration, and co
 
 ## Code of Conduct
 
-Everyone interacting in the Chelsea project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/sonatype-nexus-community/chelsea/blob/master/CODE_OF_CONDUCT.md).
+Everyone interacting in the Chelsea project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/sonatype-nexus-community/chelsea/blob/main/CODE_OF_CONDUCT.md).
 
 ## The Fine Print
 
