@@ -87,7 +87,7 @@ jobs:
           command: git config --global user.email "$GITHUB_EMAIL"
       - run:
           name: Set git upstream
-          command: git branch -u origin/master
+          command: git branch -u origin/main
       - run:
           name: Bump version
           command: gem bump -v patch --tag --skip-ci --push
@@ -107,4 +107,4 @@ workflows:
           filters:
             branches:
               only: 
-                - master
+                - main
