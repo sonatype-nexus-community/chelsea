@@ -161,6 +161,19 @@ Install dependencies:
 ```
 bundle install
 ```
+  * Misc weirdness:
+    I was running into errors like the one below:
+    ```shell
+    $ bundle install
+    Fetching gem metadata from https://rubygems.org/.........
+    chelsea-0.0.32 requires ruby version >= 2.6.6, which is incompatible with the current version, ruby 2.6.3p62
+    ```
+    This was solved by following the steps described [here](https://stackoverflow.com/questions/42306116/ruby-version-x-is-incompatible-with-current-version).
+    ```shell
+    gem install bundler
+    eval "$(rbenv init -)"
+    bundle install
+    ```
 
 Run tests:
 ```
