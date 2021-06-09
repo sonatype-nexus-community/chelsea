@@ -140,7 +140,7 @@ We suggest using [rbenv](https://github.com/rbenv/rbenv) to setup a reliable rub
 Follow the [installation steps](https://github.com/rbenv/rbenv#installation). 
 For macos (10.15.7), there was a problem with step 2, with: `$ rbenv init`. The command 
 printed suggested editing `~/.bashrc`; however, this did not work in our case (even after an OS reboot),
-and we had to instead edit `~/bash_profile`. To sanity check your installation, you should see the 
+and we had to instead edit `~/.bash_profile`. To sanity check your installation, you should see the 
 `.rbenv` directory early in your PATH, e.g.:
 ```
 $ echo $PATH
