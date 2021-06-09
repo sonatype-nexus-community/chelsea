@@ -17,12 +17,12 @@
 -->
 
 <p align="center">
-    <img src="https://github.com/sonatype-nexus-community/chelsea/blob/main/docs/images/chelsea.png" width="350"/>
+    <img src="https://github.com/sonatype-nexus-community/chelsea/blob/main/docs/images/chelsea.png" width="350" alt="chelsea-icon"/>
 </p>
 <p align="center">
-    <a href="https://rubygems.org/gems/chelsea"><img src="https://img.shields.io/gem/v/chelsea" /></a>
-    <a href="https://gitter.im/sonatype-nexus-community/chelsea?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge"><img src="https://badges.gitter.im/sonatype-nexus-community/chelsea.svg" /></a>
-    <a href="https://circleci.com/gh/sonatype-nexus-community/chelsea"><img src="https://circleci.com/gh/sonatype-nexus-community/chelsea.svg?style=shield" /></a>
+    <a href="https://rubygems.org/gems/chelsea"><img src="https://img.shields.io/gem/v/chelsea" alt="chelsea-gem"/></a>
+    <a href="https://gitter.im/sonatype-nexus-community/chelsea?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge"><img src="https://badges.gitter.im/sonatype-nexus-community/chelsea.svg" alt="chelsea-gitter"/></a>
+    <a href="https://circleci.com/gh/sonatype-nexus-community/chelsea"><img src="https://circleci.com/gh/sonatype-nexus-community/chelsea.svg?style=shield" alt="chelsea-ci"/></a>
 </p>
 
 # Chelsea
