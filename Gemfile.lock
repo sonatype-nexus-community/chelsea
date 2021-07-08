@@ -14,7 +14,7 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    addressable (2.7.0)
+    addressable (2.8.0)
       public_suffix (>= 2.0.2, < 5.0)
     ast (2.4.2)
     byebug (11.1.2)
@@ -39,7 +39,7 @@ GEM
     pastel (0.7.4)
       equatable (~> 0.6)
       tty-color (~> 0.5)
-    public_suffix (4.0.3)
+    public_suffix (4.0.6)
     rainbow (3.0.0)
     rake (12.3.3)
     regexp_parser (2.1.1)
@@ -117,4 +117,4 @@ DEPENDENCIES
   webmock (~> 3.8.3)
 
 BUNDLED WITH
-   2.2.20
+   2.2.22
