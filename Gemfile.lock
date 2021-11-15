@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    chelsea (0.0.32)
+    chelsea (0.0.33)
       bundler (>= 1.2.0, < 3)
       ox (~> 2.13.2)
       pastel (~> 0.7.2)
