@@ -27,12 +27,12 @@ dockerizedBuildPipeline(
   },
   vulnerabilityScan: {
     withDockerImage(env.DOCKER_IMAGE_ID, {
-      withCredentials([usernamePassword(credentialsId: 'policy.s integration account',
+      withCredentials([usernamePassword(credentialsId: 'jenkins-iq',
         usernameVariable: 'IQ_USERNAME', passwordVariable: 'IQ_PASSWORD')]) {
         sh '''
         gem build chelsea.gemspec
         gem install ./chelsea-*.gem
-        chelsea --file Gemfile.lock -b -a chelsea -iu $IQ_USERNAME -it $IQ_PASSWORD -i https://policy.ci.sonatype.dev --stage stage-release
+        chelsea --file Gemfile.lock -b -a chelsea -iu $IQ_USERNAME -it $IQ_PASSWORD -i https://iq.sonatype.dev --stage release
         '''
       }
     })
