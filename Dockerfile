@@ -32,7 +32,7 @@ RUN chown -R jenkins:100 /home/jenkins
 
 USER jenkins
 
-RUN gem install bundler
+RUN gem install bundler -v 2.4.22
 
 RUN bundle install
 

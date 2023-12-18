@@ -15,12 +15,18 @@
 #
 
 version: 2.1
-jobs: 
-  build: 
-    docker: 
+
+executors:
+  ruby_executor:
+    docker:
       - image: circleci/ruby:2.6.6-stretch
-        environment: 
-          BUNDLE_PATH: vendor/bundle
+#      - image: cimg/ruby:3.2
+
+jobs: 
+  build:
+    executor: ruby_executor
+    environment:
+      BUNDLE_PATH: vendor/bundle
     steps:
       - checkout
       - run:
@@ -66,8 +72,7 @@ jobs:
       - store_test_results:
           path: test_results
   release:
-    docker:
-      - image: circleci/ruby:2.6.6-stretch
+    executor: ruby_executor
     steps:
       - add_ssh_keys:
           fingerprints:
