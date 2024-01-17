@@ -17,9 +17,6 @@
 @Library(['private-pipeline-library', 'jenkins-shared']) _
 
 dockerizedBuildPipeline(
-  prepare: {
-    githubStatusUpdate('pending')
-  },
   buildAndTest: {
     sh '''
     bundle exec rspec --format progress --format RspecJunitFormatter --out test_results/rspec.xml
@@ -38,11 +35,7 @@ dockerizedBuildPipeline(
     })
   },
   testResults: [ 'test_results/rspec.xml' ],
-  onSuccess: {
-    githubStatusUpdate('success')
-  },
   onFailure: {
-    githubStatusUpdate('failure')
     notifyChat(currentBuild: currentBuild, env: env, room: 'community-oss-fun')
     sendEmailNotification(currentBuild, env, [], 'community-group@sonatype.com')
   }
