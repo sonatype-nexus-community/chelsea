@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    chelsea (0.0.38)
+    chelsea (0.0.39)
       bundler (>= 1.2.0, < 3)
       ox (~> 2.13.2)
       pastel (~> 0.7.2)
@@ -25,11 +25,11 @@ GEM
       unf (>= 0.0.5, < 1.0.0)
     equatable (0.7.0)
     hashdiff (1.0.1)
-    http-cookie (1.0.5)
+    http-cookie (1.0.6)
       domain_name (~> 0.5)
     mime-types (3.5.2)
       mime-types-data (~> 3.2015)
-    mime-types-data (3.2024.0507)
+    mime-types-data (3.2024.0702)
     necromancer (0.7.0)
     netrc (0.11.0)
     ox (2.13.4)
@@ -47,8 +47,8 @@ GEM
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
-    rexml (3.2.8)
-      strscan (>= 3.0.9)
+    rexml (3.3.2)
+      strscan
     rspec (3.9.0)
       rspec-core (~> 3.9.0)
       rspec-expectations (~> 3.9.0)
