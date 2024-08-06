@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    chelsea (0.0.39)
+    chelsea (0.0.40)
       bundler (>= 1.2.0, < 3)
       ox (~> 2.13.2)
       pastel (~> 0.7.2)
@@ -47,7 +47,7 @@ GEM
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
-    rexml (3.3.2)
+    rexml (3.3.4)
       strscan
     rspec (3.9.0)
       rspec-core (~> 3.9.0)
