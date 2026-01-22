@@ -33,11 +33,14 @@ module Chelsea
       Chelsea::OSSIndex.new(
         options: {
           oss_index_user_name: options[:user],
-          oss_index_user_token: options[:token]
+          oss_index_user_token: options[:token],
+          oss_index_url: options[:ossindex_url]
         }
       )
     else
-      Chelsea::OSSIndex.new(options: oss_index_config)
+      config_opts = oss_index_config
+      config_opts[:oss_index_url] = options[:ossindex_url] unless options[:ossindex_url].nil?
+      Chelsea::OSSIndex.new(options: config_opts)
     end
   end
 
@@ -55,10 +58,11 @@ module Chelsea
       )
       {
         oss_index_user_name: conf_hash['Username'],
-        oss_index_user_token: conf_hash['Token']
+        oss_index_user_token: conf_hash['Token'],
+        oss_index_url: conf_hash['OSSIndexUrl'] || 'https://ossindex.sonatype.org'
       }
     else
-      { oss_index_user_name: '', oss_index_user_token: '' }
+      { oss_index_user_name: '', oss_index_user_token: '', oss_index_url: 'https://ossindex.sonatype.org' }
     end
   end
 
@@ -78,6 +82,10 @@ module Chelsea
 
     puts 'What token do you want to use? '
     config['Token'] = $stdin.gets.chomp
+
+    puts 'What OSS Index URL do you want to use? (default: https://ossindex.sonatype.org) '
+    url_input = $stdin.gets.chomp
+    config['OSSIndexUrl'] = url_input.empty? ? 'https://ossindex.sonatype.org' : url_input
 
     _write_oss_index_config_file(config)
   end

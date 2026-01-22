@@ -45,6 +45,7 @@ usage: /usr/local/bin/chelsea [options]
     -c, --config       Set persistent config for OSS Index
     -u, --user         Specify OSS Index Username
     -p, --token        Specify OSS Index API Token
+    -o, --ossindex-url Specify OSS Index server URL
     -a, --application  Specify the IQ application id
     -i, --server       Specify the IQ server url
     -iu, --iquser      Specify the IQ username
@@ -104,7 +105,30 @@ Chelsea will cache results from OSS Index, preventing Rate Limiting to occur in 
 
 `chelsea --config`
 
-Chelsea will prompt you to save your config, provide your username (email address that you registered on OSS Index with), and API Token, save those, and voila! Your rate limiting should be sufficient for most use cases at this point. If it isn't, get in touch via our GitHub issues, and we can take a look at your use case and potentially partner!
+Chelsea will prompt you to save your config, provide your username (email address that you registered on OSS Index with), API Token, and optionally a custom OSS Index server URL. Save those, and voila! Your rate limiting should be sufficient for most use cases at this point. If it isn't, get in touch via our GitHub issues, and we can take a look at your use case and potentially partner!
+
+### Using a Custom OSS Index Server URL
+
+If you need to use a custom or on-premises OSS Index server, you can specify the server URL in several ways:
+
+#### Via Command Line
+
+You can specify the OSS Index server URL directly on the command line:
+
+`chelsea --file Gemfile.lock --ossindex-url https://custom.ossindex.example.com`
+
+You can combine this with authentication credentials:
+
+`chelsea --file Gemfile.lock --ossindex-url https://custom.ossindex.example.com --user your@email.com --token your-api-token`
+
+#### Via Configuration File
+
+When setting up your persistent configuration using `chelsea --config`, you will be prompted to enter:
+1. Your username (email address)
+2. Your API token
+3. Your OSS Index server URL (defaults to https://ossindex.sonatype.org if left blank)
+
+This configuration is saved to `~/.ossindex/.oss-index-config` for future use.
 
 ### Usage with Nexus IQ Server
 

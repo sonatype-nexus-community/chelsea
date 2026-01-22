@@ -25,11 +25,13 @@ module Chelsea
   class OSSIndex
     DEFAULT_OPTIONS = {
       oss_index_username: '',
-      oss_index_user_token: ''
+      oss_index_user_token: '',
+      oss_index_url: 'https://ossindex.sonatype.org'
     }.freeze
     def initialize(options: DEFAULT_OPTIONS)
       @oss_index_user_name = options[:oss_index_user_name]
       @oss_index_user_token = options[:oss_index_user_token]
+      @oss_index_url = options[:oss_index_url] || DEFAULT_OPTIONS[:oss_index_url]
       @db = DB.new
     end
 
@@ -87,7 +89,7 @@ module Chelsea
     end
 
     def _api_url
-      'https://ossindex.sonatype.org/api/v3/component-report'
+      "#{@oss_index_url}/api/v3/component-report"
     end
 
     def _user_agent
