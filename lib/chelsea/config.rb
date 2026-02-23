@@ -17,6 +17,7 @@
 #
 
 require 'yaml'
+require 'io/console'
 require_relative 'oss_index'
 
 # Saved credentials
@@ -76,16 +77,29 @@ module Chelsea
     puts 'What username do you want to authenticate as (ex: your email address)? '
     config['Username'] = $stdin.gets.chomp
 
+    # SECURITY: Mask token input to prevent shoulder surfing
     puts 'What token do you want to use? '
-    config['Token'] = $stdin.gets.chomp
+    config['Token'] = $stdin.noecho(&:gets).chomp
+    puts '' # Add newline after hidden input
 
     _write_oss_index_config_file(config)
   end
 
   def self._write_oss_index_config_file(config)
-    Dir.mkdir(@oss_index_config_location) unless File.exist? @oss_index_config_location
-    File.open(File.join(@oss_index_config_location, @oss_index_config_filename), 'w') do |file|
+    # SECURITY: Create directory with restrictive permissions (CWE-732)
+    unless File.exist? @oss_index_config_location
+      Dir.mkdir(@oss_index_config_location)
+      File.chmod(0o700, @oss_index_config_location)
+    end
+
+    config_path = File.join(@oss_index_config_location, @oss_index_config_filename)
+
+    # SECURITY: Write file with restrictive permissions (owner read/write only)
+    File.open(config_path, 'w', 0o600) do |file|
       file.write config.to_yaml
     end
+
+    # Ensure permissions are set even if file existed
+    File.chmod(0o600, config_path)
   end
 end

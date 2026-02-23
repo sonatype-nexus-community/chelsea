@@ -26,17 +26,25 @@ require_relative 'spinner'
 module Chelsea
   # IQ audit operations
   class IQClient # rubocop:disable Metrics/ClassLength
+    # SECURITY: Removed hardcoded default credentials (CWE-798)
+    # All credentials must now be explicitly provided
     DEFAULT_OPTIONS = {
-      public_application_id: 'testapp',
-      server_url: 'http://localhost:8070',
-      username: 'admin',
-      auth_token: 'admin123',
+      public_application_id: nil,
+      server_url: nil,
+      username: nil,
+      auth_token: nil,
       internal_application_id: '',
       stage: 'build'
     }.freeze
 
-    def initialize(options: DEFAULT_OPTIONS)
-      @options = options
+    # Maximum number of polling attempts before timeout
+    MAX_POLL_RETRIES = 300
+    # Seconds to wait between poll attempts
+    POLL_INTERVAL = 1
+
+    def initialize(options: {})
+      @options = DEFAULT_OPTIONS.merge(options)
+      _validate_required_options!
       @pastel = Pastel.new
       @spinner = Chelsea::Spinner.new
     end
@@ -64,16 +72,23 @@ module Chelsea
       res['statusUrl']
     end
 
-    def poll_status(url)
+    # SECURITY: Added timeout to prevent infinite loop (CWE-835)
+    def poll_status(url) # rubocop:disable Metrics/MethodLength
       spin = @spinner.spin_msg 'Polling Nexus IQ Server for results'
+      retries = 0
       loop do
         res = _poll_iq_server(url)
         if res.code == 200
           spin.success('...done.')
           return _handle_response(res)
         end
-      rescue StandardError
-        sleep(1)
+      rescue StandardError => e
+        retries += 1
+        if retries >= MAX_POLL_RETRIES
+          spin.error('...timeout.')
+          raise "Polling timeout after #{MAX_POLL_RETRIES} attempts: #{e.message}"
+        end
+        sleep(POLL_INTERVAL)
       end
     end
 
@@ -87,6 +102,20 @@ module Chelsea
     POLICY_ACTION_NONE = 'None'
 
     private
+
+    # SECURITY: Validate required options are provided
+    def _validate_required_options!
+      missing = []
+      missing << 'server_url' if @options[:server_url].nil? || @options[:server_url].empty?
+      missing << 'username' if @options[:username].nil? || @options[:username].empty?
+      missing << 'auth_token' if @options[:auth_token].nil? || @options[:auth_token].empty?
+      missing << 'public_application_id' if @options[:public_application_id].nil? || @options[:public_application_id].empty?
+
+      return if missing.empty?
+
+      raise ArgumentError, "Missing required IQ Server options: #{missing.join(', ')}. " \
+                           'Please provide --iquser, --iqpass, --server, and --application options.'
+    end
 
     def _handle_response(res) # rubocop:disable Metrics/MethodLength
       res = JSON.parse(res.body)
